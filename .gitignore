@@ -37,5 +37,6 @@ xmlrpc.php
 /themes
 
 # Ignore Modules unless specified
-sites/all/modules/*
+#sites/all/modules/*
+sites/all/*
 !sites/all/modules/groupgrade/
