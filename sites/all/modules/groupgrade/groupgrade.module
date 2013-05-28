@@ -1,0 +1,67 @@
+<?php
+/**
+ * Group Grade Base
+ */
+
+function groupgrade_menu() {
+  $items['class'] = array(
+    // The title - do NOT use t() as t() is called automatically.
+    'title' => 'CLASS Management',
+    'description' => 'Manage Web Services',
+    'type' => MENU_NORMAL_ITEM,
+    'menu_name' => 'management',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_base'),
+    'file' => 'groupgrade_form.inc',
+    'file path' => drupal_get_path('module', 'groupgrade'),
+    'access callback' => 'user_access',
+    'access arguments' => array(
+      'manage groupgrade'
+    )
+  );
+
+  $items['class/%'] = array(
+    // The title - do NOT use t() as t() is called automatically.
+    'title' => 'View Course',
+    'description' => 'Manage Web Services',
+    'type' => MENU_NORMAL_ITEM,
+    'menu_name' => 'management',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_base'),
+    'file' => 'groupgrade_form.inc',
+    'file path' => drupal_get_path('module', 'groupgrade'),
+    'access callback' => 'user_access',
+    'access arguments' => array(
+      'manage groupgrade'
+    )
+  );
+
+  $items['class/%/assignments'] = array(
+    // The title - do NOT use t() as t() is called automatically.
+    'title' => 'Course Assignments',
+    'description' => 'Manage Web Services',
+    'type' => MENU_NORMAL_ITEM,
+    'menu_name' => 'management',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_base'),
+    'file' => 'groupgrade_form.inc',
+    'file path' => drupal_get_path('module', 'groupgrade'),
+    'access callback' => 'user_access',
+    'access arguments' => array(
+      'manage groupgrade'
+    )
+  );
+
+  return $items;
+}
+
+/**
+ * Register the Namespaces
+ * 
+ * @param object
+ * @access private
+ */
+function groupgrade_xautoload($api)
+{
+  $api->namespaceRoot('Drupal\\ClassLearning');
+}

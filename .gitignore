@@ -37,5 +37,4 @@ xmlrpc.php
 /themes
 
 # Ignore everything but the "sites" folder ( for non core developer )
-/sites/
-!/sites/*/modules/groupgrade/
+/sites/all/themes/
