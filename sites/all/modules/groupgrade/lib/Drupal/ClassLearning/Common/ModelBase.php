@@ -10,6 +10,14 @@ use Drupal\ClassLearning\Exception as ModelException;
 abstract class ModelBase {
   protected $table;
   protected $fields;
+  
+  /**
+   * Unique key for this table's rows
+   * 
+   * @var string
+   * @access protected
+   */
+  protected $key = 'id';
 
   /**
    * Constructor
@@ -39,6 +47,31 @@ abstract class ModelBase {
     } catch (ModelException $e) {
       // We're in error here!
     }
+
+    if ((int) $this->fields[$this->key] > 0) :
+      $items = $this->sanitizeSaving(clone $this->fields);
+
+      // We don't want to overwrite the ID
+      // or the creation date of the request
+      unset($items->{$this->key});
+
+      // They're updating
+      db_update($this->table)
+        ->fields((array) $items)
+        ->condition($this->key, $this->fields[$this->key])
+        ->execute();
+    else :
+      // Inserting
+      $items = $this->sanitizeSaving(clone $this->items);
+
+      unset($items->{$this->key});
+      $items->created_date = time();
+
+      // Set the new insert ID
+      $this->{$this->key} = db_insert($this->table)
+        ->fields((array) $items)
+        ->execute();
+    endif;
   }
 
   /**
@@ -77,5 +110,15 @@ abstract class ModelBase {
   protected function validate()
   {
     return TRUE;
+  }
+
+  protected function sanitizeSaving($object)
+  {
+    return $object;
+  }
+
+  public function sanitizeLoading($object)
+  {
+    return $object;
   }
 }
