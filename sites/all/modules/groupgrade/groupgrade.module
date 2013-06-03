@@ -3,6 +3,22 @@
  * Group Grade Base
  */
 
+/**
+ * Loading of the system
+ *
+ * @access private
+ */
+function groupgrade_init() {
+  // Composer
+  if (! file_exists(__DIR__.'/vendor/autoload.php'))
+    die('Composer is not setup for Groupgrade.
+      You need to run "drush dl composer && drush composer install"');
+
+  // Load Composer Dependencies
+  require_once __DIR__.'/vendor/autoload.php';
+  
+}
+
 function groupgrade_menu() {
   // Parent Level Menu
   // 
