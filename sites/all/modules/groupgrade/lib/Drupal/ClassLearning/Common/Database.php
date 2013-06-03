@@ -3,11 +3,11 @@ namespace Drupal\ClassLearning\Common;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 class Database {
-  private $isSetup = false;
+  private static $isSetup = false;
 
   public static function setupCapsule()
   {
-    if ($this->isSetup) return;
+    if (self::$isSetup) return;
 
     global $databases;
     $capsule = new Capsule;
@@ -29,7 +29,7 @@ class Database {
     $capsule->bootEloquent();
 
     // Set the event dispatcher used by Eloquent models... (optional)
-    $capsule->setEventDispatcher(...);
+    //$capsule->setEventDispatcher();
 
     // Make this Capsule instance available globally via static methods... (optional)
     $capsule->setAsGlobal();

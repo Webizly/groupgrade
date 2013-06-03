@@ -17,6 +17,8 @@ function groupgrade_init() {
   // Load Composer Dependencies
   require_once __DIR__.'/vendor/autoload.php';
   
+  Drupal\ClassLearning\Common\Database::setupCapsule();
+  
 }
 
 function groupgrade_menu() {
