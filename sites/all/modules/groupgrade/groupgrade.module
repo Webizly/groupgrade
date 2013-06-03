@@ -48,6 +48,7 @@ function groupgrade_menu() {
     'title' => t('Pending'),
     // The additional page callback and related items are handled by the
     // parent menu item.
+    'weight' => 1,
   );
 
   $items["class/default/completed"] = array(
@@ -56,6 +57,7 @@ function groupgrade_menu() {
     'page callback' => '_menu_example_menu_page',
     'page arguments' => array(t('Apples')),
     'access callback' => TRUE,
+     'weight' => 2,
   );
 
   $items["class/default/all"] = array(
@@ -64,6 +66,7 @@ function groupgrade_menu() {
     'page callback' => '_menu_example_menu_page',
     'page arguments' => array(t('Apples')),
     'access callback' => TRUE,
+     'weight' => 3,
   );
 
   // Classes
