@@ -8,7 +8,7 @@ function groupgrade_menu() {
   // 
   // My Tasks/Classes/Assignment
   $items['class'] = array(
-    'title' => 'CLASS Management',
+    'title' => 'PLA Learning System Dashboard',
     'description' => 'Manage Web Services',
     'page callback' => 'groupgrade_base',
     'page arguments' => array('groupgrade_base'),
@@ -24,11 +24,11 @@ function groupgrade_menu() {
   // /class/
   $items['class/default'] = array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'My Tasks',
+    'title' => 'Dashboard',
     'weight' => 1,
   );
 
-  foreach ([t('classes') => 2, t('assignments') => 3] as $tabname => $weight) {
+  foreach ([t('tasks') => 2, t('classes') => 3, t('assignments') => 4] as $tabname => $weight) {
     $items['class/'.$tabname] = array(
       'type' => MENU_LOCAL_TASK,
       'title' => ucfirst($tabname),
@@ -43,13 +43,13 @@ function groupgrade_menu() {
   }
 
   // Secondary tabs on a per-parent tab basis
-  $items['class/default/first'] = array(
+  $items['class/tasks/first'] = array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Pending',
     'weight' => 1,
   );
 
-  $items['class/default/completed'] = array(
+  $items['class/tasks/completed'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Completed',
     'page callback' => '_menu_example_menu_page',
@@ -58,7 +58,7 @@ function groupgrade_menu() {
     'weight' => 2,
   );
 
-  $items['class/default/all'] = array(
+  $items['class/tasks/all'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'All',
     'page callback' => '_menu_example_menu_page',
