@@ -5,12 +5,12 @@
 
 function groupgrade_menu() {
   // Parent Level Menu
+  // 
   // My Tasks/Classes/Assignment
   $items['class'] = array(
-    // The title - do NOT use t() as t() is called automatically.
     'title' => 'CLASS Management',
     'description' => 'Manage Web Services',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'groupgrade_base',
     'page arguments' => array('groupgrade_base'),
     'file' => 'groupgrade_form.inc',
     'file path' => drupal_get_path('module', 'groupgrade'),
@@ -24,7 +24,7 @@ function groupgrade_menu() {
   // /class/
   $items['class/default'] = array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => t('My Tasks'),
+    'title' => 'My Tasks',
     'weight' => 1,
   );
 
@@ -45,28 +45,26 @@ function groupgrade_menu() {
   // Secondary tabs on a per-parent tab basis
   $items['class/default/first'] = array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => t('Pending'),
-    // The additional page callback and related items are handled by the
-    // parent menu item.
+    'title' => 'Pending',
     'weight' => 1,
   );
 
-  $items["class/default/completed"] = array(
+  $items['class/default/completed'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Completed',
     'page callback' => '_menu_example_menu_page',
     'page arguments' => array(t('Apples')),
     'access callback' => TRUE,
-     'weight' => 2,
+    'weight' => 2,
   );
 
-  $items["class/default/all"] = array(
+  $items['class/default/all'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'All',
     'page callback' => '_menu_example_menu_page',
     'page arguments' => array(t('Apples')),
     'access callback' => TRUE,
-     'weight' => 3,
+    'weight' => 3,
   );
 
   // Classes
@@ -77,7 +75,7 @@ function groupgrade_menu() {
     // parent menu item.
   );
 
-  $items["class/classes/past"] = array(
+  $items['class/classes/past'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Past Classes',
     'page callback' => '_menu_example_menu_page',
