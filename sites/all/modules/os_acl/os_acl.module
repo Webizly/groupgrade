@@ -1,0 +1,343 @@
+<?php
+
+/**
+ * @file
+ * Module file for demo_menu.
+ */
+
+function os_acl_menu() {
+
+	$items['os_acl/forms_1'] = array(
+	  'title' => 'Create ACL',
+	  'type' => MENU_NORMAL_ITEM,
+	  'access callback' => TRUE,
+	  'menu_name' => 'main-menu',
+	  'page callback' => 'os_acl_form1',
+	  'weight' => 1,
+  );
+
+  $items['os_acl/form_2'] = array(
+	  'title' => 'Add User to ACL',
+	  'type' => MENU_NORMAL_ITEM,
+	  'access callback' => TRUE,
+	  'menu_name' => 'main-menu',
+	  'page callback' => 'os_acl_form2',
+	  'weight' => 2,
+  );
+
+  $items['os_acl/form_3'] = array(
+	  'title' => 'Add Node to ACL',
+	  'type' => MENU_NORMAL_ITEM,
+	  'access callback' => TRUE,
+	  'menu_name' => 'main-menu',
+	  'page callback' => 'os_acl_form3',
+	  'weight' => 3,
+  );
+
+  $items['os_acl/form_4'] = array(
+	  'title' => 'Remove Node from ACL',
+	  'type' => MENU_NORMAL_ITEM,
+	  'access callback' => TRUE,
+	  'menu_name' => 'main-menu',
+	  'page callback' => 'os_acl_form4',
+	  'weight' => 4,
+  );
+
+  $items['os_acl/form_5'] = array(
+	  'title' => 'Remove User from ACL',
+	  'type' => MENU_NORMAL_ITEM,
+	  'access callback' => TRUE,
+	  'menu_name' => 'main-menu',
+	  'page callback' => 'os_acl_form5',
+	  'weight' => 5,
+  );
+
+  $items['os_acl/form_6'] = array(
+	  'title' => 'Remove ACL',
+	  'type' => MENU_NORMAL_ITEM,
+	  'access callback' => TRUE,
+	  'menu_name' => 'main-menu',
+	  'page callback' => 'os_acl_form6',
+	  'weight' => 6,
+  );
+  
+  
+  return $items;
+}
+
+function os_acl_form1() {
+   return drupal_get_form('os_acl_create_acl');
+}
+
+function os_acl_create_acl($form, &$form_state) 
+{
+	$form['acl_name'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('ACL Name'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Name of ACL'),
+	);
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Save'),
+	);
+	return $form;
+}
+/*
+function os_acl_create_acl_validate($form, &$form_state) {
+  if ($form_state['acl_name'] == '') {
+    form_set_error('', t('You must enter a name for ACL.'));
+  }
+}
+*/
+function os_acl_create_acl_submit($form, &$form_state) {
+  acl_create_new_acl('os_acl',$form['acl_name']['#value']);
+  drupal_set_message(t('Your form has been saved.'));
+}
+
+function os_acl_form2() {
+   return drupal_get_form('os_acl_add_usertoacl');
+}
+
+
+function os_acl_add_usertoacl() {
+	$form['acl_name'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('ACL Name'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Name of ACL'),
+	);
+	$form['user_id'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('User ID'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add User ID between 4 to 8'),
+	);
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Save'),
+	);
+     
+  return $form;
+}
+function os_acl_add_usertoacl_submit($form, &$form_state) {
+	$acl_id = acl_get_id_by_name('os_acl', $form['acl_name']['#value']);
+	if($acl_id == '')
+	{
+		$acl_id = acl_create_new_acl('os_acl',$form['acl_name']['#value']);
+	}
+	acl_add_user($acl_id, $form['user_id']['#value']);
+	drupal_set_message(t('Your form has been saved.'));
+}
+
+function os_acl_form3() {
+   return drupal_get_form('os_acl_add_nodetoacl');
+}
+function os_acl_add_nodetoacl() {
+	$form['acl_name'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('ACL Name'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Name of ACL'),
+	);
+	$form['node_id'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('Node ID'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Node ID between 1 to 11'),
+	);
+	
+	$options = array('1' => t('Yes'), '0' => t('No'));
+	
+	$form['view_permission'] = array(
+		'#type' => 'radios',
+		'#title' => t('View Permission'),
+		'#default_value' =>variable_get('view_permission', 1),
+		'#options' => $options,
+		'#description' => t('Set View Permission for Node'),
+	  );	
+	$form['update_permission'] = array(
+		'#type' => 'radios',
+		'#title' => t('Update Permission'),
+		'#default_value' =>variable_get('update_permission', 1),
+		'#options' => $options,
+		'#description' => t('Set Update Permission for Node'),
+	  );	
+	$form['delete_permission'] = array(
+		'#type' => 'radios',
+		'#title' => t('Delete Permission'),
+		'#default_value' =>variable_get('delete_permission', 1),
+		'#options' => $options,
+		'#description' => t('Set Delete Permission for Node'),
+	  );	
+	
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Save'),
+	);
+     
+  return $form;
+}
+function os_acl_add_nodetoacl_submit($form, &$form_state) {
+	$acl_id = acl_get_id_by_name('os_acl', $form['acl_name']['#value']);
+	if($acl_id == '')
+	{
+		$acl_id = acl_create_new_acl('os_acl',$form['acl_name']['#value']);
+	}
+	acl_node_add_acl($form['node_id']['#value'], $acl_id, $form['view_permission']['#value'], $form['update_permission']['#value'], $form['delete_permission']['#value'], $priority = 0);
+
+	drupal_set_message(t('Your form has been saved.'));
+}
+
+function os_acl_form4() {
+   return drupal_get_form('os_acl_remove_nodefromacl');
+}
+function os_acl_remove_nodefromacl() {
+	$form['acl_name'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('ACL Name'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Name of ACL'),
+	);
+	$form['node_id'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('Node ID'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Node ID between 1 to 11'),
+	);
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Save'),
+	);
+  return $form;
+}
+function os_acl_remove_nodefromacl_submit($form, &$form_state) {
+	$acl_id = acl_get_id_by_name('os_acl', $form['acl_name']['#value']);
+	if($acl_id == '')
+	{
+		form_set_error('', t('You must enter a valid ACL Name.'));
+	}
+	else
+	{
+		acl_node_remove_acl($form['node_id']['#value'], $acl_id);
+		drupal_set_message(t('Your form has been saved.'));
+	}
+}
+
+
+
+
+function os_acl_form5() {
+   return drupal_get_form('os_acl_remove_userfromacl');
+}
+
+
+function os_acl_remove_userfromacl() {
+	$form['acl_name'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('ACL Name'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Name of ACL'),
+	);
+	$form['user_id'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('User ID'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add User ID between 4 to 8'),
+	);
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Save'),
+	);
+     
+  return $form;
+}
+function os_acl_remove_userfromacl_submit($form, &$form_state) {
+	$acl_id = acl_get_id_by_name('os_acl', $form['acl_name']['#value']);
+	if($acl_id == '')
+	{
+		form_set_error('', t('You must enter a valid ACL Name.'));
+	}
+	else
+	{
+		acl_remove_user($acl_id, $form['user_id']['#value']);
+		drupal_set_message(t('Your form has been saved.'));
+	}
+}
+
+
+function os_acl_form6() {
+   return drupal_get_form('os_acl_remove_acl');
+}
+
+function os_acl_remove_acl($form, &$form_state) 
+{
+	$form['acl_name'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('ACL Name'),
+	  '#default_value' => '',
+	  '#size' => 60,
+	  '#maxlength' => 64,
+	  '#description' => t('Add Name of ACL'),
+	);
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Save'),
+	);
+	return $form;
+}
+function os_acl_remove_acl_submit($form, &$form_state) {
+	$acl_id = acl_get_id_by_name('os_acl', $form['acl_name']['#value']);
+	if($acl_id == '')
+	{
+		form_set_error('', t('You must enter a valid ACL Name.'));
+	}
+	else
+	{
+		acl_delete_acl($acl_id);;
+		drupal_set_message(t('Your form has been saved.'));
+	}
+}
+/**
+ * Used by the ACL module.
+ */
+function os_acl_enabled() {
+  return !os_acl_disabling();
+}
+
+/**
+ * Implements hook_disable().
+ */
+function os_acl_disable() {
+  os_acl_disabling(TRUE);
+}
+/*
+ * Remembers if we have disabled access.
+ */
+function os_acl_disabling($set = NULL) {
+  static $disabling = FALSE;
+
+  if (isset($set)) {
+    $disabling = $set;
+  }
+  return $disabling;
+
+}
