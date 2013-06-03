@@ -4,54 +4,83 @@
  */
 
 function groupgrade_menu() {
+  // Parent Level Menu
+  // My Tasks/Classes/Assignment
   $items['class'] = array(
     // The title - do NOT use t() as t() is called automatically.
     'title' => 'CLASS Management',
     'description' => 'Manage Web Services',
-    'type' => MENU_NORMAL_ITEM,
-    'menu_name' => 'management',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('groupgrade_base'),
     'file' => 'groupgrade_form.inc',
     'file path' => drupal_get_path('module', 'groupgrade'),
-    'access callback' => 'user_access',
-    'access arguments' => array(
-      'manage groupgrade'
-    )
+    
+    // Permissions
+    'access callback' => 'groupgrade_custom_access',
+    'access arguments' => array('authenticated user'),
   );
 
-  $items['class/%'] = array(
-    // The title - do NOT use t() as t() is called automatically.
-    'title' => 'View Course',
-    'description' => 'Manage Web Services',
-    'type' => MENU_NORMAL_ITEM,
-    'menu_name' => 'management',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('groupgrade_base'),
-    'file' => 'groupgrade_form.inc',
-    'file path' => drupal_get_path('module', 'groupgrade'),
-    'access callback' => 'user_access',
-    'access arguments' => array(
-      'manage groupgrade'
-    )
+  // Default Parent Task
+  // /class/
+  $items['class/default'] = array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => t('My Tasks'),
+    'weight' => 1,
   );
 
-  $items['class/%/assignments'] = array(
-    // The title - do NOT use t() as t() is called automatically.
-    'title' => 'Course Assignments',
-    'description' => 'Manage Web Services',
-    'type' => MENU_NORMAL_ITEM,
-    'menu_name' => 'management',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('groupgrade_base'),
-    'file' => 'groupgrade_form.inc',
-    'file path' => drupal_get_path('module', 'groupgrade'),
-    'access callback' => 'user_access',
-    'access arguments' => array(
-      'manage groupgrade'
-    )
+  foreach ([t('classes') => 2, t('assignments') => 3] as $tabname => $weight) {
+    $items['class/'.$tabname] = array(
+      'type' => MENU_LOCAL_TASK,
+      'title' => ucfirst($tabname),
+      'page callback' => '_menu_example_menu_page',
+      'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
+      'access callback' => TRUE,
+
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+      'weight' => $weight,
+    );
+  }
+
+  // Secondary tabs on a per-parent tab basis
+  $items['class/default/first'] = array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => t('Pending'),
+    // The additional page callback and related items are handled by the
+    // parent menu item.
   );
 
+  $items["class/default/completed"] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Completed',
+    'page callback' => '_menu_example_menu_page',
+    'page arguments' => array(t('Apples')),
+    'access callback' => TRUE,
+  );
+
+  $items["class/default/all"] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'All',
+    'page callback' => '_menu_example_menu_page',
+    'page arguments' => array(t('Apples')),
+    'access callback' => TRUE,
+  );
+
+  // Classes
+  $items['class/classes/first'] = array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Current Classes',
+    // The additional page callback and related items are handled by the
+    // parent menu item.
+  );
+
+  $items["class/classes/past"] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Past Classes',
+    'page callback' => '_menu_example_menu_page',
+    'page arguments' => array(t('Apples')),
+    'access callback' => TRUE,
+  );
   return $items;
 }
 
@@ -64,4 +93,17 @@ function groupgrade_menu() {
 function groupgrade_xautoload($api)
 {
   $api->namespaceRoot('Drupal\\ClassLearning');
+}
+
+/**
+ * Determine whether the current user has the role specified.
+ *
+ * @param $role_name
+ *   The role required for access
+ * @return bool
+ *   True if the acting user has the role specified.
+ */
+function groupgrade_custom_access($role_name){
+  $access_granted = in_array($role_name, $GLOBALS['user']->roles);
+  return $access_granted;
 }
