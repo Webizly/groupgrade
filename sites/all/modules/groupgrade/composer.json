@@ -1,0 +1,7 @@
+{
+  "name": "PLA Development Learning",
+  "require": {
+    "nesbot/carbon": "1.2.0",
+    "illuminate/database": "4.0.1"
+  }
+}

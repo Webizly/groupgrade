@@ -4,6 +4,9 @@
  * /class
  */
 function groupgrade_base() {
+  global $databases;
   $item = new Drupal\ClassLearning\Models\CourseStudents();
+  var_dump($databases, Database::parseConnectionInfo());
+  exit;
   return '';
 }
