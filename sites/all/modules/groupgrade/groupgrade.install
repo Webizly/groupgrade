@@ -1,0 +1,509 @@
+<?php
+/**
+ * @file
+ * 
+ * GroupGrade Schema
+ *
+ * @package groupgrade
+ * @subpackage schema
+ */
+
+function groupgrade_schema() {
+  $schema = array();
+
+  $schema['pla_assignment'] = array(
+    'description' => 'TODO: please describe this table!',
+    'fields' => array(
+      'assignment_id' => array(
+        'description' => 'TODO: please describe this field!',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'section_id' => array(
+        'description' => 'TODO: please describe this field!',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ),
+      'assignment_description' => array(
+        'description' => 'TODO: please describe this field!',
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'assignment_settings' => array(
+        'description' => 'Describes the # of instances',
+        'type' => 'blob',
+        'not null' => TRUE,
+      ),
+      'assignment_grade_destrib' => array(
+        'description' => 'TODO: please describe this field!',
+        'type' => 'blob',
+        'not null' => FALSE,
+      ),
+      'assignment_group_size' => array(
+        'description' => 'Max size of groups (1 means that there are no groups)',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'assignment_start' => array(
+        'description' => 'Specify a start time for when to trigger the start of the assignment',
+        'type' => 'datetime',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('assignment_id'),
+    'indexes' => array(
+      'section_id' => array('section_id'),
+    ),
+  );
+
+$schema['pla_assignment_section'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'asec_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'assignment_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'asec_start' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+    'asec_end' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+  ),
+  'primary key' => array('asec_id'),
+  'indexes' => array(
+    'assignment_id' => array('assignment_id'),
+  ),
+);
+
+
+$schema['pla_course'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'course_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'organization_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'course_name' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+    'course_title' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '255',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+  ),
+  'primary key' => array('course_id'),
+  'indexes' => array(
+    'organization_id' => array('organization_id'),
+  ),
+);
+
+$schema['pla_group_user'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'gu_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'user_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'gu_role' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'student',
+    ),
+    'gu_status' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'active',
+    ),
+  ),
+  'primary key' => array('gu_id'),
+  'indexes' => array(
+    'user_id' => array('user_id'),
+  ),
+);
+
+
+$schema['pla_groups'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'group_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'section_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'group_name' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => FALSE,
+    ),
+    'group_leader' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+  ),
+  'primary key' => array('group_id'),
+  'indexes' => array(
+    'section_id' => array('section_id'),
+  ),
+);
+
+
+$schema['pla_organization'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'organization_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'organization_name' => array(
+      'description' => 'Most important information about the org -- will be displayed on the frontend very frequently',
+      'type' => 'varchar',
+      'length' => '40',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+    'organization_address' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+    'organization_zip' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '20',
+      'not null' => FALSE,
+    ),
+    'organization_city' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '20',
+      'not null' => FALSE,
+    ),
+    'organization_state' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '2',
+      'not null' => FALSE,
+    ),
+    'organization_country' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => FALSE,
+    ),
+    'organization_type' => array(
+      'description' => 'If it\'s a university/school/business/etc.',
+      'type' => 'varchar',
+      'length' => '20',
+      'not null' => TRUE,
+      'default' => 'university',
+    ),
+  ),
+  'primary key' => array('organization_id'),
+);
+
+$schema['pla_section'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'section_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'semester_id' => array(
+      'description' => 'Foreign Key to the pla_semester',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'course_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'section_name' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '100',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+    'section_start' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+    'section_end' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+    'section_description' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '255',
+      'not null' => FALSE,
+    ),
+  ),
+  'primary key' => array('section_id'),
+  'indexes' => array(
+    'course_id' => array('course_id'),
+    'semester_id' => array('semester_id'),
+  ),
+);
+
+
+$schema['pla_section_user'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'su_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'user_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'su_role' => array(
+      'description' => 'A user in a course can have a role that will allow it to act differently. Roles: student/instructor',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'student',
+    ),
+    'su_status' => array(
+      'description' => 'active/dropped',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'active',
+    ),
+  ),
+  'primary key' => array('su_id'),
+  'indexes' => array(
+    'user_id' => array('user_id'),
+  ),
+);
+
+
+$schema['pla_semester'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'semester_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'organization_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'semester_name' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '25',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+    'semester_start' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+    'semester_end' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+  ),
+  'primary key' => array('semester_id'),
+  'indexes' => array(
+    'semester_to_org' => array('organization_id'),
+  ),
+);
+
+
+$schema['pla_task'] = array(
+  'description' => 'Stores information about specific tasks triggered from the parent workflow (pla_workflow)',
+  'fields' => array(
+    'task_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'workflow_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'type' => array(
+      'description' => 'The type that they task is (internal name)',
+      'type' => 'varchar',
+      'length' => '20',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+    'referenced_task' => array(
+      'description' => 'If they\'re assigned a task, we\'re going to assign that here',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'status' => array(
+      'description' => 'Status of step: not started/started/abandonded/failed to submit/submitted',
+      'type' => 'varchar',
+      'length' => '40',
+      'not null' => TRUE,
+      'default' => 'not started',
+    ),
+    'start' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => TRUE,
+    ),
+    'end' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+    'force_end' => array(
+      'description' => 'A specific time this task must be completed by.',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+    'data' => array(
+      'description' => 'Inputted data from the user to complete this step',
+      'type' => 'blob',
+      'not null' => TRUE,
+    ),
+    'settings' => array(
+      'description' => 'Settings for this task (reviewing a question submitted in another workflow)',
+      'type' => 'blob',
+      'not null' => TRUE,
+    ),
+  ),
+  'primary key' => array('task_id'),
+  'indexes' => array(
+    'workflow_id' => array('workflow_id'),
+  ),
+);
+
+
+$schema['pla_workflow'] = array(
+  'description' => 'Stores information about the Workflows triggered from the assignment and specific to the section\'s users/groups',
+  'fields' => array(
+    'workflow_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
+    'type' => array(
+      'description' => 'Internal type of the workflow (one_a, one_b etc.)',
+      'type' => 'varchar',
+      'length' => '20',
+      'not null' => TRUE,
+      'default' => '',
+    ),
+    'assignment_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'user_id' => array(
+      'description' => 'User ID this workflow is assigned to (NULL means that it is assigned via group_id)',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'group_id' => array(
+      'description' => 'Group ID this workflow is assigned to (NULL means that it is assigned via user_id)',
+      'type' => 'int',
+      'not null' => FALSE,
+    ),
+    'workflow_start' => array(
+      'description' => 'Start time',
+      'type' => 'datetime',
+      'not null' => TRUE,
+    ),
+    'workflow_end' => array(
+      'description' => 'End time (be that completion or the forced end of task(',
+      'type' => 'datetime',
+      'not null' => FALSE,
+    ),
+  ),
+  'primary key' => array('workflow_id'),
+  'indexes' => array(
+    'assignment_id' => array('assignment_id'),
+  ),
+);
+
+}
