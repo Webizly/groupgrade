@@ -6,4 +6,14 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Section extends ModelBase {
   protected $table = 'section';
   protected $primaryKey = 'section_id';
+
+  public function course()
+  {
+    return $this->belongsTo('Course');
+  }
+
+  public function users()
+  {
+    return $this->hasMany('SectionUsers');
+  }
 }

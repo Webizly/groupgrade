@@ -53,7 +53,7 @@ function groupgrade_menu() {
     'file' => 'Tasks.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
+    'page arguments' => array(),
     'access callback' => TRUE,
 
     // The weight property overrides the default alphabetic ordering of menu

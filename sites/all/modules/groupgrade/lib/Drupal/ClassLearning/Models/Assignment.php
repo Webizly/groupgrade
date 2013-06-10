@@ -6,4 +6,9 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Assignment extends ModelBase {
   protected $primaryKey = 'assignment_id';
   protected $table = 'assignment';
+
+  public function section()
+  {
+    return $this->belongsTo('section');
+  }
 }
