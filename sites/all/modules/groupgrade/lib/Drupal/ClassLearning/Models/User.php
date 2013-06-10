@@ -1,6 +1,7 @@
 <?php
 namespace Drupal\ClassLearning\Models;
-use Drupal\ClassLearning\Models\SectionUsers;
+use Drupal\ClassLearning\Models\SectionUsers,
+  Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * User Interface
@@ -12,11 +13,60 @@ use Drupal\ClassLearning\Models\SectionUsers;
  * @package groupgrade
  */
 class User {
-  public static function classes()
+  /**
+   * Retrieve the Classes a user has
+   *
+   * You can pass a two filters to the method:
+   *  - current: classes a user is currently taking
+   *  - past: classes a user took in the past
+   *  - none: no filter, retrieve all classes
+   *
+   * @todo impliment caching
+   * @param  string $filter [description]
+   * @return object
+   */
+  public static function classes($filter = 'current')
   {
-    return SectionUser::where('user_id', '=', $this->getKey())
-      ->groupBy('section_id')
-      ->get();
+    switch($filter)
+    {
+      case 'current' :
+        $d = date('Y-m-d H:i:s');
+
+        return Capsule::select('
+SELECT * FROM `pla_course` WHERE `course_id` IN (
+  # Get the current courses
+  SELECT `course_id` FROM `pla_section` WHERE `section_id` IN (
+    SELECT
+      `semester_id`
+    FROM
+      `pla_semester` 
+    WHERE 
+      `semester_start` >= ?
+    AND
+      `semester_end` <= ?
+  )
+) AND `course_id` IN (
+  # Get the courses a user is taking
+  SELECT `course_id` FROM `pla_section` WHERE `section_id` IN (
+    # Get a users sections
+    SELECT `section_id` FROM `pla_section_user` WHERE `user_id` = ?
+  ) 
+)
+ORDER BY `organization_id` ASC
+', array($d, $d, $this->getKey()));
+        break;
+
+      case 'past' :
+
+        break;
+
+      case 'all' :
+        $query = SectionUsers::where('user_id', '=', $this->getKey())
+          ->groupBy('section_id');
+
+        break;
+
+    }
   }
 
   /**

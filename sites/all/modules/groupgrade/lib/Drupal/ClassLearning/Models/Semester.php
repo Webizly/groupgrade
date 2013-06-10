@@ -21,4 +21,17 @@ class Semester extends ModelBase {
       ->where('organization_id', '=', $o)
       ->first();
   }
+
+  /**
+   * Retrieve the Current Semesters across all of the system
+   * 
+   * @return object
+   */
+  public static function currentSemesters()
+  {
+    $d = date('Y-m-d H:i:s');
+    return self::where('semester_start', '<=', $d)
+      ->where('semester_end', '>=', $d)
+      ->get();
+  }
 }
