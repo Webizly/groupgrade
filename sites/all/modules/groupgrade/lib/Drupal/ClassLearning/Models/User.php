@@ -32,7 +32,9 @@ class User {
       case 'current' :
         $d = date('Y-m-d H:i:s');
 
-        return Capsule::select('
+        $connection = Capsule::connection();
+
+        return $connection->select('
 SELECT * FROM `pla_course` WHERE `course_id` IN (
   # Get the current courses
   SELECT `course_id` FROM `pla_section` WHERE `section_id` IN (
@@ -53,7 +55,7 @@ SELECT * FROM `pla_course` WHERE `course_id` IN (
   ) 
 )
 ORDER BY `organization_id` ASC
-', array($d, $d, $this->getKey()));
+', array($d, $d, self::key()));
         break;
 
       case 'past' :
@@ -75,6 +77,17 @@ ORDER BY `organization_id` ASC
    * @return int
    */
   public function getKey()
+  {
+    global $user;
+    return $user->uid;
+  }
+
+  /**
+   * Staticlly Retrieve the user ID
+   *
+   * @return int
+   */
+  public static function key()
   {
     global $user;
     return $user->uid;

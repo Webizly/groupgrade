@@ -8,6 +8,7 @@ function groupgrade_classes_dashboard() {
 
 function groupgrade_classes_view_specific($which = 'current')
 {
-  $classes = Drupal\ClassLearning\Models\User::classes();
+  $classes = Drupal\ClassLearning\Models\User::classes($which);
+  
   return '';
 }
