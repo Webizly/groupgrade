@@ -8,6 +8,14 @@
  * @subpackage schema
  */
 
+/**
+ * Impliment hook_enable()
+ */
+function groupgrade_enable() {
+  // Ensure the blog node type is available.
+  node_types_rebuild();
+}
+
 function groupgrade_schema() {
   $schema = array();
 
@@ -403,6 +411,17 @@ $schema['pla_task'] = array(
       'unsigned' => TRUE,
       'not null' => FALSE,
     ),
+    'user_id' => array(
+      'description' => 'User ID this workflow is assigned to (NULL means that it is assigned via group_id)',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+    ),
+    'group_id' => array(
+      'description' => 'Group ID this workflow is assigned to (NULL means that it is assigned via user_id)',
+      'type' => 'int',
+      'not null' => FALSE,
+    ),
     'type' => array(
       'description' => 'The type that they task is (internal name)',
       'type' => 'varchar',
@@ -476,17 +495,6 @@ $schema['pla_workflow'] = array(
       'description' => 'TODO: please describe this field!',
       'type' => 'int',
       'unsigned' => TRUE,
-      'not null' => FALSE,
-    ),
-    'user_id' => array(
-      'description' => 'User ID this workflow is assigned to (NULL means that it is assigned via group_id)',
-      'type' => 'int',
-      'unsigned' => TRUE,
-      'not null' => FALSE,
-    ),
-    'group_id' => array(
-      'description' => 'Group ID this workflow is assigned to (NULL means that it is assigned via user_id)',
-      'type' => 'int',
       'not null' => FALSE,
     ),
     'workflow_start' => array(

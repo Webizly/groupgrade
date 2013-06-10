@@ -46,19 +46,50 @@ function groupgrade_menu() {
     'weight' => 1,
   );
 
-  foreach ([t('tasks') => 2, t('classes') => 3, t('assignments') => 4] as $tabname => $weight) {
-    $items['class/'.$tabname] = array(
-      'type' => MENU_LOCAL_TASK,
-      'title' => ucfirst($tabname),
-      'page callback' => '_menu_example_menu_page',
-      'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
-      'access callback' => TRUE,
+  $items['class/tasks'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Tasks',
+    'page callback' => 'groupgrade_tasks_dashboard',
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
+    'access callback' => TRUE,
 
     // The weight property overrides the default alphabetic ordering of menu
     // entries, allowing us to get our tabs in the order we want.
-      'weight' => $weight,
-    );
-  }
+    'weight' => 2,
+  );
+
+  $items['class/classes'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Classes',
+    'page callback' => 'groupgrade_classes_dashboard',
+    'file' => 'Classes.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
+    'access callback' => TRUE,
+
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 3,
+  );
+
+  $items['class/assignments'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Assignments',
+    'page callback' => 'groupgrade_assignments_dashboard',
+    'file' => 'Assignments.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
+    'access callback' => TRUE,
+
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 4,
+  );
 
   // Secondary tabs on a per-parent tab basis
   $items['class/tasks/first'] = array(
@@ -70,8 +101,12 @@ function groupgrade_menu() {
   $items['class/tasks/completed'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Completed',
-    'page callback' => '_menu_example_menu_page',
-    'page arguments' => array(t('Apples')),
+
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_tasks_view_specific',
+    'page arguments' => array('completed'),
     'access callback' => TRUE,
     'weight' => 2,
   );
@@ -79,8 +114,11 @@ function groupgrade_menu() {
   $items['class/tasks/all'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'All',
-    'page callback' => '_menu_example_menu_page',
-    'page arguments' => array(t('Apples')),
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_tasks_view_specific',
+    'page arguments' => array('all'),
     'access callback' => TRUE,
     'weight' => 3,
   );
@@ -89,18 +127,63 @@ function groupgrade_menu() {
   $items['class/classes/first'] = array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Current Classes',
-    // The additional page callback and related items are handled by the
-    // parent menu item.
   );
 
   $items['class/classes/past'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Past Classes',
-    'page callback' => '_menu_example_menu_page',
-    'page arguments' => array(t('Apples')),
+    
+    'file' => 'Classes.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_classes_view_specific',
+    'page arguments' => array('past'),
+
     'access callback' => TRUE,
   );
   return $items;
+}
+
+/**
+ * Implements hook_form().
+ */
+function blog_form($node, $form_state) {
+  return array();
+}
+
+/**
+ * Impliments hook_node_info()
+ */
+function groupgrade_node_info() {
+  return array(
+    'assignment' => array(
+      'name' => t('Assignment'),
+      'base' => 'groupgrade_assignment',
+      'description' => t('An assignment for use inside of a course section.'),
+      'locked' => TRUE,
+    ),
+
+    'problem' => array(
+      'name' => t('Problem'),
+      'base' => 'groupgrade_problem',
+      'description' => t('A problem for use inside of an assignment.'),
+      'locked' => TRUE,
+    ),
+
+    'solution' => array(
+      'name' => t('Solution'),
+      'base' => 'groupgrade_solution',
+      'description' => t('A solution for use inside of an problem.'),
+      'locked' => TRUE,
+    ),
+
+    'grade' => array(
+      'name' => t('Grade'),
+      'base' => 'groupgrade_grade',
+      'description' => t('A grade for use inside of a solution.'),
+      'locked' => TRUE,
+    ),
+  );
 }
 
 /**
