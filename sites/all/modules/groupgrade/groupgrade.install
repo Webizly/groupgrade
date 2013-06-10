@@ -335,6 +335,12 @@ $schema['pla_section_user'] = array(
       'unsigned' => TRUE,
       'not null' => TRUE,
     ),
+    'section_id' => array(
+      'description' => 'Referencing the section ID this belongs to',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+    ),
     'user_id' => array(
       'description' => 'TODO: please describe this field!',
       'type' => 'int',
