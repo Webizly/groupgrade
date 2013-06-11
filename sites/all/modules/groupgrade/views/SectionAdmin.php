@@ -34,6 +34,12 @@ function groupgrade_section_view_form($form, &$form_state, $course)
     '#required' => true,
   );
 
+  $items['description'] = array(
+    '#title' => 'Section Description',
+    '#type' => 'textarea',
+    '#required' => true,
+  );
+
   $items['semester'] = array(
      '#type' => 'select',
      '#title' => t('Semester'),
@@ -56,12 +62,14 @@ function groupgrade_section_view_form($form, &$form_state, $course)
 function groupgrade_section_view_form_submit($form, &$form_state) {
   $name = $form['name']['#value'];
   $course = $form['course']['#value'];
+  $description = $form['description']['#value'];
   $semester = $form['semester']['#value'];
 
   $section = new Section;
   $section->course_id = (int) $course;
   $section->semester_id = (int) $semester;
   $section->section_name = $name;
+  $section->section_description = $description;
   $section->save();
 
   drupal_set_message(sprintf('Section "%s" created.', $name));
