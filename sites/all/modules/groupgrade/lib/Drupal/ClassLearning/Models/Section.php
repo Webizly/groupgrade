@@ -17,4 +17,9 @@ class Section extends ModelBase {
   {
     return $this->hasMany('Drupal\ClassLearning\Models\SectionUsers');
   }
+
+  public function semester()
+  {
+    return $this->belongsTo('Drupal\ClassLearning\Models\Semester');
+  }
 }

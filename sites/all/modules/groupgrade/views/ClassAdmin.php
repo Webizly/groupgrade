@@ -11,7 +11,7 @@ function groupgrade_class_view($id)
   $course = Course::find($id);
   if ($course == NULL) return drupal_not_found();
   $sections = $course->sections()->get();
-  
+
   $return = '';
   $return .= '<h2>Course <small>'.$course->course_name.' &mdash; '.$course->course_title.'</small></h2>';
   $return .= '<div class="admin clearfix"><div class=" clearfix">';
@@ -20,10 +20,17 @@ function groupgrade_class_view($id)
 
   $rows = array();
   if (count($sections) > 0) : foreach($sections as $section) :
-    $rows[] = array($section->section_name, $section->section_description, number_format($section->students()->count()));
+    $semester = $section->semester()->first();
+  
+    $rows[] = array(
+      $section->section_name,
+      $section->section_description,
+      number_format($section->students()->count()),
+      $semester->semester_name
+    );
   endforeach; endif;
   $return .= theme('table', array(
-    'header' => array('Section Name', 'Description', 'Students'),
+    'header' => array('Section Name', 'Description', 'Students', 'Semester'),
     'rows' => $rows,
     'attributes' => array('width' => '100%'),
     'empty' => 'No sections found.'
