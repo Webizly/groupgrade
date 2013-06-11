@@ -103,28 +103,30 @@ function groupgrade_view_section($section_id)
   ));
 
   $return .= '</div><div class="right clearfix">';
-  $return .= '<h3>Students</h3>';
 
-  $students = $section->students()
-    ->where('su_role', '=', 'student')
-    ->get();
+  foreach(array('instructor', 'student') as $role):
+    $return .= '<h3>'.ucfirst($role).'s</h3>';
+    $students = $section->students()
+      ->where('su_role', '=', $role)
+      ->get();
 
-  $rows = array();
-  if (count($students) > 0) : foreach($students as $student) :
-    $user = $student->user();
-    $rows[] = array(
-      ggPrettyName($user),
-      $student->su_status,
-      '<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
-      <a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
-    );
-  endforeach; endif;
+    $rows = array();
+    if (count($students) > 0) : foreach($students as $student) :
+      $user = $student->user();
+      $rows[] = array(
+        ggPrettyName($user),
+        $student->su_status,
+        '<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
+        <a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
+      );
+    endforeach; endif;
 
-  $return .= theme('table', array(
-    'rows' => $rows,
-    'header' => array('Student', 'Status', 'Operations'),
-    'empty' => 'No students found.',
-  ));
+    $return .= theme('table', array(
+      'rows' => $rows,
+      'header' => array('User', 'Status', 'Operations'),
+      'empty' => 'No students found.',
+    ));
+  endforeach;
 
   $return .= '</div></div><div class="admin"><div class="clearfix">';
   $return .= '<h5>Add User to Section</h5>';
