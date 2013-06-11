@@ -21,9 +21,9 @@ function groupgrade_class_view($id)
   $rows = array();
   if (count($sections) > 0) : foreach($sections as $section) :
     $semester = $section->semester()->first();
-  
+
     $rows[] = array(
-      $section->section_name,
+      '<a href="'.url('admin/pla/section/'.$section->section_id).'">'.$section->section_name.'</a>',
       $section->section_description,
       number_format($section->students()->count()),
       $semester->semester_name
