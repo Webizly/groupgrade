@@ -9,6 +9,15 @@ function groupgrade_classes_dashboard() {
 function groupgrade_classes_view_specific($which = 'current')
 {
   $classes = Drupal\ClassLearning\Models\User::classes($which);
-  
-  return '';
+
+  $headers = array('Course', 'Semester', 'Role');
+  $rows = array();
+  if (count($classes) > 0) : foreach($classes as $class) :
+    $rows[] = array($class->course_name, '', '');
+  endforeach; endif;
+
+  return theme('table', array(
+    'header' => $headers, 
+    'rows' => $rows
+  ));
 }
