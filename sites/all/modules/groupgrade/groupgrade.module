@@ -215,6 +215,17 @@ function groupgrade_menu() {
     'weight' => 4,
   );
 
+  $items['admin/pla/courses/%'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Course',
+    'page callback' => 'groupgrade_class_view',
+    'file' => 'ClassAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(3),
+    'access arguments' => array('access administration pages'), 
+  );
+
   $items['admin/pla/courses/sections'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Sections',

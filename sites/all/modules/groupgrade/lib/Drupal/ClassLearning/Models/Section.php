@@ -13,7 +13,7 @@ class Section extends ModelBase {
     return $this->belongsTo('Drupal\ClassLearning\Models\Course');
   }
 
-  public function users()
+  public function students()
   {
     return $this->hasMany('Drupal\ClassLearning\Models\SectionUsers');
   }

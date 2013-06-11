@@ -51,7 +51,7 @@ function groupgrade_organization_view($id)
 
   $rows = array();
   if (count($courses) > 0) : foreach($courses as $course) :
-    $rows[] = array($course->course_name, number_format($course->sections()->count()));
+    $rows[] = array('<a href="'.url('admin/pla/courses/'.$course->course_id).'">'.$course->course_name.'</a>', number_format($course->sections()->count()));
   endforeach; endif;
   $return .= theme('table', array(
     'header' => array('Course Name', 'Sections'),
@@ -81,5 +81,4 @@ function groupgrade_organization_view($id)
   $return .= '</div></div>';
 
   return $return;
-
 }
