@@ -53,7 +53,7 @@ return array(
   ),
 
   'admin/pla/courses' => array(
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_CALLBACK,
     'title' => 'Courses',
     'page callback' => 'groupgrade_organization_main',
     'file' => 'Organization.php',
@@ -63,16 +63,17 @@ return array(
     'access arguments' => array('access administration pages'), 
     // The weight property overrides the default alphabetic ordering of menu
     // entries, allowing us to get our tabs in the order we want.
-    'weight' => 3,
+    'weight' => 5,
   ),
 
-  'admin/pla/courses/sections' => array(
-    'type' => MENU_LOCAL_TASK,
+  'admin/pla/section/%' => array(
+    'type' => MENU_CALLBACK,
     'title' => 'Sections',
-    'page callback' => 'groupgrade_organization_main',
-    'file' => 'Organization.php',
+    'page callback' => 'groupgrade_view_section',
+    'file' => 'SectionAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
+    'page arguments' => array(3),
     'access arguments' => array('access administration pages'), 
   ),
 

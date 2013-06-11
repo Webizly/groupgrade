@@ -74,3 +74,19 @@ function groupgrade_section_view_form_submit($form, &$form_state) {
 
   drupal_set_message(sprintf('Section "%s" created.', $name));
 }
+
+function groupgrade_view_section($section_id)
+{
+  $section = Section::find($section_id);
+  $course = $section->course()->first();
+
+  $return = '';
+  $return .= '<h2>View Section <small>'.$course->course_name.' &mdash; '.$section->section_name.'</small></h2>';
+  $return .= '<div class="admin clearfix"><div class="left clearfix">';
+
+  $return .= '</div><div class="right clearfix">';
+  
+  $return .= '</div></div>';
+
+  return $return;
+}
