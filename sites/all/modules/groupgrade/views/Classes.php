@@ -18,7 +18,8 @@ function groupgrade_classes_view_specific($which = 'current')
 
   return theme('table', array(
     'header' => $headers, 
-    'rows' => $rows
+    'rows' => $rows,
+    'empty' => 'No classes found.',
   ));
 }
 

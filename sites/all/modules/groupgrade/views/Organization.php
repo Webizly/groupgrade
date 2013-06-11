@@ -21,7 +21,8 @@ function groupgrade_organization_main()
   $return .= theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
-    'attributes' => array('width' => '100%')
+    'attributes' => array('width' => '100%'),
+    'empty' => 'No organizations found.',
   ));
 
   $return .= '</div><div class="right clearfix">';
@@ -56,7 +57,8 @@ function groupgrade_organization_view($id)
   $return .= theme('table', array(
     'header' => array('Course Name', 'Sections'),
     'rows' => $rows,
-    'attributes' => array('width' => '100%')
+    'attributes' => array('width' => '100%'),
+    'empty' => 'No courses found.',
   ));
   
   $return .= '</div><div class="right clearfix">';
@@ -75,7 +77,8 @@ function groupgrade_organization_view($id)
   $return .= theme('table', array(
     'header' => array('Name', 'Start', 'End'),
     'rows' => $rows,
-    'attributes' => array('width' => '100%')
+    'attributes' => array('width' => '100%'),
+    'empty' => 'No semesters found.'
   ));
 
   $return .= '</div></div>';

@@ -14,7 +14,7 @@ function groupgrade_class_view($id)
 
   $return = '';
   $return .= '<h2>Course <small>'.$course->course_name.' &mdash; '.$course->course_title.'</small></h2>';
-  $return .= '<div class="admin clearfix"><div class="left clearfix">';
+  $return .= '<div class="admin clearfix"><div class=" clearfix">';
   $return .= '<h3>Sections</h3>';
   $return .= '<p><a href="'.url('admin/pla/sections/new/'.$course->course_id).'" class="btn btn-primary">Create Section</a></p>';
 
@@ -25,7 +25,8 @@ function groupgrade_class_view($id)
   $return .= theme('table', array(
     'header' => array('Section Name', 'Description', 'Students'),
     'rows' => $rows,
-    'attributes' => array('width' => '100%')
+    'attributes' => array('width' => '100%'),
+    'empty' => 'No courses found.'
   ));
   
   $return .= '</div></div>';
