@@ -26,7 +26,7 @@ function groupgrade_class_view($id)
     'header' => array('Section Name', 'Description', 'Students'),
     'rows' => $rows,
     'attributes' => array('width' => '100%'),
-    'empty' => 'No courses found.'
+    'empty' => 'No sections found.'
   ));
   
   $return .= '</div></div>';
