@@ -61,7 +61,7 @@ function groupgrade_organization_view($id)
   
   $return .= '</div><div class="right clearfix">';
   $return .= '<h3>Semesters</h3>';
-  $return .= '<p><a href="'.url('class/semester/new/'.$org->organization_id).'" class="btn btn-primary">Add Semester</a></p>';
+  $return .= '<p><a href="'.url('admin/pla/semester/new/'.$org->organization_id).'" class="btn btn-primary">Add Semester</a></p>';
 
   // Semesters
   $semesters = $org->semesters()->get();

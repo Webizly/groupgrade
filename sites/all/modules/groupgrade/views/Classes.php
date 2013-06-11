@@ -30,22 +30,25 @@ function groupgrade_classes_create($organization)
 function groupgrade_classes_create_form($form, &$form_state, $org_id)
 {
   $organization = Drupal\ClassLearning\Models\Organization::find($org_id);
-
+  if ($organization == NULL) return drupal_not_found();
+  
   $items = array();
   $items['back-text'] = array(
     '#type' => 'link',
     '#title' => 'Back to Organization',
-    '#href' => 'class/organization/'.$org_id,
+    '#href' => 'admin/pla/organization/'.$org_id,
   );
 
   $items['name'] = array(
     '#title' => 'Course Name (ACCT 101, IS 101, etc.)',
     '#type' => 'textfield',
+    '#required' => true,
   );
 
   $items['title'] = array(
     '#title' => 'Course Title (Intro to Accounting)',
-    '#type' => 'textfield'
+    '#type' => 'textfield',
+    '#required' => true,
   );
 
   $items['organization'] = array(

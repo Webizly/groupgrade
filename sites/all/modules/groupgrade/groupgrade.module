@@ -229,6 +229,17 @@ function groupgrade_menu() {
     'weight' => 4,
   );
 
+  // Semester
+  $items['admin/pla/semester/new/%'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Add Semester',
+    'page callback' => 'groupgrade_semester_add',
+    'file' => 'Semester.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(4),
+    'access arguments' => array('access administration pages'), 
+  );
   
   $items['admin/pla/courses/new/%'] = array(
     'type' => MENU_CALLBACK,

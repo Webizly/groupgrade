@@ -418,13 +418,13 @@ $schema['pla_semester'] = array(
     ),
     'semester_start' => array(
       'description' => 'TODO: please describe this field!',
-      'type' => 'datetime',
-    'mysql_type' => 'datetime','not null' => FALSE,
+      'type' => 'date',
+    'mysql_type' => 'date','not null' => FALSE,
     ),
     'semester_end' => array(
       'description' => 'TODO: please describe this field!',
-      'type' => 'datetime',
-    'mysql_type' => 'datetime','not null' => FALSE,
+      'type' => 'date',
+    'mysql_type' => 'date','not null' => FALSE,
     ),
   ),
   'primary key' => array('semester_id'),
