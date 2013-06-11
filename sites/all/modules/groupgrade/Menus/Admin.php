@@ -88,6 +88,17 @@ return array(
     'access arguments' => array('access administration pages'), 
   ),
 
+  'admin/pla/section/remove-user/%/%' => array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Create Course',
+    'page callback' => 'groupgrade_remove_user_section',
+    'file' => 'SectionAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(4, 5),
+    'access arguments' => array('access administration pages'), 
+  ),
+  
   'admin/pla/courses/%' => array(
     'type' => MENU_CALLBACK,
     'title' => 'View Course',

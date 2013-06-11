@@ -124,7 +124,7 @@ function groupgrade_view_section($section_id)
     $return .= theme('table', array(
       'rows' => $rows,
       'header' => array('User', 'Status', 'Operations'),
-      'empty' => 'No students found.',
+      'empty' => 'No users found.',
     ));
   endforeach;
 
@@ -200,4 +200,14 @@ function groupgrade_add_student_form_submit($form, &$form_state) {
   $su->save();
 
   sprintf('User %d added to section %d', $user, $section);
+}
+
+function groupgrade_remove_user_section($user, $section)
+{
+  SectionUsers::where('section_id', '=', $section)
+    ->where('user_id', '=', $user)
+    ->delete();
+
+  drupal_set_message(sprintf('User %d removed from section %d', $user, $section));
+  return drupal_goto('admin/pla/section/'.$section);
 }
