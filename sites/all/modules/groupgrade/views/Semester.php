@@ -15,7 +15,7 @@ function groupgrade_semester_add_form($form, &$form_state, $org_id)
   $items['back-text'] = array(
     '#type' => 'link',
     '#title' => 'Back to Organization',
-    '#href' => 'class/organization/'.$org_id,
+    '#href' => 'admin/pla/organization/'.$org_id,
   );
   $items['name'] = array(
     '#title' => 'Semester Name (Fall 2013, Spring 2014, etc.)',
@@ -56,7 +56,7 @@ function groupgrade_semester_add_form_submit($form, &$form_state)
   $start = $form['start-date']['#value'];
   $start = sprintf('%s-%s-%s', $start['year'], $start['month'], $start['day']);
   $organization = $form['organization']['#value'];
-  
+
   $semester = new Semester;
   $semester->semester_name = $name;
   $semester->semester_start = $start;
