@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Semester extends ModelBase {
   protected $primaryKey = 'semester_id';
   protected $table = 'semester';
-
+  public $timestamps = false;
+  
   /**
    * Retrieve the Current Semester
    * 

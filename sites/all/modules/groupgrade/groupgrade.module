@@ -141,14 +141,165 @@ function groupgrade_menu() {
 
     'access callback' => TRUE,
   );
+
+  $items['class/test'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Testing PLA',
+    'page callback' => 'groupgrade_test_form',
+    'access callback' => TRUE
+  );
+
+  // Organization MGMT
+  $items['class/organization/%'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'View Organization',
+    'page callback' => 'groupgrade_organization_view',
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(2),
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+  );
+
+  $items['class/organization'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Organization',
+    'page callback' => 'groupgrade_organization_main',
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    //'access callback' => TRUE,
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 4,
+  );
+
+
+  $items['class/classes/new/%'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Create Course',
+    'page callback' => 'groupgrade_classes_create',
+    'file' => 'Classes.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(3),
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 4,
+  );
+
+  
   return $items;
 }
 
+function groupgrade_test_form()
+{
+  return '';
+}
+
 /**
- * Implements hook_form().
+ * Implement hook_form().
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/node-example.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
  */
-function blog_form($node, $form_state) {
-  return array();
+function groupgrade_assignment_form($node, $form_state) {
+  $form = array();
+   $type = node_type_get_type($node);
+
+  // We need to define form elements for the node's title and body.
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => check_plain($type->title_label),
+    '#required' => TRUE,
+    '#default_value' => $node->title,
+    '#weight' => -5
+  );
+  // We want the body and filter elements to be adjacent. We could try doing
+  // this by setting their weights, but another module might add elements to the
+  // form with the same weights and end up between ours. By putting them into a
+  // sub-array together, we're able force them to be rendered together.
+  $form['body_filter']['body'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Assignment Description',
+    '#default_value' => '',
+    '#required' => FALSE
+  );
+  //$form['body_filter']['filter'] = filter_form($node->format);
+
+  // NOTE in node_example there is some addition code here not needed for this simple node-type
+
+  return $form;
+}
+
+/**
+ * Implement hook_form().
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/node-example.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function groupgrade_problem_form($node, $form_state) {
+  $form = array();
+   $type = node_type_get_type($node);
+
+  // We want the body and filter elements to be adjacent. We could try doing
+  // this by setting their weights, but another module might add elements to the
+  // form with the same weights and end up between ours. By putting them into a
+  // sub-array together, we're able force them to be rendered together.
+  $form['body_filter']['body'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Problem',
+    '#default_value' => '',
+    '#required' => FALSE
+  );
+  //$form['body_filter']['filter'] = filter_form($node->format);
+
+  // NOTE in node_example there is some addition code here not needed for this simple node-type
+
+  return $form;
+}
+
+/**
+ * Implement hook_form().
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/node-example.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function groupgrade_solution_form($node, $form_state) {
+  $form = array();
+   $type = node_type_get_type($node);
+
+  // We want the body and filter elements to be adjacent. We could try doing
+  // this by setting their weights, but another module might add elements to the
+  // form with the same weights and end up between ours. By putting them into a
+  // sub-array together, we're able force them to be rendered together.
+  $form['body_filter']['body'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Solution',
+    '#default_value' => '',
+    '#required' => FALSE
+  );
+  //$form['body_filter']['filter'] = filter_form($node->format);
+
+  // NOTE in node_example there is some addition code here not needed for this simple node-type
+
+  return $form;
 }
 
 /**

@@ -12,7 +12,32 @@
  * Impliment hook_enable()
  */
 function groupgrade_enable() {
-  // Ensure the blog node type is available.
+  
+  /* // Setup the fields
+  if(!field_info_field('organization')) {
+    $field = array(
+        'field_name' => 'organization',
+        'type' => 'number_integer',
+        'settings' => array(
+            'required' => TRUE,
+        ),
+    );
+    field_create_field($field);
+
+    $instance = array(
+        'field_name' => 'organization',
+        'entity_type' => 'user',
+        'label' => 'Organization a user is apart of',
+        'bundle' => 'user',
+        'required' => true,
+        'widget' => array(
+            'type'=>'number',
+        )
+    );
+    field_create_instance($instance);
+}
+  */
+  // Ensure the node types is available.
   node_types_rebuild();
 }
 

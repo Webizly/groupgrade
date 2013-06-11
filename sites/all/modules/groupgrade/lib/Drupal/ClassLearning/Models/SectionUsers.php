@@ -6,4 +6,5 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Section_Users extends ModelBase {
   protected $table = 'section_user';
   protected $primaryKey = 'su_id';
+  public $timestamps = false;
 }

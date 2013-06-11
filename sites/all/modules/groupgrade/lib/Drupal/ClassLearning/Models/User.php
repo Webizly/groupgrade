@@ -72,6 +72,19 @@ ORDER BY `organization_id` ASC
   }
 
   /**
+   * We query the ACL lists for something along the lines of
+   * organization:* with the user on it
+   * 
+   * @return array
+   */
+  public static function getOrganizationsCanAccess()
+  {
+    $lists = acl_get_ids_by_user('pla', self::key());
+    var_dump(self::key(), $lists);
+    exit;
+  }
+
+  /**
    * Retrieve the user ID
    *
    * @return int

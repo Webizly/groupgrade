@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Task extends ModelBase {
   protected $primaryKey = 'task_id';
   protected $table = 'task';
-
+  public $timestamps = false;
+  
   /**
    * Retrieve Upcoming Tasks for a User
    * 
@@ -23,6 +24,6 @@ class Task extends ModelBase {
 
   public function assignment()
   {
-    return $this->belongsTo('Assignment');
+    return $this->belongsTo('Drupal\ClassLearning\Models\Assignment');
   }
 }

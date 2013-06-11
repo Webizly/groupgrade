@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Assignment extends ModelBase {
   protected $primaryKey = 'assignment_id';
   protected $table = 'assignment';
-
+  public $timestamps = false;
   public function section()
   {
-    return $this->belongsTo('section');
+    return $this->belongsTo('Drupal\ClassLearning\Models\Section');
   }
 }

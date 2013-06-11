@@ -6,4 +6,10 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Workflow extends ModelBase {
   protected $primaryKey = 'workflow_id';
   protected $table = 'workflow';
+  public $timestamps = false;
+  
+  public function tasks()
+  {
+    return $this->hasMany('Drupal\ClassLearning\Models\WorkflowTask');
+  }
 }

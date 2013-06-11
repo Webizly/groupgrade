@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 class Section extends ModelBase {
   protected $table = 'section';
   protected $primaryKey = 'section_id';
-
+  public $timestamps = false;
+  
   public function course()
   {
-    return $this->belongsTo('Course');
+    return $this->belongsTo('Drupal\ClassLearning\Models\Course');
   }
 
   public function users()
   {
-    return $this->hasMany('SectionUsers');
+    return $this->hasMany('Drupal\ClassLearning\Models\SectionUsers');
   }
 }
