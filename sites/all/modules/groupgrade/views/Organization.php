@@ -64,7 +64,10 @@ function groupgrade_organization_view($id)
   $return .= '<p><a href="'.url('admin/pla/semester/new/'.$org->organization_id).'" class="btn btn-primary">Add Semester</a></p>';
 
   // Semesters
-  $semesters = $org->semesters()->get();
+  $semesters = $org->semesters()
+    ->orderBy('semester_end', 'desc')
+    ->get();
+    
   $rows = array();
   if (count($semesters) > 0) : foreach($semesters as $sem) :
     $rows[] = array($sem->semester_name, $sem->semester_start, $sem->semester_end);
