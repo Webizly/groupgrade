@@ -1,5 +1,6 @@
 <?php
-use Drupal\ClassLearning\Models\Section;
+use Drupal\ClassLearning\Models\Section,
+  Drupal\ClassLearning\Models\SectionUsers;
 
 function groupgrade_section_view($course)
 {
@@ -83,10 +84,110 @@ function groupgrade_view_section($section_id)
   $return = '';
   $return .= '<h2>View Section <small>'.$course->course_name.' &mdash; '.$section->section_name.'</small></h2>';
   $return .= '<div class="admin clearfix"><div class="left clearfix">';
+  $return .= '<h3>Assignments</h3>';
+
+  $assignments = $section->assignments()->get();
+  $rows = array();
+
+  if (count($assignments) > 0) : foreach($assignments as $assignment) :
+    $rows[] = array($assignment->assignment_title, $assignment->start);
+  endforeach; endif;
+
+  $return .= theme('table', array(
+    'rows' => $rows,
+    'header' => array('Title', 'Start Date'),
+    'empty' => 'No assignments found.',
+  ));
 
   $return .= '</div><div class="right clearfix">';
-  
+  $return .= '<h3>Students</h3>';
+
+  $students = $section->students()
+    ->where('su_role', '=', 'student')
+    ->get();
+
+  $rows = array();
+  if (count($students) > 0) : foreach($students as $student) :
+    $user = $student->user();
+    $rows[] = array(ggPrettyName($user), $student->su_status);
+  endforeach; endif;
+
+  $return .= theme('table', array(
+    'rows' => $rows,
+    'header' => array('Student', 'Status'),
+    'empty' => 'No students found.',
+  ));
+
+  $return .= '</div></div><div class="admin"><div class="clearfix">';
+  $return .= '<h5>Add User to Section</h5>';
+
   $return .= '</div></div>';
+  $form = drupal_get_form('groupgrade_add_student_form', $section->section_id);
+  $return .= drupal_render($form);
 
   return $return;
+}
+
+function groupgrade_add_student_form($form, &$form_state, $section_id) {
+  $items = array();
+
+  $section = Section::find($section_id);
+  $students = $section->studentsNotIn();
+  if (count($students) == 0) :
+    $items['mk'] = array(
+      '#type' => 'item',
+      '#markup' => 'No users available to add.'
+    );
+    return $items;
+  endif;
+  
+  $index = array();
+  if (count($students) > 0) : foreach($students as $student) :
+    $user = \user_load($student->uid);
+
+    $index[$student->uid] = ggPrettyName($user);
+  endforeach; endif;
+
+  $items['user'] = array(
+     '#type' => 'select',
+     '#title' => t('User'),
+     '#options' => $index,
+     '#default_value' => null,
+ );
+
+  $items['section'] = array(
+    '#value' => $section_id,
+    '#type' => 'hidden'
+  );
+
+  $items['role'] = array(
+    '#type' => 'select',
+    '#title' => 'Role',
+    '#options' => array(
+      'student' => 'Student',
+      'instructor' => 'Instructor'
+    ),
+    '#default_value' => 'student'
+  );
+
+  $items['submit'] = array(
+    '#value' => 'Add User to Section',
+    '#type' => 'submit'
+  );
+  return $items;
+}
+
+function groupgrade_add_student_form_submit($form, &$form_state) {
+  $user = $form['user']['#value'];
+  $role = $form['role']['#value'];
+  $section = $form['section']['#value'];
+
+  $su = new SectionUsers;
+  $su->section_id = (int) $section;
+  $su->user_id = $user;
+  $su->su_role = $role;
+  $su->su_status = 'active';
+  $su->save();
+
+  sprintf('User %d added to section %d', $user, $section);
 }

@@ -213,3 +213,17 @@ function groupgrade_custom_access($role_name){
   $access_granted = in_array($role_name, $GLOBALS['user']->roles);
   return $access_granted;
 }
+
+
+/**
+ * Handle a user object and retrieve the first/last name or fallback to their username
+ * 
+ * @param object
+ * @return string
+ */
+function ggPrettyName($user) {
+  if (count($user->field_first_name) == 0 OR count($user->field_last_name) == 0)
+    return $user->name;
+
+  return sprintf('%s %s', $user->field_first_name['und'][0]['value'], $user->field_last_name['und'][0]['value']);
+}
