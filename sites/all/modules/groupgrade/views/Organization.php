@@ -32,8 +32,8 @@ function groupgrade_organization_view($id)
 
   if ($org == NULL) drupal_not_found();
 
-  $courses = $org->courses();
-
+  $courses = $org->courses()->get();
+  
   $return = '';
   $return .= '<h3>Courses</h3>';
   $return .= '<p><a href="'.url('class/classes/new/'.$org->organization_id).'" class="btn btn-primary">Create Class</a></p>';

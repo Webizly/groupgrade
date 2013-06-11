@@ -163,9 +163,33 @@ function groupgrade_menu() {
     // entries, allowing us to get our tabs in the order we want.
   );
 
-  $items['class/organization'] = array(
+  //==================
+  // Administrator
+  //==================
+  $items['admin/pla'] = array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Organization',
+    'title' => 'PLA Learning Method',
+    'page callback' => 'groupgrade_admin_dash',
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    //'access callback' => TRUE,
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 1,
+  );
+
+  // /class/
+  $items['admin/pla/default'] = array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Dashboard',
+    'weight' => 1,
+  );
+
+  $items['admin/pla/organization'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Organizations',
     'page callback' => 'groupgrade_organization_main',
     'file' => 'Organization.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -177,8 +201,36 @@ function groupgrade_menu() {
     'weight' => 4,
   );
 
+  $items['admin/pla/courses'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Courses',
+    'page callback' => 'groupgrade_organization_main',
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-  $items['class/classes/new/%'] = array(
+    //'access callback' => TRUE,
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 4,
+  );
+
+  $items['admin/pla/courses/sections'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Sections',
+    'page callback' => 'groupgrade_organization_main',
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    //'access callback' => TRUE,
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 4,
+  );
+
+  
+  $items['admin/pla/courses/new/%'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'Create Course',
     'page callback' => 'groupgrade_classes_create',
@@ -194,6 +246,25 @@ function groupgrade_menu() {
 
   
   return $items;
+}
+
+
+/**
+ * Change the administration menu content before it is rendered.
+ *
+ * @param $content: A structured array suitable for drupal_render(), containing:
+ *       menu: The administrative menu of links below the path 'admin/*'.
+ *       icon: The icon menu.
+ *       user: The user items and links.
+ *
+ * Passed by reference.
+ */
+function groupgrade_admin_menu_output_alter(&$content) {
+  $content['menu']['pla'] = array(
+    '#title' => t('PLA Learning System'),
+    '#href' => 'admin/pla',
+    '#weight' => 10,
+  );
 }
 
 function groupgrade_test_form()
