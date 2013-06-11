@@ -149,20 +149,6 @@ function groupgrade_menu() {
     'access callback' => TRUE
   );
 
-  // Organization MGMT
-  $items['class/organization/%'] = array(
-    'type' => MENU_CALLBACK,
-    'title' => 'View Organization',
-    'page callback' => 'groupgrade_organization_view',
-    'file' => 'Organization.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-    'page arguments' => array(2),
-    'access arguments' => array('access administration pages'), 
-    // The weight property overrides the default alphabetic ordering of menu
-    // entries, allowing us to get our tabs in the order we want.
-  );
-
   //==================
   // Administrator
   //==================
@@ -185,6 +171,20 @@ function groupgrade_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Dashboard',
     'weight' => 1,
+  );
+
+  // Organization MGMT
+  $items['admin/pla/organization/%'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'View Organization',
+    'page callback' => 'groupgrade_organization_view',
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(3),
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
   );
 
   $items['admin/pla/organization'] = array(
