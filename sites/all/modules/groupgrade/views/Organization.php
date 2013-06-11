@@ -47,7 +47,7 @@ function groupgrade_organization_view($id)
   $return .= '<h2>Organization <small>'.$org->organization_name.'</small></h2>';
   $return .= '<div class="admin clearfix"><div class="left clearfix">';
   $return .= '<h3>Courses</h3>';
-  $return .= '<p><a href="'.url('class/classes/new/'.$org->organization_id).'" class="btn btn-primary">Create Class</a></p>';
+  $return .= '<p><a href="'.url('admin/pla/courses/new/'.$org->organization_id).'" class="btn btn-primary">Create Course</a></p>';
 
   $rows = array();
   if (count($courses) > 0) : foreach($courses as $course) :
