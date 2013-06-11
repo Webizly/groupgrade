@@ -105,7 +105,7 @@ return array(
     'file' => 'SectionAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page arguments' => array(3),
+    'page arguments' => array(4),
     'access arguments' => array('access administration pages'), 
   ),
 

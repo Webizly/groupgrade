@@ -10,8 +10,8 @@ function groupgrade_class_view($id)
 {
   $course = Course::find($id);
   if ($course == NULL) return drupal_not_found();
-  $sections = $course->sections();
-
+  $sections = $course->sections()->get();
+  
   $return = '';
   $return .= '<h2>Course <small>'.$course->course_name.' &mdash; '.$course->course_title.'</small></h2>';
   $return .= '<div class="admin clearfix"><div class=" clearfix">';
@@ -90,5 +90,5 @@ function groupgrade_classes_create_form_submit($form, &$form_state)
   $course->course_title = $title;
   $course->save();
 
-  drupal_set_message(sprintf('Course %d created', $course->course_id));
+  return drupal_set_message(sprintf('Course %d created', $course->course_id));
 }

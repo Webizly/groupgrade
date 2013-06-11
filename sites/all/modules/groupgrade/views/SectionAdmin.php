@@ -8,6 +8,19 @@ function groupgrade_section_view($course)
 
 function groupgrade_section_view_form($form, &$form_state, $course)
 {
+  $cou = Drupal\ClassLearning\Models\Course::find($course);
+  
+  if ($cou == NULL) return drupal_not_found();
+
+  $getSemesters = Drupal\ClassLearning\Models\Semester::where('organization_id', '=', $cou->organization_id)
+    ->orderBy('semester_start', 'desc')
+    ->get();
+
+  $index = array();
+  if (count($getSemesters) > 0) : foreach($getSemesters as $s) :
+    $index[$s->semester_id] = $s->semester_name;
+  endforeach; endif;
+
   $items = array();
   $items['back-text'] = array(
     '#type' => 'link',
@@ -21,15 +34,35 @@ function groupgrade_section_view_form($form, &$form_state, $course)
     '#required' => true,
   );
 
+  $items['semester'] = array(
+     '#type' => 'select',
+     '#title' => t('Semester'),
+     '#options' => $index,
+     '#default_value' => null,
+ );
+
   $items['course'] = array(
     '#value' => $course,
     '#type' => 'hidden'
   );
 
   $items['submit'] = array(
-    '#value' => 'Create Course',
+    '#value' => 'Create Section',
     '#type' => 'submit'
   );
   return $items;
-  return $items;
+}
+
+function groupgrade_section_view_form_submit($form, &$form_state) {
+  $name = $form['name']['#value'];
+  $course = $form['course']['#value'];
+  $semester = $form['semester']['#value'];
+
+  $section = new Section;
+  $section->course_id = (int) $course;
+  $section->semester_id = (int) $semester;
+  $section->section_name = $name;
+  $section->save();
+
+  drupal_set_message(sprintf('Section "%s" created.', $name));
 }
