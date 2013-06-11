@@ -7,4 +7,9 @@ class Course extends ModelBase {
   protected $primaryKey = 'course_id';
   protected $table = 'course';
   public $timestamps = false;
+
+  public function sections()
+  {
+    return $this->hasMany('Drupal\ClassLearning\Models\Section');
+  }
 }

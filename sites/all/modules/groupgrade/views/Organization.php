@@ -51,10 +51,10 @@ function groupgrade_organization_view($id)
 
   $rows = array();
   if (count($courses) > 0) : foreach($courses as $course) :
-    $rows[] = array($course->course_name);
+    $rows[] = array($course->course_name, number_format($course->sections()->count()));
   endforeach; endif;
   $return .= theme('table', array(
-    'header' => array('Course Name'),
+    'header' => array('Course Name', 'Sections'),
     'rows' => $rows,
     'attributes' => array('width' => '100%')
   ));
@@ -67,7 +67,7 @@ function groupgrade_organization_view($id)
   $semesters = $org->semesters()
     ->orderBy('semester_end', 'desc')
     ->get();
-    
+
   $rows = array();
   if (count($semesters) > 0) : foreach($semesters as $sem) :
     $rows[] = array($sem->semester_name, $sem->semester_start, $sem->semester_end);
