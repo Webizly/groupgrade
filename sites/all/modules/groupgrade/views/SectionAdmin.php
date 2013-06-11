@@ -79,7 +79,10 @@ function groupgrade_section_view_form_submit($form, &$form_state) {
 function groupgrade_view_section($section_id)
 {
   $section = Section::find($section_id);
+  if ($section == NULL) return drupal_not_found();
+
   $course = $section->course()->first();
+  if ($course == NULL) return drupal_not_found();
 
   $return = '';
   $return .= '<h2>View Section <small>'.$course->course_name.' &mdash; '.$section->section_name.'</small></h2>';
@@ -109,12 +112,17 @@ function groupgrade_view_section($section_id)
   $rows = array();
   if (count($students) > 0) : foreach($students as $student) :
     $user = $student->user();
-    $rows[] = array(ggPrettyName($user), $student->su_status);
+    $rows[] = array(
+      ggPrettyName($user),
+      $student->su_status,
+      '<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
+      <a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
+    );
   endforeach; endif;
 
   $return .= theme('table', array(
     'rows' => $rows,
-    'header' => array('Student', 'Status'),
+    'header' => array('Student', 'Status', 'Operations'),
     'empty' => 'No students found.',
   ));
 
@@ -140,7 +148,7 @@ function groupgrade_add_student_form($form, &$form_state, $section_id) {
     );
     return $items;
   endif;
-  
+
   $index = array();
   if (count($students) > 0) : foreach($students as $student) :
     $user = \user_load($student->uid);
