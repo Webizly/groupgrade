@@ -15,6 +15,8 @@ return array(
     // The weight property overrides the default alphabetic ordering of menu
     // entries, allowing us to get our tabs in the order we want.
     'weight' => 1,
+
+    'menu_name' => 'primary-links'
   ),
 
   // /class/
@@ -25,6 +27,20 @@ return array(
   ),
 
   // Organization MGMT
+  'admin/pla/organization/new' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Create New Organization',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_organization_new'),
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    //'access callback' => TRUE,
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 2,
+  ),
   'admin/pla/organization/%' => array(
     'type' => MENU_CALLBACK,
     'title' => 'View Organization',

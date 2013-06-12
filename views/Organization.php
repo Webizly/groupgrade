@@ -85,3 +85,33 @@ function groupgrade_organization_view($id)
 
   return $return;
 }
+
+function groupgrade_organization_new($form, &$form_state) {
+  $items = array();
+  $items = array();
+  $items['back-text'] = array(
+    '#type' => 'link',
+    '#title' => 'Back to Organization Listing',
+    '#href' => 'admin/pla/organization',
+  );
+
+  $items['name'] = array(
+    '#title' => 'Organization Name',
+    '#type' => 'textfield',
+    '#required' => true,
+  );
+
+  $items['submit'] = array(
+    '#value' => 'Create Organization',
+    '#type' => 'submit'
+  );
+  return $items;
+}
+
+function groupgrade_organization_new_submit($form, &$form_state) {
+  $o = new Organization;
+  $o->organization_name = $form['name']['#value'];
+  $o->save();
+
+  return drupal_set_message(sprintf('Organization "%s" created.', $o->organization_name));
+}
