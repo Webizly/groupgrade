@@ -1,12 +1,6 @@
-# Ignore Everything Except Needed Files
-/*
-!/README.md
- */
-!/sites
-/sites/*
-!/sites/all
-/sites/all/*
-!/sites/all/modules
-/sites/all/modules/*
-!/sites/all/modules/groupgrade
-!.gitignore
+/.settings
+/.project
+/.buildpath
+/composer.phar
+/composer.lock
+/vendor

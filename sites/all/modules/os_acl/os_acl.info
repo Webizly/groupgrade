@@ -1,8 +1,0 @@
-name = Operate Smart ACL Test Module
-description = Operate Smart ACL Test Module
-package = ZZ Custom Development
-core = 7.x
-
-version = "7.x-1.x-dev"
-core = "7.x"
-
