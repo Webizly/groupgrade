@@ -4,7 +4,7 @@ return array(
   // Administrator
   //==================
   'admin/pla' => array(
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'PLA Learning Method',
     'page callback' => 'groupgrade_admin_dash',
     'file' => 'Admin.php',
@@ -27,33 +27,6 @@ return array(
   ),
 
   // Organization MGMT
-  'admin/pla/organization/new' => array(
-    'type' => MENU_LOCAL_TASK,
-    'title' => 'Create New Organization',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('groupgrade_organization_new'),
-    'file' => 'Organization.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-    //'access callback' => TRUE,
-    'access arguments' => array('access administration pages'), 
-    // The weight property overrides the default alphabetic ordering of menu
-    // entries, allowing us to get our tabs in the order we want.
-    'weight' => 2,
-  ),
-  'admin/pla/organization/%' => array(
-    'type' => MENU_CALLBACK,
-    'title' => 'View Organization',
-    'page callback' => 'groupgrade_organization_view',
-    'file' => 'Organization.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-    'page arguments' => array(3),
-    'access arguments' => array('access administration pages'), 
-    // The weight property overrides the default alphabetic ordering of menu
-    // entries, allowing us to get our tabs in the order we want.
-  ),
-
   'admin/pla/organization' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Organizations',
@@ -67,9 +40,35 @@ return array(
     // entries, allowing us to get our tabs in the order we want.
     'weight' => 2,
   ),
+  'admin/pla/organization/new' => array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'Create New Organization',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_organization_new'),
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    //'access callback' => TRUE,
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 2,
+  ),
+  'admin/pla/organization/%' => array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'View Organization',
+    'page callback' => 'groupgrade_organization_view',
+    'file' => 'Organization.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(3),
+    'access arguments' => array('access administration pages'), 
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+  ),
 
   'admin/pla/courses' => array(
-    'type' => MENU_CALLBACK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'Courses',
     'page callback' => 'groupgrade_organization_main',
     'file' => 'Organization.php',
@@ -83,7 +82,7 @@ return array(
   ),
 
   'admin/pla/section/%' => array(
-    'type' => MENU_CALLBACK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'Sections',
     'page callback' => 'groupgrade_view_section',
     'file' => 'SectionAdmin.php',
@@ -94,7 +93,7 @@ return array(
   ),
 
   'admin/pla/courses/new/%' => array(
-    'type' => MENU_CALLBACK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'Create Course',
     'page callback' => 'groupgrade_classes_create',
     'file' => 'ClassAdmin.php',
@@ -116,7 +115,7 @@ return array(
   ),
   
   'admin/pla/courses/%' => array(
-    'type' => MENU_CALLBACK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'View Course',
     'page callback' => 'groupgrade_class_view',
     'file' => 'ClassAdmin.php',
@@ -127,7 +126,7 @@ return array(
   ),
 
   'admin/pla/sections/new/%' => array(
-    'type' => MENU_CALLBACK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'New Section',
     'page callback' => 'groupgrade_section_view',
     'file' => 'SectionAdmin.php',
@@ -138,7 +137,7 @@ return array(
   ),
 
   'admin/pla/courses/sections' => array(
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'Sections',
     'page callback' => 'groupgrade_organization_main',
     'file' => 'Organization.php',
@@ -149,7 +148,7 @@ return array(
 
   // Semester
   'admin/pla/semester/new/%' => array(
-    'type' => MENU_CALLBACK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'Add Semester',
     'page callback' => 'groupgrade_semester_add',
     'file' => 'Semester.php',

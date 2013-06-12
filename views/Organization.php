@@ -7,7 +7,7 @@ function groupgrade_organization_main()
   $organizations = Organization::all();
 
   $return = '';
-  $return .= '<div class="admin clearfix"><div class="left clearfix">';
+  $return .= '<div class="admin clearfix"><div class="clearfix">';
   $return .= '<h3>Organizations</h3>';
 
   $headers = array('Name');
@@ -24,8 +24,6 @@ function groupgrade_organization_main()
     'attributes' => array('width' => '100%'),
     'empty' => 'No organizations found.',
   ));
-
-  $return .= '</div><div class="right clearfix">';
 
   $return .= '</div></div>';
 
