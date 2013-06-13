@@ -279,3 +279,24 @@ function gg_acl_remove_user($acl_name, $uid = NULL, $number) {
 
   acl_remove_user($acl_id, $uid);
 }
+
+/**
+ * See if a user has any sort of instructor priviliages
+ *
+ * @return bool
+ */
+function gg_has_acl_role($role) {
+  global $user;
+  
+  if (! $user->uid) return FALSE;
+
+  $acl_list = acl_get_id_by_name('pla', $role);
+
+  // List does not exist
+  if ($acl_list == NULL OR ! $acl_list) return FALSE;
+
+  if (acl_has_user($acl_list, $user->uid))
+    return TRUE;
+  else
+    return FALSE;
+}

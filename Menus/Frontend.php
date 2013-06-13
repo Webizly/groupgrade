@@ -123,4 +123,19 @@ return array(
     'access callback' => TRUE
   ),
 
+  'class/instructor' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Instructor Management',
+    'page callback' => 'groupgrade_instructor_dash',
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+    
+    // The weight property overrides the default alphabetic ordering of menu
+    // entries, allowing us to get our tabs in the order we want.
+    'weight' => 4,
+  ),
+
 );
