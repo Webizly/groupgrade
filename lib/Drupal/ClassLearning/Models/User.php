@@ -105,4 +105,14 @@ ORDER BY `organization_id` ASC
     global $user;
     return $user->uid;
   }
+
+  /**
+   * Retrieve the Assignments a user has created
+   * 
+   * @return object Query Builder
+   */
+  public static function assignments()
+  {
+    return Drupal\ClassLearning\Models\SectionUsers::where('user_id', '=', self::key())
+  }
 }
