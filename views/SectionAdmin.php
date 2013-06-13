@@ -163,6 +163,7 @@ function groupgrade_add_student_form($form, &$form_state, $section_id) {
      '#title' => t('User'),
      '#options' => $index,
      '#default_value' => null,
+     '#multiple' => TRUE,
  );
 
   $items['section'] = array(
@@ -181,7 +182,7 @@ function groupgrade_add_student_form($form, &$form_state, $section_id) {
   );
 
   $items['submit'] = array(
-    '#value' => 'Add User to Section',
+    '#value' => 'Add User(s) to Section',
     '#type' => 'submit'
   );
   return $items;
