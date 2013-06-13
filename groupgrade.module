@@ -3,6 +3,8 @@
  * Group Grade Base
  */
 
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 /**
  * Loading of the system
  *
@@ -227,4 +229,10 @@ function ggPrettyName($user) {
     return $user->name;
 
   return sprintf('%s %s', $user->field_first_name['und'][0]['value'], $user->field_last_name['und'][0]['value']);
+}
+
+function ldebug($exit = false) {
+  var_dump(Capsule::connection()->getQueryLog());
+
+  if ($exit) exit;
 }

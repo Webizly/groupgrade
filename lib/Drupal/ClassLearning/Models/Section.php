@@ -1,7 +1,10 @@
 <?php
 namespace Drupal\ClassLearning\Models;
 use Illuminate\Database\Eloquent\Model as ModelBase,
-  Drupal\ClassLearning\Exception as ModelException;
+  Drupal\ClassLearning\Exception as ModelException,
+  Drupal\ClassLearning\Models\AssignmentSection,
+  Drupal\ClassLearning\Models\Assignment,
+  Illuminate\Database\Capsule\Manager as Capsule;
 
 class Section extends ModelBase {
   protected $table = 'section';
@@ -20,7 +23,12 @@ class Section extends ModelBase {
 
   public function assignments()
   {
-    return $this->hasMany('Drupal\ClassLearning\Models\Assignment');
+    $con = Capsule::connection();
+
+    return $con->table('assignment_section')
+      ->where('section_id', '=', $this->section_id)
+      ->join('assignment', 'assignment.assignment_id', '=', 'assignment_section.assignment_id')
+      ->select('assignment.*', 'assignment_section.asec_start', 'assignment_section.asec_end');
   }
   
   public function semester()
