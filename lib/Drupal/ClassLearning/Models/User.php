@@ -113,6 +113,6 @@ ORDER BY `organization_id` ASC
    */
   public static function assignments()
   {
-    return Drupal\ClassLearning\Models\SectionUsers::where('user_id', '=', self::key())
+    return Drupal\ClassLearning\Models\SectionUsers::where('user_id', '=', self::key());
   }
 }
