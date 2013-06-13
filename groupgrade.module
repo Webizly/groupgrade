@@ -222,6 +222,7 @@ function groupgrade_custom_access($role_name){
  * @return string
  */
 function ggPrettyName($user) {
+  return $user->name;
   if (count($user->field_first_name) == 0 OR count($user->field_last_name) == 0)
     return $user->name;
 
