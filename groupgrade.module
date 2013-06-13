@@ -252,7 +252,7 @@ function gg_acl_add_user($acl_name, $uid = NULL, $number = NULL) {
 
   $acl_id = acl_get_id_by_name('pla', $acl_name, $number);
   
-  if (! $acl_id OR $acl_id == NULL)
+  if (! $acl_id)
     $acl_id = acl_create_acl('pla', $acl_name, $number);
 
   acl_add_user($acl_id, $uid);
@@ -274,7 +274,7 @@ function gg_acl_remove_user($acl_name, $uid = NULL, $number) {
   $acl_id = acl_get_id_by_name('pla', $acl_name, $number);
     
   // ACL doesn't exist
-  if (! $acl_id OR $acl_id == NULL)
+  if (! $acl_id)
     return;
 
   acl_remove_user($acl_id, $uid);
@@ -293,7 +293,7 @@ function gg_has_acl_role($role) {
   $acl_list = acl_get_id_by_name('pla', $role);
 
   // List does not exist
-  if ($acl_list == NULL OR ! $acl_list) return FALSE;
+  if (! $acl_list) return FALSE;
 
   if (acl_has_user($acl_list, $user->uid))
     return TRUE;
