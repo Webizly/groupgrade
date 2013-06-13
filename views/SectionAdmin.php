@@ -213,6 +213,9 @@ function groupgrade_remove_user_section($user, $section)
     ->where('user_id', '=', $user)
     ->delete();
 
+  foreach(array('student', 'instructor') as $role)
+    gg_acl_remove_user('section-'.$role, $user, $section);
+
   drupal_set_message(sprintf('User %d removed from section %d', $user, $section));
   return drupal_goto('admin/pla/section/'.$section);
 }
