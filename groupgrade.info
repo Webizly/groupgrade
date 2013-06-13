@@ -5,6 +5,7 @@ core = 7.x
 php = 5.3
 
 dependencies[] = xautoload
+dependencies[] = acl
 test_dependencies[] = simpletest
 
 ; files[] = wconsumer.class.inc

@@ -236,3 +236,46 @@ function ldebug($exit = false) {
 
   if ($exit) exit;
 }
+
+/**
+ * Add a User to an ACL by the ACL name and User ID
+ * 
+ * @param string
+ * @param int
+ * @return void
+ */
+function gg_acl_add_user($acl_name, $uid = NULL) {
+  if ($uid == NULL) {
+    global $user;
+    $uid = $user->uid;
+  }
+
+  $acl_id = acl_get_id_by_name('pla', $acl_name);
+  
+  if (! $acl_id OR $acl_id == NULL)
+    $acl_id = acl_create_acl('pla', $acl_name);
+
+  acl_add_user($acl_id, $uid);
+}
+
+/**
+ * Remove a User from an ACL by the ACL name and User ID
+ * 
+ * @param string
+ * @param int
+ * @return void
+ */
+function gg_acl_remove_user($acl_name, $uid = NULL) {
+  if ($uid == NULL) {
+    global $user;
+    $uid = $user->uid;
+  }
+
+  $acl_id = acl_get_id_by_name('pla', $acl_name);
+    
+  // ACL doesn't exist
+  if (! $acl_id OR $acl_id == NULL)
+    return;
+
+  acl_remove_user($acl_id, $uid);
+}
