@@ -189,18 +189,20 @@ function groupgrade_add_student_form($form, &$form_state, $section_id) {
 }
 
 function groupgrade_add_student_form_submit($form, &$form_state) {
-  $user = $form['user']['#value'];
+  $users = (array) $form['user']['#value'];
   $role = $form['role']['#value'];
   $section = $form['section']['#value'];
 
-  $su = new SectionUsers;
-  $su->section_id = (int) $section;
-  $su->user_id = $user;
-  $su->su_role = $role;
-  $su->su_status = 'active';
-  $su->save();
+  if (count($users) > 0) : foreach($users as $user):
+    $su = new SectionUsers;
+    $su->section_id = (int) $section;
+    $su->user_id = $user;
+    $su->su_role = $role;
+    $su->su_status = 'active';
+    $su->save();
+  endforeach; endif;
 
-  sprintf('User %d added to section %d', $user, $section);
+  drupal_set_message( sprintf('%d user(s) added to section %d', count($users), $section) );
 }
 
 function groupgrade_remove_user_section($user, $section)
