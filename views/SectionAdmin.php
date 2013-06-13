@@ -200,6 +200,8 @@ function groupgrade_add_student_form_submit($form, &$form_state) {
     $su->su_role = $role;
     $su->su_status = 'active';
     $su->save();
+
+    gg_acl_add_user('section-'.$role, $user, $section);
   endforeach; endif;
 
   drupal_set_message( sprintf('%d user(s) added to section %d', count($users), $section) );

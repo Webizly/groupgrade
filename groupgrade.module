@@ -244,16 +244,16 @@ function ldebug($exit = false) {
  * @param int
  * @return void
  */
-function gg_acl_add_user($acl_name, $uid = NULL) {
+function gg_acl_add_user($acl_name, $uid = NULL, $number = NULL) {
   if ($uid == NULL) {
     global $user;
     $uid = $user->uid;
   }
 
-  $acl_id = acl_get_id_by_name('pla', $acl_name);
+  $acl_id = acl_get_id_by_name('pla', $acl_name, $number);
   
   if (! $acl_id OR $acl_id == NULL)
-    $acl_id = acl_create_acl('pla', $acl_name);
+    $acl_id = acl_create_acl('pla', $acl_name, $number);
 
   acl_add_user($acl_id, $uid);
 }
@@ -265,13 +265,13 @@ function gg_acl_add_user($acl_name, $uid = NULL) {
  * @param int
  * @return void
  */
-function gg_acl_remove_user($acl_name, $uid = NULL) {
+function gg_acl_remove_user($acl_name, $uid = NULL, $number) {
   if ($uid == NULL) {
     global $user;
     $uid = $user->uid;
   }
 
-  $acl_id = acl_get_id_by_name('pla', $acl_name);
+  $acl_id = acl_get_id_by_name('pla', $acl_name, $number);
     
   // ACL doesn't exist
   if (! $acl_id OR $acl_id == NULL)
