@@ -113,6 +113,20 @@ ORDER BY `organization_id` ASC
    */
   public static function assignments()
   {
-    return Drupal\ClassLearning\Models\SectionUsers::where('user_id', '=', self::key());
+    return Drupal\ClassLearning\Models\Assignments::where('user_id', '=', self::key());
+  }
+
+  /**
+   * Return the sections that a user is apart of with a specific role
+   * 
+   * @param string
+   * @return object Query Builder object
+   */
+  public static function sectionsWithRole($role)
+  {
+    return SectionUsers::where('user_id', '=', self::key())
+      ->join('section', 'section.section_id', '=', 'section_user.section_id')
+      ->where('su_role', '=', $role)
+      ->select(array('section_user.su_role', 'section_user.su_status', 'section.*'));
   }
 }

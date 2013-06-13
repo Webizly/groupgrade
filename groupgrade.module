@@ -290,12 +290,15 @@ function gg_has_acl_role($role) {
   
   if (! $user->uid) return FALSE;
 
-  $acl_list = acl_get_id_by_name('pla', $role);
+  $select = db_query('SELECT COUNT(uid) FROM {acl_user}
+  WHERE uid = :uid AND acl_id IN (
+    SELECT acl_id FROM {acl} WHERE name = :role
+  ) ', array(
+    'uid' => $user->uid,
+    'role' => $role
+  ))->fetchField();
 
-  // List does not exist
-  if (! $acl_list) return FALSE;
-
-  if (acl_has_user($acl_list, $user->uid))
+  if ($select)
     return TRUE;
   else
     return FALSE;
