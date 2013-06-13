@@ -231,6 +231,9 @@ function ggPrettyName($user) {
   return sprintf('%s %s', $user->field_first_name['und'][0]['value'], $user->field_last_name['und'][0]['value']);
 }
 
+function ddebug($var) {
+  var_dump($var); exit;
+}
 function ldebug($exit = false) {
   var_dump(Capsule::connection()->getQueryLog());
 

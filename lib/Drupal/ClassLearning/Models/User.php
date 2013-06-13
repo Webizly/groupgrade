@@ -124,6 +124,10 @@ ORDER BY `organization_id` ASC
    */
   public static function sectionsWithRole($role)
   {
+    return Section::select(array('section_user.su_role', 'section_user.su_status', 'section.*'))
+      ->join('section_user', 'section.section_id', '=', 'section_user.section_id')
+      ->where('section_user.user_id', '=', self::key())
+      ->where('section_user.su_role', '=', $role);
     return SectionUsers::where('user_id', '=', self::key())
       ->join('section', 'section.section_id', '=', 'section_user.section_id')
       ->where('su_role', '=', $role)
