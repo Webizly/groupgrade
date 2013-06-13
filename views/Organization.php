@@ -9,6 +9,7 @@ function groupgrade_organization_main()
   $return = '';
   $return .= '<div class="admin clearfix"><div class="clearfix">';
   $return .= '<h3>Organizations</h3>';
+  $return .= '<p><a href="'.url('admin/pla/organization/new').'">Create Organization</a></p>';
 
   $headers = array('Name');
   $rows = array();
