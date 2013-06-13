@@ -135,7 +135,18 @@ return array(
     
     // The weight property overrides the default alphabetic ordering of menu
     // entries, allowing us to get our tabs in the order we want.
-    'weight' => 4,
+    'weight' => 5,
   ),
 
+  // Semester
+  'class/instructor/%' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Section',
+    'page callback' => 'groupgrade_view_section',
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(3),
+    'access arguments' => array('access administration pages'), 
+  ),
 );

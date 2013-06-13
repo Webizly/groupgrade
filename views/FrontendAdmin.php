@@ -18,7 +18,7 @@ function groupgrade_instructor_dash() {
     $semester = $section->semester()->first();
 
     $rows[] = array(
-      '<a href="'.url('admin/pla/section/'.$section->section_id).'">'.$section->section_name.'</a>',
+      '<a href="'.url('class/instructor/'.$section->section_id).'">'.$section->section_name.'</a>',
       $section->section_description,
       number_format($section->students()->count()),
       $semester->semester_name
@@ -34,3 +34,11 @@ function groupgrade_instructor_dash() {
   $return .= '</div>';
   return $return;
 }
+
+
+function groupgrade_view_section($id) {
+  $return = '';
+
+  return $return;
+}
+
