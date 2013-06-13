@@ -129,7 +129,7 @@ function groupgrade_view_section($section_id)
   endforeach;
 
   $return .= '</div></div><div class="admin"><div class="clearfix">';
-  $return .= '<h5>Add User to Section</h5>';
+  $return .= '<h5>Add Users to Section</h5>';
 
   $return .= '</div></div>';
   $form = drupal_get_form('groupgrade_add_student_form', $section->section_id);
