@@ -314,14 +314,14 @@ function gg_has_acl_role($role) {
  * @param
  * @return bool
  */
-function gg_has_role_in_section($section, $role)
+function gg_has_role_in_section($role, $section)
 {
   global $user;
   if (! $user->uid) return FALSE;
-  
+
   $acl_id = acl_get_id_by_name('pla', 'section-'.$role, $section);
 
   if (! $acl_id) return FALSE;
 
-  return (! acl_has_user($acl_id, $uid)) ? FALSE : TRUE;
+  return (! acl_has_user($acl_id, $user->uid)) ? FALSE : TRUE;
 }

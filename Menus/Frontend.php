@@ -146,9 +146,8 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page arguments' => array(1),
-    'access arguments' => array('instructor', 1),
+    'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
-   // 'menu_name' => 'navigation', 
   ),
 
   'class/instructor/%/first' => array(
@@ -167,7 +166,8 @@ return array(
     'page callback' => 'groupgrade_view_user',
     'page arguments' => array(2),
 
-    'access callback' => TRUE,
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
     'weight' => 2,
   ),
 
@@ -181,7 +181,8 @@ return array(
     'page callback' => 'groupgrade_view_assignments',
     'page arguments' => array(2),
 
-    'access callback' => TRUE,
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ),
 
@@ -195,7 +196,8 @@ return array(
     'page callback' => 'groupgrade_create_assignment', //drupal_get_form',
     'page arguments' => array(2),
 
-    'access callback' => TRUE,
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ),
 );
