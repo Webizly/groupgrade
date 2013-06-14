@@ -306,3 +306,22 @@ function gg_has_acl_role($role) {
   else
     return FALSE;
 }
+
+
+/**
+ * Access permissions callback to see if user has role in section of class
+ *
+ * @param
+ * @return bool
+ */
+function gg_has_role_in_section($section, $role)
+{
+  global $user;
+  if (! $user->uid) return FALSE;
+  
+  $acl_id = acl_get_id_by_name('pla', 'section-'.$role, $section);
+
+  if (! $acl_id) return FALSE;
+
+  return (! acl_has_user($acl_id, $uid)) ? FALSE : TRUE;
+}

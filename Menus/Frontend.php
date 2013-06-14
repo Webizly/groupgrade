@@ -146,8 +146,8 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page arguments' => array(1),
-    'access arguments' => array(),
-    'access callback' => TRUE,
+    'access arguments' => array('instructor', 1),
+    'access callback' => 'gg_has_role_in_section',
    // 'menu_name' => 'navigation', 
   ),
 
