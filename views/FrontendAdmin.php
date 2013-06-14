@@ -47,12 +47,13 @@ function groupgrade_view_section($id) {
 
 function groupgrade_view_user($id) {
   $return = '';
+  var_dump($id);
   $section = Section::find($id);
   
   if ($section == NULL) return drupal_not_found();
 
   foreach(array('instructor', 'student') as $role):
-    $return .= '<h3>'.ucfirst($role).'s</h3>';
+    $return .= '<h4>'.ucfirst($role).'s</h4>';
     $students = $section->students()
       ->where('su_role', '=', $role)
       ->get();
@@ -62,16 +63,17 @@ function groupgrade_view_user($id) {
       $user = $student->user();
       $rows[] = array(
         ggPrettyName($user),
-        $student->su_status,
-        '<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
-        <a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
+        $student->su_status//,
+        //'<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
+        //<a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
       );
     endforeach; endif;
 
     $return .= theme('table', array(
       'rows' => $rows,
-      'header' => array('User', 'Status', 'Operations'),
+      'header' => array('User', 'Status'/*, 'Operations'*/),
       'empty' => 'No users found.',
+      'attributes' => array('width' => '100%'),
     ));
   endforeach;
 

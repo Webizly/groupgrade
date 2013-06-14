@@ -164,7 +164,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page callback' => 'groupgrade_view_user',
-    'page arguments' => array(1),
+    'page arguments' => array(2),
 
     'access callback' => TRUE,
     'weight' => 2,
@@ -178,7 +178,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page callback' => 'groupgrade_classes_view_specific',
-    'page arguments' => array(1),
+    'page arguments' => array(2),
 
     'access callback' => TRUE,
     'weight' => 3,
