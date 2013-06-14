@@ -3,14 +3,13 @@ return array(
 // My Tasks/Classes/Assignment
   'class' => array(
     'title' => 'PLA Learning System Dashboard',
-    'description' => 'Manage Web Services',
-    'page callback' => 'groupgrade_base',
-    'page arguments' => array('groupgrade_base'),
-    'file' => 'groupgrade_form.inc',
-    'file path' => drupal_get_path('module', 'groupgrade'),
+    'page callback' => 'groupgrade_tasks_dashboard',
+    //'page arguments' => array('groupgrade_tasks_dashboard'),
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
     
     // Permissions
-    'access callback' => 'groupgrade_custom_access',
+    //'access callback' => 'groupgrade_custom_access',
     'access arguments' => array('authenticated user'),
   ),
 
@@ -18,23 +17,8 @@ return array(
   // /class/
   'class/default' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'Dashboard',
-    'weight' => 1,
-  ),
-
-  'class/tasks' => array(
-    'type' => MENU_LOCAL_TASK,
     'title' => 'Tasks',
-    'page callback' => 'groupgrade_tasks_dashboard',
-    'file' => 'Tasks.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-    'page arguments' => array(),
-    'access callback' => TRUE,
-
-    // The weight property overrides the default alphabetic ordering of menu
-    // entries, allowing us to get our tabs in the order we want.
-    'weight' => 2,
+    'weight' => 1,
   ),
 
   'class/classes' => array(
@@ -47,8 +31,6 @@ return array(
     'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
     'access callback' => TRUE,
 
-    // The weight property overrides the default alphabetic ordering of menu
-    // entries, allowing us to get our tabs in the order we want.
     'weight' => 3,
   ),
 
@@ -62,18 +44,16 @@ return array(
     'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
     'access callback' => TRUE,
 
-    // The weight property overrides the default alphabetic ordering of menu
-    // entries, allowing us to get our tabs in the order we want.
     'weight' => 4,
   ),
 
-  'class/tasks/first' => array(
+  'class/default/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Pending',
     'weight' => 1,
   ),
 
-  'class/tasks/completed' => array(
+  'class/default/completed' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Completed',
 
@@ -86,7 +66,7 @@ return array(
     'weight' => 2,
   ),
 
-  'class/tasks/all' => array(
+  'class/default/all' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'All',
     'file' => 'Tasks.php',
@@ -133,8 +113,6 @@ return array(
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
     
-    // The weight property overrides the default alphabetic ordering of menu
-    // entries, allowing us to get our tabs in the order we want.
     'weight' => 5,
   ),
 
