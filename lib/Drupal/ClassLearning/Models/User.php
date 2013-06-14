@@ -45,74 +45,22 @@ class User {
     $query->join('semester', 'semester.semester_id', '=', 'section.semester_id');
 
     $d = date('Y-m-d');
-    switch($filter)
-    {
-      case 'current' :
-        $current_semester = Semester::where('semester_start', '<=', $d)
-          ->where('semester_end', '>=', $d)
-          ->select('semester_id')
-          ->first();
+    if ($filter == 'current') :
+      $current_semester = Semester::where('semester_start', '<=', $d)
+        ->where('semester_end', '>=', $d)
+        ->select('semester_id')
+        ->first();
 
-        // There is no current semester
-        if ($current_semester == NULL)
-          return NULL;
+      // There is no current semester
+      if ($current_semester == NULL)
+        return NULL;
 
-        $query->where('section.semester_id', '=', $current_semester->semester_id);
-        break;
-    }
+      $query->where('section.semester_id', '=', $current_semester->semester_id);
+    endif;
+    
     $query->orderBy('section.section_id', 'desc');
-
+    
     return $query->get();
-
-    /*
-    switch($filter)
-    {
-      case 'current' :
-        $d = date('Y-m-d H:i:s');
-
-        $connection = Capsule::connection();
-
-        return $connection->select('
-SELECT * FROM `pla_course` WHERE `course_id` IN (
-  # Get the current courses
-  SELECT `course_id` FROM `pla_section` WHERE `section_id` IN (
-    SELECT
-      `semester_id`
-    FROM
-      `pla_semester` 
-    WHERE 
-      `semester_start` <= ?
-    AND
-      `semester_end` >= ?
-  )
-) AND `course_id` IN (
-  # Get the courses a user is taking
-  SELECT `course_id` FROM `pla_section` WHERE `section_id` IN (
-    # Get a users sections
-    SELECT `section_id` FROM `pla_section_user` WHERE `user_id` = ?
-  ) 
-)
-ORDER BY `organization_id` ASC
-', array($d, $d, self::key()));
-        break;
-
-      case 'past' :
-
-        break;
-
-      case 'all' :
-        $connection = Capsule::connection();
-         
-        return $connection->select('
-SELECT * FROM `pla_course` WHERE `course_id` IN (
-  SELECT `section_id` FROM `pla_section_user` WHERE `user_id` = ?
-)
-ORDER BY `organization_id` ASC
-', array(self::key()));
-        break;
-
-    }
-    */
   }
 
   /**
