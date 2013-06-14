@@ -156,14 +156,14 @@ return array(
     'weight' => 1,
   ),
 
-  'class/instructor/%/students' => array(
+  'class/instructor/%/users' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'View Students',
+    'title' => 'View Users',
     
-    'file' => 'Classes.php',
+    'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_classes_view_specific',
+    'page callback' => 'groupgrade_view_user',
     'page arguments' => array(1),
 
     'access callback' => TRUE,

@@ -1,5 +1,8 @@
 <?php
-use Drupal\ClassLearning\Models\User;
+use Drupal\ClassLearning\Models\User,
+  Drupal\ClassLearning\Models\Section,
+  Drupal\ClassLearning\Models\SectionUsers,
+  Drupal\ClassLearning\Models\Semester;
 
 /**
  * @file
@@ -39,6 +42,39 @@ function groupgrade_instructor_dash() {
 function groupgrade_view_section($id) {
   $return = '';
   var_dump($id);
+  return $return;
+}
+
+function groupgrade_view_user($id) {
+  $return = '';
+  $section = Section::find($id);
+  
+  if ($section == NULL) return drupal_not_found();
+
+  foreach(array('instructor', 'student') as $role):
+    $return .= '<h3>'.ucfirst($role).'s</h3>';
+    $students = $section->students()
+      ->where('su_role', '=', $role)
+      ->get();
+
+    $rows = array();
+    if (count($students) > 0) : foreach($students as $student) :
+      $user = $student->user();
+      $rows[] = array(
+        ggPrettyName($user),
+        $student->su_status,
+        '<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
+        <a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
+      );
+    endforeach; endif;
+
+    $return .= theme('table', array(
+      'rows' => $rows,
+      'header' => array('User', 'Status', 'Operations'),
+      'empty' => 'No users found.',
+    ));
+  endforeach;
+
   return $return;
 }
 
