@@ -138,15 +138,49 @@ return array(
     'weight' => 5,
   ),
 
-  // Semester
   'class/instructor/%' => array(
-    'type' => MENU_LOCAL_TASK,
+    //'type' => MENU_NORMAL_ITEM,
     'title' => 'View Section',
     'page callback' => 'groupgrade_view_section',
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page arguments' => array(3),
-    'access arguments' => array('access administration pages'), 
+    'page arguments' => array(1),
+    'access arguments' => array('access administration pages'),
+    'menu_name' => 'navigation', 
+  ),
+
+  'class/instructor/%/first' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'View Section',
+    'weight' => 1,
+  ),
+
+  'class/instructor/%/students' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Students',
+    
+    'file' => 'Classes.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_classes_view_specific',
+    'page arguments' => array(1),
+
+    'access callback' => TRUE,
+    'weight' => 2,
+  ),
+
+  'class/instructor/%/assignments' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Assignments',
+    
+    'file' => 'Classes.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_classes_view_specific',
+    'page arguments' => array(1),
+
+    'access callback' => TRUE,
+    'weight' => 3,
   ),
 );

@@ -38,7 +38,7 @@ function groupgrade_instructor_dash() {
 
 function groupgrade_view_section($id) {
   $return = '';
-
+  var_dump($id);
   return $return;
 }
 
