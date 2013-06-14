@@ -43,9 +43,9 @@ SELECT * FROM `pla_course` WHERE `course_id` IN (
     FROM
       `pla_semester` 
     WHERE 
-      `semester_start` >= ?
+      `semester_start` <= ?
     AND
-      `semester_end` <= ?
+      `semester_end` >= ?
   )
 ) AND `course_id` IN (
   # Get the courses a user is taking
