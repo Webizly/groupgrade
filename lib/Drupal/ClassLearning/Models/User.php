@@ -1,6 +1,8 @@
 <?php
 namespace Drupal\ClassLearning\Models;
 use Drupal\ClassLearning\Models\SectionUsers,
+  Drupal\ClassLearning\Models\Section,
+  Drupal\ClassLearning\Models\Semester,
   Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
@@ -27,6 +29,42 @@ class User {
    */
   public static function classes($filter = 'current')
   {
+    $query = Section::whereIn('section.section_id', function($query)
+    {
+      global $user;
+
+      $query->select('section_id')
+        ->from('section_user')
+        ->where('user_id', '=', (int) $user->uid)
+        ->where('su_role', '=', 'student');
+    });
+
+    //$query->join('section_user', 'section_user.section_id', '=', 'section.section_id')
+    //  ->select('section.*', 'section_user.su_role', 'section_user.su_status');
+    $query->join('course', 'course.course_id', '=', 'section.course_id');
+    $query->join('semester', 'semester.semester_id', '=', 'section.semester_id');
+
+    $d = date('Y-m-d');
+    switch($filter)
+    {
+      case 'current' :
+        $current_semester = Semester::where('semester_start', '<=', $d)
+          ->where('semester_end', '>=', $d)
+          ->select('semester_id')
+          ->first();
+
+        // There is no current semester
+        if ($current_semester == NULL)
+          return NULL;
+
+        $query->where('section.semester_id', '=', $current_semester->semester_id);
+        break;
+    }
+    $query->orderBy('section.section_id', 'desc');
+
+    return $query->get();
+
+    /*
     switch($filter)
     {
       case 'current' :
@@ -63,12 +101,18 @@ ORDER BY `organization_id` ASC
         break;
 
       case 'all' :
-        $query = SectionUsers::where('user_id', '=', self::key())
-          ->groupBy('section_id');
-
+        $connection = Capsule::connection();
+         
+        return $connection->select('
+SELECT * FROM `pla_course` WHERE `course_id` IN (
+  SELECT `section_id` FROM `pla_section_user` WHERE `user_id` = ?
+)
+ORDER BY `organization_id` ASC
+', array(self::key()));
         break;
 
     }
+    */
   }
 
   /**

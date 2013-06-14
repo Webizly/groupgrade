@@ -83,7 +83,7 @@ return array(
     'title' => 'Current Classes',
     'weight' => 1,
   ),
-
+  /*
   'class/classes/past' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Past Classes',
@@ -96,7 +96,7 @@ return array(
 
     'access callback' => TRUE,
     'weight' => 2,
-  ),
+  ),  */
 
   'class/classes/all' => array(
     'type' => MENU_LOCAL_TASK,
