@@ -81,6 +81,7 @@ return array(
   'class/classes/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Current Classes',
+    'weight' => 1,
   ),
 
   'class/classes/past' => array(
@@ -94,6 +95,21 @@ return array(
     'page arguments' => array('past'),
 
     'access callback' => TRUE,
+    'weight' => 2,
+  ),
+
+  'class/classes/all' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'All Classes',
+    
+    'file' => 'Classes.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_classes_view_specific',
+    'page arguments' => array('all'),
+
+    'access callback' => TRUE,
+    'weight' => 3,
   ),
 
   'class/test' => array(
@@ -112,7 +128,7 @@ return array(
 
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
-    
+
     'weight' => 5,
   ),
 

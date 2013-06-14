@@ -63,7 +63,7 @@ ORDER BY `organization_id` ASC
         break;
 
       case 'all' :
-        $query = SectionUsers::where('user_id', '=', $this->getKey())
+        $query = SectionUsers::where('user_id', '=', self::key())
           ->groupBy('section_id');
 
         break;
