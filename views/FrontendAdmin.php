@@ -47,7 +47,6 @@ function groupgrade_view_section($id) {
 
 function groupgrade_view_user($id) {
   $return = '';
-  var_dump($id);
   $section = Section::find($id);
   
   if ($section == NULL) return drupal_not_found();
@@ -80,3 +79,45 @@ function groupgrade_view_user($id) {
   return $return;
 }
 
+function groupgrade_view_assignments($id) {
+  $return = '';
+  $return .= '<h3>Assignments</h3>';
+
+  $section = Section::find($id);
+  
+  if ($section == NULL) return drupal_not_found();
+
+  $assignments = $section->assignments()->get();
+  $rows = array();
+
+  if (count($assignments) > 0) : foreach($assignments as $assignment) :
+    $rows[] = array($assignment->assignment_title, $assignment->start, '');
+  endforeach; endif;
+
+  $return .= theme('table', array(
+    'rows' => $rows,
+    'header' => array('Title', 'Start Date', 'Operations'),
+    'empty' => 'No assignments found.',
+    'attributes' => array('width' => '100%'),
+  ));
+
+  return $return;
+}
+
+function groupgrade_create_assignment($section)
+{
+  module_load_include('inc', 'node', 'node.pages');
+  $form = node_add('assignment'); 
+  return drupal_render($form);
+
+  $items = array();
+  $items['title'] = array('#type' => 'item', '#markup' => '<h4>Create new Assignment</h4>');
+  $items['back-link'] = array(
+    '#type' => 'item',
+    '#markup' => '<a href="'.
+      url('class/instructor/'.$section.'/assignments')
+    .'">Back to Assignments</a>');
+
+
+  return $items;
+}
