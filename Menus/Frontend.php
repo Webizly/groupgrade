@@ -158,8 +158,40 @@ return array(
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_create_assignment', //drupal_get_form',
-    'page arguments' => array(),
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_create_assignment'),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+
+    'weight' => 3,
+  ),
+
+  'class/instructor/assignments/%' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Assignment',
+    
+    'file' => 'AssignmentAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_assignment', //drupal_get_form',
+    'page arguments' => array(3),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+
+    'weight' => 3,
+  ),
+
+  'class/instructor/assignments/%/edit' => array(
+    'type' => MENU_LOCAL_ACTION,
+    'title' => 'Edit Assignment',
+    
+    'file' => 'AssignmentAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_edit_assignment', 3),
 
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),

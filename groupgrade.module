@@ -3,7 +3,12 @@
  * Group Grade Base
  */
 
-use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Capsule\Manager as Capsule,
+  Drupal\ClassLearning\Models\User,
+  Drupal\ClassLearning\Models\Section,
+  Drupal\ClassLearning\Models\SectionUsers,
+  Drupal\ClassLearning\Models\Semester,
+  Drupal\ClassLearning\Models\Assignment;
 
 /**
  * Loading of the system
@@ -82,7 +87,7 @@ function groupgrade_assignment_form($node, $form_state) {
   // this by setting their weights, but another module might add elements to the
   // form with the same weights and end up between ours. By putting them into a
   // sub-array together, we're able force them to be rendered together.
-  $form['body_filter']['body'] = array(
+  $form['body'] = array(
     '#type' => 'textarea',
     '#title' => 'Assignment Description',
     '#default_value' => '',
@@ -335,5 +340,58 @@ function gg_has_role_in_section($role, $section)
  * @param object
  */
 function groupgrade_node_insert($node) {
-  $type = $node->type;
+  return;
+
+  switch($node->type)
+  {
+    case 'assignment' :
+      $a = new Assignment;
+      $a->user_id = $node->uid;
+      $a->assignment_title = $node->title;
+      $a->assignment_node = $node->nid;
+      $a->save();
+
+      //drupal_set_message(sprintf('Assignment %d created.', $a->assignment_id));
+      //return drupal_goto('class/instructor/assignments/'.$a->assignment_id);
+      break;
+  }
+}
+
+/**
+ * Implements hook_node_type_insert().
+ *
+ * Much like hook_node_insert() lets us know that a node is being
+ * inserted into the database, hook_node_type_insert() lets us know
+ * that a new content type has been inserted.
+ *
+ * Since Drupal will at some point insert our new content type,
+ * this gives us a chance to add the fields we want.
+ *
+ * It is called for all inserts to the content type database, so
+ * we have to make sure we're only modifying the type we're
+ * concerned with.
+ */
+function groupgrade_node_type_insert($content_type) {
+  if ($content_type->type == 'assignment') {
+    // First we add the body field. Node API helpfully gives us
+    // node_add_body_field().
+    // We'll set the body label now, although we could also set
+    // it along with our other instance properties later.
+    $body_instance = node_add_body_field($content_type, t('Assignment Description'));
+
+    // Save our changes to the body field instance.
+    field_update_instance($body_instance);
+
+    // Create all the fields we are adding to our content type.
+    foreach (_node_example_installed_fields() as $field) {
+      field_create_field($field);
+    }
+
+    // Create all the instances for our fields.
+    foreach (_node_example_installed_instances() as $instance) {
+      $instance['entity_type'] = 'node';
+      $instance['bundle'] = 'groupgrade';
+      field_create_instance($instance);
+    }
+  }
 }
