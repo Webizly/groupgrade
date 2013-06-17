@@ -13,7 +13,7 @@ function groupgrade_classes_view_specific($which = 'current')
   $rows = array();
   if (count($classes) > 0) : foreach($classes as $class) :
     $rows[] = array(
-      '<a href="'.url('class/course/'.$class['section_id']).'">'
+      '<a href="'.url('class/section/'.$class['section_id']).'">'
         .$class['course_name'].' &mdash; '. $class['course_title']
       .'</a>', $class->semester_name);
   endforeach; endif;
@@ -26,4 +26,11 @@ function groupgrade_classes_view_specific($which = 'current')
   ));
 }
 
+
+function groupgrade_view_section($section)
+{
+  $return = '';
+
+  return $return;
+}
 

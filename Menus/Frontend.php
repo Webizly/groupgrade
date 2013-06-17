@@ -118,6 +118,29 @@ return array(
     'access callback' => TRUE
   ),
 
+  // ==========================
+  // Section View
+  // ==========================
+  'class/section/%' => array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'View Section',
+    'page callback' => 'groupgrade_view_section',
+    'file' => 'Classes.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(2),
+    'access callback' => 'gg_has_role_in_section',
+    'access arguments' => array('student', 2),
+
+    'weight' => 4,
+  ),
+
+  'class/section/%/default' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'View Section',
+    'weight' => 1,
+  ),
+
   'class/instructor' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Instructor Management',
