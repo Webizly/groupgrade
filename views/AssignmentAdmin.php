@@ -91,7 +91,8 @@ function groupgrade_view_assignment($id) {
 
   $sections = $assignment->sections()->get();
 
-  $return = '<div class="well">';
+  $return = '<p><a href="'.url('class/instructor/assignments').'">Back to Assignments</a></p>';
+  $return .= '<div class="well">';
     $return .= '<h3>'.$assignment->assignment_title.'</h3>';
     $return .= '<p>'.$assignment->assignment_description.'</p>';
   $return .= '</div>';
@@ -178,7 +179,7 @@ function groupgrade_edit_assignment_submit($form, &$form_state)
 function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 {
   drupal_set_title(t('Add Section to Assignment'));
-  
+
   global $user;
   $sections_q = User::sectionsWithRole('instructor')
     ->join('course', 'course.course_id', '=', 'section.course_id')
