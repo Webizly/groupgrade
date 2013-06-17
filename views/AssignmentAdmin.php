@@ -237,3 +237,64 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 
   return drupal_set_message(sprintf('Added assignment section %d to section %d', $s->asec_id, $section));
 }
+
+
+/**
+ * Edit a section on an assignment
+ */
+function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $section)
+{
+  global $user;
+  $section = AssignmentSection::find($section);
+  if ($section == NULL) return drupal_not_found();
+
+  $items = array();
+  $items['m'] = array(
+    '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment</a>',
+  );
+
+  $items['start-date'] = array(
+    '#type' => 'date_select',
+
+    '#date_format' => 'Y-m-d H:i',
+    '#title' => t('Assignment Start Date'),
+    '#date_year_range' => '-0:+2', 
+
+    // The minute increment.
+    '#date_increment' => '15',
+    '#default_value' => $section->asec_start,
+    '#required' => TRUE,
+  );
+
+
+  $items['assignment_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $assignment
+  );
+
+  $items['asec_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $section->asec_id
+  );
+
+  $items['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update Section'),
+  );
+  return $items;
+}
+
+
+function groupgrade_edit_assignment_section_submit($form, &$form_state)
+{
+  $section = (int) $form['asec_id']['#value'];
+  $start = $form['start-date']['#value'];
+
+  $section = AssignmentSection::find($section);
+  if ($section == NULL) return drupal_not_found();
+
+  $section->asec_start = sprintf('%d-%d-%d %d:%d:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
+  $section->save();
+
+  return drupal_set_message(sprintf('Updated assignment section %d on section %d', $section->asec_id, $section->section_id));
+}
