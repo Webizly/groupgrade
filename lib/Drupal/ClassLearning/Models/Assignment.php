@@ -7,8 +7,9 @@ class Assignment extends ModelBase {
   protected $primaryKey = 'assignment_id';
   protected $table = 'assignment';
   public $timestamps = false;
-  public function section()
+
+  public function sections()
   {
-    return $this->belongsTo('Drupal\ClassLearning\Models\Section');
+    return $this->belongsTo('Drupal\ClassLearning\Models\AssignmentSection');
   }
 }

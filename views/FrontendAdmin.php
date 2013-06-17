@@ -40,6 +40,9 @@ function groupgrade_instructor_dash() {
 
 
 function groupgrade_view_section($id) {
+  $section = Section::find((int) $id);
+  if ($section == NULL) return drupal_not_found();
+
   $return = '';
   return $return;
 }
@@ -103,20 +106,3 @@ function groupgrade_view_assignments($id) {
   return $return;
 }
 
-function groupgrade_create_assignment($section)
-{
-  module_load_include('inc', 'node', 'node.pages');
-  $form = node_add('assignment'); 
-  return drupal_render($form);
-
-  $items = array();
-  $items['title'] = array('#type' => 'item', '#markup' => '<h4>Create new Assignment</h4>');
-  $items['back-link'] = array(
-    '#type' => 'item',
-    '#markup' => '<a href="'.
-      url('class/instructor/'.$section.'/assignments')
-    .'">Back to Assignments</a>');
-
-
-  return $items;
-}

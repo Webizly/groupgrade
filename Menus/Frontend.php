@@ -132,6 +132,44 @@ return array(
     'weight' => 5,
   ),
 
+  'class/instructor/first' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+    'title' => 'Dashboard',
+  ),
+
+  'class/instructor/assignments' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Assignment Management',
+    'page callback' => 'groupgrade_assignment_dash',
+    'file' => 'AssignmentAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+
+    'weight' => 5,
+  ),
+
+  'class/instructor/assignments/new' => array(
+    'type' => MENU_LOCAL_ACTION,
+    'title' => 'New Assignment',
+    
+    'file' => 'AssignmentAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_create_assignment', //drupal_get_form',
+    'page arguments' => array(),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+
+    'weight' => 3,
+  ),
+
+  // ===============================
+  // Manage the section
+  // ===============================
   'class/instructor/%' => array(
     //'type' => MENU_NORMAL_ITEM,
     'title' => 'Section View',
@@ -139,7 +177,7 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page arguments' => array(1),
+    'page arguments' => array(2),
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
   ),
@@ -173,21 +211,6 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page callback' => 'groupgrade_view_assignments',
-    'page arguments' => array(2),
-
-    'access arguments' => array('instructor', 2),
-    'access callback' => 'gg_has_role_in_section',
-    'weight' => 3,
-  ),
-
-  'class/instructor/%/assignments/new' => array(
-    'type' => MENU_LOCAL_ACTION,
-    'title' => 'New Assignment',
-    
-    'file' => 'FrontendAdmin.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-    'page callback' => 'groupgrade_create_assignment', //drupal_get_form',
     'page arguments' => array(2),
 
     'access arguments' => array('instructor', 2),

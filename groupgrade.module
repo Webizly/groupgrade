@@ -325,3 +325,15 @@ function gg_has_role_in_section($role, $section)
 
   return (! acl_has_user($acl_id, $user->uid)) ? FALSE : TRUE;
 }
+
+/**
+ * Interface to manage nodes
+ *
+ * Impliments hook_node_insert()
+ * 
+ * @access private
+ * @param object
+ */
+function groupgrade_node_insert($node) {
+  $type = $node->type;
+}
