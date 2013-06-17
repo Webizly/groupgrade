@@ -87,7 +87,7 @@ function groupgrade_view_assignment($id) {
   if ($assignment == NULL OR (int) $assignment->user_id !== (int) $user->uid)
     return drupal_not_found();
 
-  $sections = $assignment->sections();
+  $sections = $assignment->sections()->get();
 
   $return = '<div class="well">';
     $return .= '<h3>'.$assignment->assignment_title.'</h3>';
@@ -100,7 +100,7 @@ function groupgrade_view_assignment($id) {
   if (count($sections) > 0) : foreach($sections as $section) :
 
     $rows[] = array($section->section_name, $section->asec_start,
-        '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit').'">Edit</a>');
+        '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$section->asec_id).'">Edit</a>');
   endforeach; endif;
 
   $return .= theme('table', array(
@@ -187,6 +187,9 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
   endforeach; endif;
 
   $items = array();
+  $items['m'] = array(
+    '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment</a>',
+  );
   $items['section'] = array(
     '#type' => 'select',
     '#title' => 'Section',
