@@ -221,6 +221,22 @@ function groupgrade_custom_access($role_name){
   return $access_granted;
 }
 
+/**
+ * Determine whether the current user has the role specified.
+ *
+ * @param $role_name
+ *   The role required for access
+ * @return bool
+ *   True if the acting user has the role specified.
+ */
+function groupgrade_baseaccess() {
+  global $user;
+
+  if (! $user->uid) return FALSE;
+
+  return TRUE;
+}
+
 
 /**
  * Handle a user object and retrieve the first/last name or fallback to their username
@@ -305,8 +321,8 @@ function gg_has_acl_role($role) {
     'uid' => $user->uid,
     'role' => $role
   ))->fetchField();
-
-  if ($select)
+  
+  if ($select !== FALSE AND $select !== NULL)
     return TRUE;
   else
     return FALSE;

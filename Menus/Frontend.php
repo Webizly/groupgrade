@@ -9,8 +9,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
     
     // Permissions
-    //'access callback' => 'groupgrade_custom_access',
-    'access arguments' => array('authenticated user'),
+    'access callback' => 'groupgrade_baseaccess',
   ),
 
   // Default Parent Task
