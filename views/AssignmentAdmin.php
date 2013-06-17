@@ -20,7 +20,7 @@ function groupgrade_assignment_dash() {
     ->get();
 
   $return = '';
-  $return .= '<h3>Assignments</h3>';
+  $return .= '<h3>Your Assignments</h3>';
 
   $rows = array();
 
