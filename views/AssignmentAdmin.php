@@ -87,6 +87,8 @@ function groupgrade_view_assignment($id) {
   if ($assignment == NULL OR (int) $assignment->user_id !== (int) $user->uid)
     return drupal_not_found();
 
+  drupal_set_title($assignment->assignment_title);
+
   $sections = $assignment->sections()->get();
 
   $return = '<div class="well">';
@@ -120,7 +122,7 @@ function groupgrade_edit_assignment($form, &$form_state, $id)
 
   if ($assignment == NULL OR (int) $assignment->user_id !== (int) $user->uid)
     return drupal_not_found();
-
+  drupal_set_title('Edit '.$assignment->assignment_title);
   $items = array();
 
   $items['null'] = array(
@@ -175,6 +177,8 @@ function groupgrade_edit_assignment_submit($form, &$form_state)
  */
 function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 {
+  drupal_set_title(t('Add Section to Assignment'));
+  
   global $user;
   $sections_q = User::sectionsWithRole('instructor')
     ->join('course', 'course.course_id', '=', 'section.course_id')

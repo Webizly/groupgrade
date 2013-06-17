@@ -138,6 +138,9 @@ return array(
     'title' => 'Dashboard',
   ),
 
+  // ===================
+  // Assignment Mgmt
+  // ===================
   'class/instructor/assignments' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Assignment Management',
@@ -148,6 +151,7 @@ return array(
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
 
+    'menu_name' => 'assignment mgmt',
     'weight' => 5,
   ),
 
@@ -163,12 +167,10 @@ return array(
 
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
-
-    'weight' => 3,
   ),
 
   'class/instructor/assignments/%' => array(
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_NORMAL_ITEM,
     'title' => 'View Assignment',
     
     'file' => 'AssignmentAdmin.php',
@@ -179,12 +181,18 @@ return array(
 
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
-
-    'weight' => 3,
+    'weight' => 1,
   ),
 
+  'class/instructor/assignments/%/first' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+    'title' => 'View Assignment',
+  ),
+
+
   'class/instructor/assignments/%/edit' => array(
-    'type' => MENU_LOCAL_ACTION,
+    'type' => MENU_LOCAL_TASK,
     'title' => 'Edit Assignment',
     
     'file' => 'AssignmentAdmin.php',
@@ -195,8 +203,7 @@ return array(
 
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
-
-    'weight' => 3,
+    'weight' => 2,
   ),
 
   'class/instructor/assignments/%/edit-section/%' => array(
@@ -211,12 +218,10 @@ return array(
 
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
-
-    'weight' => 3,
   ),
 
   'class/instructor/assignments/%/add-section' => array(
-    'type' => MENU_LOCAL_ACTION,
+    'type' => MENU_LOCAL_TASK,
     'title' => 'Add Section',
     
     'file' => 'AssignmentAdmin.php',
@@ -227,7 +232,6 @@ return array(
 
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
-
     'weight' => 3,
   ),
 
