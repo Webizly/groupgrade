@@ -9,7 +9,8 @@ use Drupal\ClassLearning\Models\User,
   Drupal\ClassLearning\Models\Section,
   Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Semester,
-  Drupal\ClassLearning\Models\Assignment;
+  Drupal\ClassLearning\Models\Assignment,
+  Drupal\ClassLearning\Models\AssignmentSection;
 
 function groupgrade_assignment_dash() {
   global $user;
@@ -94,6 +95,21 @@ function groupgrade_view_assignment($id) {
   $return .= '</div>';
 
 
+  $rows = array();
+
+  if (count($sections) > 0) : foreach($sections as $section) :
+
+    $rows[] = array($section->section_name, $section->asec_start,
+        '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit').'">Edit</a>');
+  endforeach; endif;
+
+  $return .= theme('table', array(
+    'rows' => $rows,
+    'header' => array('Section', 'Start Date', 'Operations'),
+    'empty' => 'No sections found for assignment.',
+    'attributes' => array('width' => '100%'),
+  ));
+
   return $return;
 }
 
@@ -150,7 +166,71 @@ function groupgrade_edit_assignment_submit($form, &$form_state)
   $assignment->assignment_title = $form['title']['#value'];
   $assignment->assignment_description = $form['description']['#value'];
   $assignment->save();
-  
-  return drupal_set_message(sprintf('Assignment %d updated.', $id));
 
+  return drupal_set_message(sprintf('Assignment %d updated.', $id));
+}
+
+/**
+ * Add a section to an assignment
+ */
+function groupgrade_add_assignment_section($form, &$form_state, $assignment)
+{
+  global $user;
+  $sections_q = User::sectionsWithRole('instructor')
+    ->join('course', 'course.course_id', '=', 'section.course_id')
+    ->addSelect('course.course_name')
+    ->get();
+
+  $sections = array();
+  if (count($sections_q) > 0) : foreach($sections_q as $s) :
+    $sections[$s->section_id] = sprintf('%s-%s', $s->course_name, $s->section_name);
+  endforeach; endif;
+
+  $items = array();
+  $items['section'] = array(
+    '#type' => 'select',
+    '#title' => 'Section',
+    '#options' => $sections,
+    '#required' => true
+  );
+
+  $items['start-date'] = array(
+    '#type' => 'date_select',
+
+    '#date_format' => 'Y-m-d H:i',
+    '#title' => t('Assignment Start Date'),
+    '#date_year_range' => '-0:+2', 
+
+    // The minute increment.
+    '#date_increment' => '15',
+    '#default_value' => '',
+    '#required' => TRUE,
+  );
+
+
+  $items['assignment_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $assignment
+  );
+
+  $items['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Add Section'),
+  );
+  return $items;
+}
+
+
+function groupgrade_add_assignment_section_submit($form, &$form_state)
+{
+  $section = $form['section']['#value'];
+  $start = $form['start-date']['#value'];
+
+  $s = new AssignmentSection;
+  $s->assignment_id = (int) $form['assignment_id']['#value'];
+  $s->section_id = (int) $section;
+  $s->asec_start = sprintf('%d-%d-%d %d:%d:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
+  $s->save();
+
+  return drupal_set_message(sprintf('Added assignment section %d to section %d', $s->asec_id, $section));
 }

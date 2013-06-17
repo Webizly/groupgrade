@@ -199,6 +199,22 @@ return array(
     'weight' => 3,
   ),
 
+  'class/instructor/assignments/%/add-section' => array(
+    'type' => MENU_LOCAL_ACTION,
+    'title' => 'Add Section',
+    
+    'file' => 'AssignmentAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_add_assignment_section', 3),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+
+    'weight' => 3,
+  ),
+
   // ===============================
   // Manage the section
   // ===============================

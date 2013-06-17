@@ -69,7 +69,7 @@ function groupgrade_schema() {
       'assignment_description' => array(
         'description' => 'Description for assignment to be provided to users',
         'type' => 'text',
-        'not null' => FALSE,
+        'not null' => TRUE,
       ),
       'assignment_settings' => array(
         'description' => 'Describes the # of instances',

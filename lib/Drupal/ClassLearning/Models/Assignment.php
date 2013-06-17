@@ -10,6 +10,7 @@ class Assignment extends ModelBase {
 
   public function sections()
   {
-    return $this->belongsTo('Drupal\ClassLearning\Models\AssignmentSection');
+    return $this->belongsTo('Drupal\ClassLearning\Models\AssignmentSection')
+      ->join('section', 'section.section_id', '=', 'assignment_section.section_id');
   }
 }
