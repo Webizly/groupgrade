@@ -23,12 +23,9 @@ class Section extends ModelBase {
 
   public function assignments()
   {
-    $con = Capsule::connection();
-
-    return $con->table('assignment_section')
-      ->where('section_id', '=', $this->section_id)
+    return AssignmentSection::where('section_id', '=', $this->section_id)
       ->join('assignment', 'assignment.assignment_id', '=', 'assignment_section.assignment_id')
-      ->select('assignment.*', 'assignment_section.asec_start', 'assignment_section.asec_end');
+      ->select('assignment.*', 'assignment_section.*');
   }
   
   public function semester()

@@ -93,7 +93,7 @@ function groupgrade_view_assignments($id) {
   $rows = array();
 
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
-    $rows[] = array($assignment->assignment_title, $assignment->start, '');
+    $rows[] = array($assignment->assignment_title, gg_time_human($assignment->asec_start), '');
   endforeach; endif;
 
   $return .= theme('table', array(

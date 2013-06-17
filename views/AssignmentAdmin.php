@@ -102,7 +102,7 @@ function groupgrade_view_assignment($id) {
 
   if (count($sections) > 0) : foreach($sections as $section) :
 
-    $rows[] = array($section->section_name, $section->asec_start,
+    $rows[] = array($section->section_name, gg_time_human($section->asec_start),
         '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$section->asec_id).'">Edit</a>');
   endforeach; endif;
 
