@@ -11,6 +11,13 @@ use Illuminate\Database\Capsule\Manager as Capsule,
   Drupal\ClassLearning\Models\Assignment;
 
 /**
+ * Global date() format for MySQL DATETIME
+ *
+ * @global string
+ */
+define('MYSQL_DATETIME', 'Y-m-d H:i:s');
+
+/**
  * Loading of the system
  *
  * @access private
