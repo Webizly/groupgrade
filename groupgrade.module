@@ -8,7 +8,10 @@ use Illuminate\Database\Capsule\Manager as Capsule,
   Drupal\ClassLearning\Models\Section,
   Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Semester,
-  Drupal\ClassLearning\Models\Assignment;
+  Drupal\ClassLearning\Models\Assignment,
+  Drupal\ClassLearning\Models\AssignmentSection,
+
+  Drupal\ClassLearning\Workflow\Manager as WorkflowManager;
 
 /**
  * Global date() format for MySQL DATETIME
@@ -65,7 +68,11 @@ function groupgrade_admin_menu_output_alter(&$content) {
 
 function groupgrade_test_form()
 {
-  return '';
+  $asec = AssignmentSection::find(3);
+  var_dump(WorkflowManager::checkAssignment($asec));
+
+  exit;
+  //return '';
 }
 
 /**
