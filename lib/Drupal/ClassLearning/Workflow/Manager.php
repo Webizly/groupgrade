@@ -1,13 +1,17 @@
 <?php
 namespace Drupal\ClassLearning\Workflow;
+
 use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Section,
   Drupal\ClassLearning\Models\Semester,
-  Illuminate\Database\Capsule\Manager as Capsule,
-  Carbon\Carbon,
   Drupal\ClassLearning\Models\Workflow,
   Drupal\ClassLearning\Models\WorkflowTask,
-  Drupal\ClassLearning\Models\AssignmentSection;
+  Drupal\ClassLearning\Models\AssignmentSection,
+
+  Drupal\ClassLearning\Workflow\Allocator,
+
+  Illuminate\Database\Capsule\Manager as Capsule,
+  Carbon\Carbon;
 
 /**
  * Manager of the Workflow

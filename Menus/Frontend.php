@@ -307,4 +307,85 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ),
+
+  // =======================================
+  // Dummy Pages
+  // ======================================
+  'class/dummy' => array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'Problem Main',
+    
+    'file' => 'DummyPages.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'gg_dummy_main',
+    'page arguments' => array(),
+
+    'access callback' => true,//'gg_has_role_in_section',
+    'weight' => 3,
+  ),    
+
+
+  'class/dummy/first' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Dummy Pages',
+    'weight' => 1,
+  ),
+
+
+  'class/dummy/view-problem' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Problem',
+    
+    'file' => 'DummyPages.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'gg_view_problem',
+    'page arguments' => array(),
+
+    'access callback' => true,//'gg_has_role_in_section',
+    'weight' => 3,
+  ), 
+
+  'class/dummy/submit-problem' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Submit Problem',
+    
+    'file' => 'DummyPages.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'gg_view_problem',
+    'page arguments' => array(),
+
+    'access callback' => true,//'gg_has_role_in_section',
+    'weight' => 3,
+  ),    
+
+  'class/dummy/create-solution' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Create Solution',
+    
+    'file' => 'DummyPages.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'gg_view_problem',
+    'page arguments' => array(),
+
+    'access callback' => true,//'gg_has_role_in_section',
+    'weight' => 3,
+  ), 
+
+  'class/dummy/grade-solution' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Grade Solution',
+    
+    'file' => 'DummyPages.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'gg_view_problem',
+    'page arguments' => array(),
+
+    'access callback' => true,//'gg_has_role_in_section',
+    'weight' => 3,
+  ), 
 );
