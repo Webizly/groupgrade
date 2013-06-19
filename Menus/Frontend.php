@@ -157,7 +157,7 @@ return array(
   'class/instructor/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 1,
-    'title' => 'Dashboard',
+    'title' => 'Section Management',
   ),
 
   // ===================
