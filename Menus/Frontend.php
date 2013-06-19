@@ -313,7 +313,7 @@ return array(
   // ======================================
   'class/dummy' => array(
     'type' => MENU_NORMAL_ITEM,
-    'title' => 'Problem Main',
+    'title' => 'Screen Examples',
     
     'file' => 'DummyPages.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -344,7 +344,7 @@ return array(
     'page arguments' => array(),
 
     'access callback' => true,//'gg_has_role_in_section',
-    'weight' => 3,
+    'weight' => 2,
   ), 
 
   'class/dummy/submit-problem' => array(
@@ -354,11 +354,11 @@ return array(
     'file' => 'DummyPages.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'gg_view_problem',
+    'page callback' => 'gg_submit_problem',
     'page arguments' => array(),
 
     'access callback' => true,//'gg_has_role_in_section',
-    'weight' => 3,
+    'weight' => 1,
   ),    
 
   'class/dummy/create-solution' => array(
@@ -368,7 +368,7 @@ return array(
     'file' => 'DummyPages.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'gg_view_problem',
+    'page callback' => 'gg_create_solution',
     'page arguments' => array(),
 
     'access callback' => true,//'gg_has_role_in_section',
@@ -382,10 +382,10 @@ return array(
     'file' => 'DummyPages.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'gg_view_problem',
+    'page callback' => 'gg_grade_solution',
     'page arguments' => array(),
 
     'access callback' => true,//'gg_has_role_in_section',
-    'weight' => 3,
+    'weight' => 4,
   ), 
 );
