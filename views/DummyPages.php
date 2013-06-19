@@ -33,6 +33,10 @@ function gg_submit_problem_form($form, &$form_state)
     '#required' => true,
   ];
 
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Problem For Later',
+  ];
   $items['submit'] = [
     '#type' => 'submit',
     '#value' => 'Submit Problem',
@@ -64,6 +68,10 @@ function gg_create_solution_form($form, &$form_state)
     '#required' => true,
   ];
 
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Solution For Later',
+  ];
   $items['submit'] = [
     '#type' => 'submit',
     '#value' => 'Submit Solution',
@@ -103,6 +111,11 @@ function gg_grade_solution_form($form, &$form_state)
     '#type' => 'textarea',
     '#title' => 'Grade Justification',
     '#required' => true,
+  ];
+
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Grading For Later',
   ];
 
   $items['submit'] = [
