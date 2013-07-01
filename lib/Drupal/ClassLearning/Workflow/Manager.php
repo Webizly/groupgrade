@@ -91,48 +91,146 @@ class Manager {
     $tasks = [
       'create problem' => [
         'duration' => 3,
+        'trigger' => [
+
+        ],
       ],
 
       'edit problem' => [
         'pool' => 'instructor',
         'duration' => 1,
+        'trigger' => [
+          [
+            'type' => 'reference task status',
+            'task type' => 'create problem',
+            'task status' => 'complete',
+          ],
+        ],
       ],
 
       'create solution' => [
         'duration' => 3,
+        'trigger' => [
+          [
+            'type' => 'reference task status',
+            'task type' => 'edit problem',
+            'task status' => 'complete',
+          ],
+        ],
       ],
 
       'grade solution' => [
         'count' => 2,
         'duration' => 3,
+        'trigger' => [
+          [
+            'type' => 'reference task status',
+            'task type' => 'create solution',
+            'task status' => 'complete',
+          ],
+        ],
       ],
 
-      // If grades are within margin of each other,
-      // automatically resolve them taking in max, avg, etc.
-      // If not, trigger the 'resolution grader' task
-      'resolve grade' => [
+      // Resolve the grades
+      'resolve grades' => [
         'internal' => true,
+
+        // Default value
+        'value' => true,
+
+        // Trigger once all the grades are submitted
+        'trigger' => [
+          [
+            'type' => 'reference task status',
+            'task type' => 'grade solution',
+            'task status' => 'complete',
+          ],
+        ],
       ],
 
+      // Grades are fine, store them in the workflow
+      'grades ok' => [
+        'internal' => true,
+        'trigger' => [
+          [
+            'type' => 'value of task in range',
+            'task type' => 'resolve grades',
+
+            // Range of 15 points
+            'range' => 15,
+          ]
+        ]
+        
+        // Expire if grades are out of range
+        'expire' => [
+          [
+            'type' => 'value of task out of range',
+            'task type' => 'resolve grades',
+
+            // Range of 15 points
+            'range' => 15,
+          ]
+        ],
+      ],
+
+      // Grades are out of a range and we need a second grader
       'resolution grader' => [
-        'force trigger' => true,
-        'duration' => 3,
+        'trigger' => [
+          [
+            'type' => 'value of task out of range',
+            'task type' => 'resolve grades',
+
+            // Range of 15 points
+            'range' => 15,
+          ]
+        ],
+
+        // Expire if grades are in range
+        'expire' => [
+          [
+            'type' => 'value of task in range',
+            'task type' => 'resolve grades',
+
+            // Range of 15 points
+            'range' => 15,
+          ]
+        ],
       ],
 
+      // Dispute grades
+      // This step gives the option to dispute the grade they have recieved on their
+      // soln to yet-another-grader
       'dispute' => [
         'duration' => 2,
         'alias user' => 'create solution',
+        
+        // Default value
+        'value' => false,
+
+        // Trigger this if one of the tasks "resolution grader" or
+        // "grades ok" is complete.
+        'trigger' => [
+          [
+            'type' => 'one value of tasks is complete',
+            'task types' => ['resolution grader', 'grades ok'],
+          ],
+        ],
       ],
 
+      // Resolve a dispute and end the workflow
+      // Trigger only if the "dispute" task has a value of true
       'resolve dispute' => [
         'pool' => 'instructor',
-        'force trigger' => true,
         'duration' => 2,
-      ],
 
-      'end' => [
-        'internal' => true,
-      ]
+        'trigger' => [
+          [
+            'type' => 'compare value of task',
+            'task type' => 'dispute',
+            'value' => true,
+          ],
+        ],
+      ],
     ];
 
     // Running count of time
