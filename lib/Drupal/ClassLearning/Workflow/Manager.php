@@ -235,17 +235,26 @@ class Manager {
     ];
 
     foreach($tasks as $name => $task) :
-      $t = new WorkflowTask;
-      $t->workflow_id = $workflow->workflow_id;
+      if (isset($tasks[$name]['count']))
+        $count = $tasks[$name]['count'];
+      else
+        $count = 1;
 
-      // We're not assigning users at this stage
-      $t->type = $name;
-      $t->status = 'not triggered';
-      $t->start = NULL;
+      // Some need multiple tasks. Ex: grading a soln
+      // This can be expanded to as many as needed
+      for ($i = 0; $i < $count; $i++) :
+        $t = new WorkflowTask;
+        $t->workflow_id = $workflow->workflow_id;
 
-      $t->settings = $tasks[$name];
-      $t->data = [];
-      $t->save();
+        // We're not assigning users at this stage
+        $t->type = $name;
+        $t->status = 'not triggered';
+        $t->start = NULL;
+
+        $t->settings = $tasks[$name];
+        $t->data = [];
+        $t->save();
+      endfor;
     endforeach;
   }
 }
