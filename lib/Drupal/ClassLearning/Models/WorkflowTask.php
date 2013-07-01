@@ -169,6 +169,38 @@ class WorkflowTask extends ModelBase {
 
         break;
 
+      // Check if the value of a task meets an expected value
+      case 'compare value of task' :
+        if (! isset($condition['task type']))
+          throw new ModelException('Task type not defined for "compare value of task"', 500, null, $condition);
+        
+        if (! isset($condition['compare value']))
+          throw new ModelException('Compare value not defined for "compare value of task"', 500, null, $condition);
+        
+        // Query the other workflow tasks
+        $task = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+          ->whereType($condition['task type'])
+          ->first();
+
+        // Task not found!
+        if ($task == NULL) return FALSE;
+
+        // There is no value to be in range
+        if (! isset($task->data['value']))
+          return FALSE;
+        else
+          $value = $task->data['value'];
+
+        // This is a soft compare, not a compare of types
+        // Just of values. So passing these would pass:
+        // 
+        // 0 == NULL
+        // FALSE == NULL
+        if ($value !== $condition['compare value'])
+          return FALSE;
+
+        break;
+
       // See if a certain time has elapsed since this task was triggered
       case 'time since trigger' :
         if (! isset($condition['task elapsed']))
@@ -181,15 +213,26 @@ class WorkflowTask extends ModelBase {
         if ($time->isFuture())
           return FALSE;
         break;
-      /*
-      // Note the function:
-      // This checks if another single task has a certain status--not this respective task
-      case 'task meet status' :
-        if (! isset($condition['task id']))
-          throw new ModelException('Task elapsed time condition not defined for "time since trigger"', 500, null, $condition);
-        
+
+      // One of the tasks is a certain status
+      case 'check tasks for status' :
+        if (! isset($condition['task status']) OR ! is_array($condition['task types']))
+          throw new ModelException('Condition error', 500, null, $condition);
+
+        foreach ($condition['task types'] as $type) :
+          // Query the other workflow tasks
+          $task = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+            ->whereType($type)
+            ->first();
+
+          // Task found and status matched
+          // Return it right here!
+          if ($task !== NULL AND $task->status == $condition['task status'])
+            return TRUE;
+        endforeach;
         break;
-      */
+
+      // Unknown type
       default :
         throw new ModelException('Workflow task condition does not have registered type', 500, null, $condition);
     }

@@ -159,7 +159,7 @@ class Manager {
             // Range of 15 points
             'range' => 15,
           ]
-        ]
+        ],
         
         // Expire if grades are out of range
         'expire' => [
@@ -211,8 +211,9 @@ class Manager {
         // "grades ok" is complete.
         'trigger' => [
           [
-            'type' => 'one value of tasks is complete',
+            'type' => 'check tasks for status',
             'task types' => ['resolution grader', 'grades ok'],
+            'task status' => 'complete'
           ],
         ],
       ],
@@ -227,32 +228,20 @@ class Manager {
           [
             'type' => 'compare value of task',
             'task type' => 'dispute',
-            'value' => true,
+            'compare value' => true,
           ],
         ],
       ],
     ];
-
-    // Running count of time
-    $bumpTime = Carbon::now();
 
     foreach($tasks as $name => $task) :
       $t = new WorkflowTask;
       $t->workflow_id = $workflow->workflow_id;
 
       // We're not assigning users at this stage
-      
       $t->type = $name;
       $t->status = 'not triggered';
-      
-      // Calculate start time
-      if (isset($tasks[$name]['duration'])) :
-        $t->start = $bumpTime->toDateTimeString();
-        $bumpTime->addDays($tasks[$name]['duration']);
-      else :
-        // No set duration
-        $t->start = $bumpTime->toDateTimeString();
-      endif;
+      $t->start = NULL;
 
       $t->settings = $tasks[$name];
       $t->data = [];
