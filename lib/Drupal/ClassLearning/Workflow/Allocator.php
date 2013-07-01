@@ -7,6 +7,8 @@
  */
 namespace Drupal\ClassLearning\Workflow;
 
+use Drupal\ClassLearning\Exception as AllocatorException;
+
 /**
  * User Allocator
  *
@@ -21,18 +23,18 @@ class Allocator {
    * 
    * @var array
    */
-  private $user = array();
+  private $user = [];
 
   private $instructor;
   
   /**
    * Workflow Storage
    *
-   * To access, use `getWorkflows()`
+   * To access, use `getWorkflows()` or `addWorkflow()`
    * 
    * @var array
    */
-  private $workflows = array();
+  private $workflows = [];
 
   /**
    * Roles Storage
@@ -41,12 +43,12 @@ class Allocator {
    * 
    * @var array
    */
-  private $roles = array();
+  private $roles = [];
 
   /**
    * @ignore
    */
-  private $roles_rules = array();
+  private $roles_rules = [];
 
   /**
    * Temporary storage for users being added to roles
@@ -54,7 +56,7 @@ class Allocator {
    * @access private
    * @var array
    */
-  private $roles_queue = array();
+  private $roles_queue = [];
 
   /**
    * Use to track the number of runs the algorithm has run
@@ -70,7 +72,7 @@ class Allocator {
    * @todo Restructure how we store users
    * @param SectionUsers Users from a section
    */
-  public function __construct(SectionUsers $users)
+  public function __construct($users)
   {
     if (count($users) > 0) : foreach ($users as $user) :
       $this->users[$user->user_id] = [
@@ -81,21 +83,23 @@ class Allocator {
 
   /**
    * Grunt work to assign users
+   *
+   * It'd be best to run `assignmentRun()` as that method automatically detects errors
+   * and fixes them. This is a helper processor.
    * 
    * @return void
    */
-  public function assign_users()
+  public function runAssignment()
   {
     if (count($this->roles) == 0)
-      throw new Exception('Roles are not defined for allocation.');
+      throw new AllocatorException('Roles are not defined for allocation.');
 
     // Reset it
-    $this->workflows = array();
+    $this->resetWorkflows();
 
-    // First run, add all workflows
-    foreach ($this->users as $student_id => $student)
-      $this->workflows[] = $this->empty_workflow();
-
+    if (count($this->workflows) == 0)
+      throw new AllocatorException('No workflows to allocate to.');
+    
     // Now let's find the assignes
     foreach($this->roles as $role) :
       // Get just their student IDs
@@ -118,7 +122,7 @@ class Allocator {
         // Start from the beginning of the queue
         foreach($this->roles_queue[$role] as $queue_id => $user_id) :
           // They're not a match -- skip to the next user in queue
-          if ($this->can_enter_workflow($user_id, $this->workflows[$workflow_id]))
+          if ($this->canEnterWorkflow($user_id, $this->workflows[$workflow_id]))
           {
             $this->workflows[$workflow_id][$role] = $user_id;
 
@@ -141,7 +145,7 @@ class Allocator {
    * @param array
    * @return bool
    */
-  public function can_enter_workflow($user_id, $workflow)
+  protected function canEnterWorkflow($user_id, $workflow)
   {
     foreach($workflow as $role => $assigne)
     {
@@ -189,12 +193,23 @@ class Allocator {
    *
    * @return array
    */
-  public function empty_workflow()
+  public function emptyWorkflow()
   {
-    $i = array();
+    $i = [];
     foreach($this->roles as $r) $i[$r] = NULL;
 
     return $i;
+  }
+
+  /**
+   * Reset all the workflows
+   *
+   * @access protected
+   */
+  protected function resetWorkflows()
+  {
+    foreach ($this->workflows as $workflow_id => $workflow) 
+      $this->workflows[$workflow_id] = $this->emptyWorkflow();
   }
 
   /**
@@ -203,7 +218,7 @@ class Allocator {
    * @param string
    * @param string
    */
-  public function create_role($name, $rules = array())
+  public function createRole($name, $rules = [])
   {
     $this->roles[] = $name;
     $this->roles_rules[$name] = $rules;
@@ -217,6 +232,29 @@ class Allocator {
   public function getWorkflows()
   {
     return $this->workflows;
+  }
+
+  /**
+   * Get a Workflow
+   *
+   * @param integer
+   * @return array|void
+   */
+  public function getWorkflow($workflow_id)
+  {
+    return (isset($this->workflows[$workflow_id])) ? $this->workflows[$workflow_id] : NULL;
+  }
+
+  /**
+   * Add a workflow
+   *
+   * This should be called **after** registering all the roles for the allocation
+   * 
+   * @param int
+   */
+  public function addWorkflow($workflow_id)
+  {
+    $this->workflows[$workflow_id] = NULL;
   }
 
   /**
@@ -241,14 +279,14 @@ class Allocator {
    */
   public function assignmentRun($maxRuns = 20)
   {
-    $index = array();
-    $errorIndex = array();
+    $index = [];
+    $errorIndex = [];
     $runCount = 0;
 
     for ($i = 0; $i < $maxRuns; $i++) :
       $this->runCount++;
 
-      $this->assign_users();
+      $this->runAssignment();
 
       $hasErrors = $this->contains_errors($this->getWorkflows());
 

@@ -9,6 +9,7 @@ use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\AssignmentSection,
 
   Drupal\ClassLearning\Workflow\Allocator,
+  Drupal\ClassLearning\Workflow\TaskFactory,
 
   Illuminate\Database\Capsule\Manager as Capsule,
   Carbon\Carbon;
@@ -28,8 +29,23 @@ class Manager {
    */
   public static function checkAssignment(AssignmentSection &$assignment)
   {
-    if (self::isStarted($assignment))
-      return TRUE;
+    // Debugging for now
+    WorkflowTask::truncate();
+    Workflow::truncate();
+
+    /*whereIn('task.workflow_id', function($query) use ($assignment)
+    {
+       $query->select('workflow_id')
+        ->from('workflow')
+        ->where('assignment_id', '=', $assignment->assignment_id);
+    })->delete();
+
+    Workflow::where('assignment_id', '=', $assignment->assignment_id)
+      ->delete();
+    */
+   
+    //if (self::isStarted($assignment))
+    //  return TRUE;
 
     $date = Carbon::createFromFormat('Y-m-d H:i:s', $assignment->asec_start);
 
@@ -64,6 +80,8 @@ class Manager {
       ->where('su_status', '=', 'active')
       ->get();
 
+    $workflows = [];
+
     // We're just creating a workflow for each user
     // They're not actually assigned to this workflow
     foreach($users as $null) :
@@ -74,8 +92,46 @@ class Manager {
       $w->save();
 
       // Create the workflows tasks
-      self::triggerTaskCreation($w, $a);
+      self::triggerTaskCreation($w, $a, $users);
+
+      $workflows[] = $w;
     endforeach;
+
+    // Allocate the users
+    self::allocateUsers($a, $users, $workflows);
+  }
+
+  /**
+   * Assign the users to tasks
+   *
+   * @param AssignmentSection
+   * @param SectionUsers
+   * @return void
+   */
+  public static function allocateUsers(AssignmentSection $a, $users, &$workflows)
+  {
+    $allocator = new Allocator($users);
+
+    foreach (self::getTasks() as $role_name => $role)
+    {
+      if (! isset($role['internal']) OR ! $role['internal']) :
+        $count = 1;
+
+        if (isset($role['count']))
+          $count = $role['count'];
+
+        for ($i = 0; $i < $count; $i++)
+          $allocator->createRole($role_name);
+      endif;
+    }
+
+    foreach ($workflows as $workflow)
+      $allocator->addWorkflow($workflow->workflow_id);
+
+    $allocator->assignmentRun();
+
+    $allocator->dump();
+    exit;
   }
 
   /**
@@ -85,10 +141,22 @@ class Manager {
    * @access protected
    * @param Workflow
    * @param AssignmentSection
+   * @param SectionUsers
    */
-  protected static function triggerTaskCreation(&$workflow, &$assignment)
+  protected static function triggerTaskCreation(&$workflow, &$assignment, &$users)
   {
-    $tasks = [
+    $factory = new TaskFactory($workflow, self::getTasks());
+    $factory->createTasks();
+  }
+
+  /**
+   * Get the workflow tasks
+   *
+   * @return array
+   */
+  public static function getTasks()
+  {
+    return [
       'create problem' => [
         'duration' => 3,
         'trigger' => [
@@ -233,28 +301,5 @@ class Manager {
         ],
       ],
     ];
-
-    foreach($tasks as $name => $task) :
-      if (isset($tasks[$name]['count']))
-        $count = $tasks[$name]['count'];
-      else
-        $count = 1;
-
-      // Some need multiple tasks. Ex: grading a soln
-      // This can be expanded to as many as needed
-      for ($i = 0; $i < $count; $i++) :
-        $t = new WorkflowTask;
-        $t->workflow_id = $workflow->workflow_id;
-
-        // We're not assigning users at this stage
-        $t->type = $name;
-        $t->status = 'not triggered';
-        $t->start = NULL;
-
-        $t->settings = $tasks[$name];
-        $t->data = [];
-        $t->save();
-      endfor;
-    endforeach;
   }
 }
