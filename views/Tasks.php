@@ -8,7 +8,7 @@ function groupgrade_tasks_dashboard() {
 function groupgrade_tasks_view_specific($specific = '') {
   global $user;
   $tasks = Task::queryByStatus($user->uid, $specific)->get();
-  $rows = array();
+  $rows = [];
 
   switch($specific)
   {
@@ -17,8 +17,12 @@ function groupgrade_tasks_view_specific($specific = '') {
       
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
-        $row_t = array();
-        $row_t[] = $task->timeoutTime()->diffForHumans();
+        $row_t = [];
+        $row_t[] = sprintf(
+          '<a href="%s">%s</a>',
+          url('class/task/'.$task->task_id), groupgrade_carbon_span($task->timeoutTime())
+        );
+
         $row_t[] = $task->type;
         //$row_t[] = $task->status;
 
@@ -39,7 +43,7 @@ function groupgrade_tasks_view_specific($specific = '') {
       $headers = array('Assignment', 'Task', 'Problem', 'Date Completed');
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
-        $rowt = array();
+        $rowt = [];
         $rowt[] = $task->assignment()->first()->assignment_title;
         $rowt[] = $task->type;
         $rowt[] = '';

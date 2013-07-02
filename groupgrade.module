@@ -337,3 +337,17 @@ function gg_time_human($datetime)
     $time->toDayDateTimeString(),
     $time->diffForHumans());
 }
+
+/**
+ * We use a Carbon object and present it in human time diff
+ * From there, we also put it in a span so you can view the actual time as
+ * the title of the span.
+ *
+ * @param string
+ */
+function groupgrade_carbon_span(Carbon\Carbon $time)
+{
+  return sprintf('<span title="%s">%s</span>',
+    $time->toDayDateTimeString(),
+    $time->diffForHumans());
+}
