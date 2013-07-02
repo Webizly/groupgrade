@@ -53,6 +53,7 @@ function groupgrade_tasks_view_specific($specific = '') {
   return theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
-    'attributes' => ['width' => '100%']
+    'attributes' => ['width' => '100%'],
+    'empty' => 'No tasks found.',
   ));
 }
