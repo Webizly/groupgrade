@@ -158,7 +158,7 @@ class Manager {
     $date = Carbon::createFromFormat('Y-m-d H:i:s', $assignment->asec_start);
 
     // Did it pass yet?
-    if ($date->isPast())
+    if ($date->isPast() AND ! $this->isStarted())
       return self::trigger($assignment);
     else
       return FALSE;
