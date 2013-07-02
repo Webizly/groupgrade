@@ -1,5 +1,5 @@
 <?php
-use Drupal\ClassLearning\Models\Task;
+use Drupal\ClassLearning\Models\WorkflowTask as Task;
 
 function groupgrade_tasks_dashboard() {
   return groupgrade_tasks_view_specific('pending');
@@ -18,7 +18,7 @@ function groupgrade_tasks_view_specific($specific = '') {
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
         $row_t = array();
-        $row_t[] = $task->force_end;
+        $row_t[] = $task->timeoutTime()->diffForHumans();
         $row_t[] = $task->type;
         //$row_t[] = $task->status;
 

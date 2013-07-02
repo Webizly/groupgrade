@@ -270,7 +270,8 @@ class WorkflowTask extends ModelBase {
 
     // Update the status
     $this->status = 'triggered';
-    
+    $this->start = Carbon::now()->toDateTimeString();
+
     // Notify user
     WorkflowManager::notifyUser('triggered', $this);
 
@@ -298,6 +299,51 @@ class WorkflowTask extends ModelBase {
     $this->save();
   }
 
+  /**
+   * Get the timeout time for this task
+   *
+   * This would be when the task would be timed out fully
+   * 
+   * @return object Carbon datetime
+   */
+  public function timeoutTime()
+  {
+    $duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 0;
+    return Carbon::now()->addDays($duration);
+  }
+
+
+  /**
+   * Retrieve Upcoming Tasks for a User
+   * 
+   * @param int User Id
+   * @param string
+   */
+  public static function queryByStatus($user, $status = 'pending')
+  {
+    $query = self::where('user_id', '=', $user)
+      ->orderBy('force_end', 'asc');
+
+    switch ($status)
+    {
+      case 'pending' :
+        $query->whereIn('status', ['triggered', 'started']);
+        break;
+
+      case 'completed' :
+        $query->whereIn('status', ['complete', 'timed out']);
+        break;
+
+      // No filter
+      case 'all' :
+        $query->where('status', '!=', 'not triggered');
+        $query->where('status', '!=', 'expired');
+
+        break;
+    }
+    return $query;
+  }
+
   // ============================
   // Mutators
   // ============================
@@ -319,5 +365,28 @@ class WorkflowTask extends ModelBase {
   public function setDataAttribute($value)
   {
     $this->attributes['data'] = json_encode($value);
+  }
+
+  // =============================
+  // Relations
+  // =============================
+  public function workflow()
+  {
+    return $this->belongsTo('Drupal\ClassLearning\Models\Workflow');
+  }
+
+  public function assignmentSection()
+  {
+    return $this->workflow()->first()->assignmentSection();
+  }
+
+  public function section()
+  {
+    return $this->assignmentSection()->first()->section();
+  }
+
+  public function assignment()
+  {
+    return $this->assignmentSection()->first()->assignment();
   }
 }
