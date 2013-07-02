@@ -148,10 +148,26 @@ class Manager {
   }
 
   /**
+   * Check on all assignments
+   *
+   * @return void
+   */
+  public static function checkAssignments()
+  {
+    $assignments = AssignmentSection::whereNull('asec_end')
+      ->get();
+
+    if (count($assignments) > 0) :
+      foreach ($assignments as $a)
+        self::checkAssignment($a);
+    endif;
+  }
+
+  /**
    * Check to see if an assignment section should be triggered to start
    * 
    * @param AssignmentSection
-   * @return boolean
+   * @return void
    */
   public static function checkAssignment(AssignmentSection &$assignment)
   {

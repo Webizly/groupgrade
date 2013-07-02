@@ -351,3 +351,14 @@ function groupgrade_carbon_span(Carbon\Carbon $time)
     $time->toDayDateTimeString(),
     $time->diffForHumans());
 }
+
+/**
+ * Impliments hook_cron()
+ */
+function groupgrade_cron() {
+  // Check Assignments
+  WorkflowManager::checkAssignments();
+
+  // Check Tasks
+  WorkflowManager::checkTaskInstances();
+}
