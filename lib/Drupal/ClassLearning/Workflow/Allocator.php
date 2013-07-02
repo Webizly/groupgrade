@@ -393,7 +393,5 @@ class Allocator {
 <?php echo print_r($this->workflows); ?>
 </pre>
 <?php
-
-exit;
   }
 }

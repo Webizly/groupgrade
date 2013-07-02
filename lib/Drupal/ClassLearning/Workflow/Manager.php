@@ -131,7 +131,6 @@ class Manager {
     $allocator->assignmentRun();
 
     $allocator->dump();
-    exit;
   }
 
   /**
