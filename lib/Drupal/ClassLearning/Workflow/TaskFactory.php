@@ -30,7 +30,7 @@ class TaskFactory {
   /**
    * Constructor
    */
-  public function __construct(&$workflow, &$tasks)
+  public function __construct($workflow, $tasks)
   {
     $this->tasks = $tasks;
     $this->workflow = $workflow;
@@ -51,7 +51,7 @@ class TaskFactory {
         $count = $task['count'];
       else
         $count = 1;
-      
+
       // Some need multiple tasks. Ex: grading a soln
       // This can be expanded to as many as needed
       for ($i = 0; $i < $count; $i++) :

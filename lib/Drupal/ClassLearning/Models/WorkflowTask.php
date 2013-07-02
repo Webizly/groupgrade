@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 
 class WorkflowTask extends ModelBase {
   protected $table = 'task';
-  protected $primaryKey = 'wt_id';
+  protected $primaryKey = 'task_id';
   public $timestamps = false;
 
   /**

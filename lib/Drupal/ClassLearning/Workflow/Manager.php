@@ -11,6 +11,7 @@ use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Workflow\Allocator,
   Drupal\ClassLearning\Workflow\TaskFactory,
 
+  Drupal\ClassLearning\Exception as ManagerException,
   Illuminate\Database\Capsule\Manager as Capsule,
   Carbon\Carbon;
 
@@ -130,7 +131,25 @@ class Manager {
 
     $allocator->assignmentRun();
 
-    $allocator->dump();
+    // Now we have to intepert the response of the allocator
+    $taskInstances = $allocator->getTaskInstanceStorage();
+    $workflows = $allocator->getWorkflows();
+
+    foreach ($workflows as $workflow_id => $workflow)
+    {
+      foreach ($workflow as $role_id => $assigned_user)
+      {
+        $taskInstanceId = $taskInstances[$workflow_id][$role_id];
+        $taskInstance = WorkflowTask::find($taskInstanceId);
+
+        if ($taskInstance == NULL)
+          throw new ManagerException(
+            sprintf('Task instance %d cannot be found for workflow %d', $taskInstanceId, $workflow_id));
+
+        $taskInstance->user_id = $assigned_user;
+        $taskInstance->save();
+      }
+    }
   }
 
   /**
