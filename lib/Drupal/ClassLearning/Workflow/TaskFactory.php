@@ -47,11 +47,11 @@ class TaskFactory {
       throw new \Drupal\ClassLearning\Exception('No tasks defined for TaskFactory');
 
     foreach($this->tasks as $name => $task) :
-      if (isset($tasks[$name]['count']))
-        $count = $tasks[$name]['count'];
+      if (isset($task['count']))
+        $count = $task['count'];
       else
         $count = 1;
-
+      
       // Some need multiple tasks. Ex: grading a soln
       // This can be expanded to as many as needed
       for ($i = 0; $i < $count; $i++) :
