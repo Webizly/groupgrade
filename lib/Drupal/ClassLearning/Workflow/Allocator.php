@@ -7,7 +7,8 @@
  */
 namespace Drupal\ClassLearning\Workflow;
 
-use Drupal\ClassLearning\Exception as AllocatorException;
+use Drupal\ClassLearning\Exception as AllocatorException,
+  Drupal\ClassLearning\Models\WorkflowTask;
 
 /**
  * User Allocator
@@ -23,9 +24,12 @@ class Allocator {
    * 
    * @var array
    */
-  private $user = [];
+  protected $user = [];
 
-  private $instructor;
+  /**
+   * @ignore
+   */
+  protected $instructor;
   
   /**
    * Workflow Storage
@@ -34,7 +38,7 @@ class Allocator {
    * 
    * @var array
    */
-  private $workflows = [];
+  protected $workflows = [];
 
   /**
    * Roles Storage
@@ -43,12 +47,12 @@ class Allocator {
    * 
    * @var array
    */
-  private $roles = [];
+  protected $roles = [];
 
   /**
    * @ignore
    */
-  private $roles_rules = [];
+  protected $roles_rules = [];
 
   /**
    * Temporary storage for users being added to roles
@@ -56,7 +60,7 @@ class Allocator {
    * @access private
    * @var array
    */
-  private $roles_queue = [];
+  protected $roles_queue = [];
 
   /**
    * Use to track the number of runs the algorithm has run
@@ -65,6 +69,29 @@ class Allocator {
    * @var integer
    */
   public $runCount = 0;
+
+  /**
+   * A two-dimensional array of storage for keeping the storage
+   * of the task instance id's relative to the workflow->role ID
+   *
+   * The array looks like this:
+   * 
+   * ```
+   * [
+   *   'workflow_id' => [
+   *     'internal role id' => 'task instance id',
+   *     'internal role id' => 'task instance id',
+   *     'internal role id' => 'task instance id'    
+   *   ],
+   *   'workflow_id' => [
+   *     'internal role id' => 'task instance id',
+   *     'internal role id' => 'task instance id'
+   *   ],
+   *   ...
+   * ]
+   * @global array
+   */
+  protected $taskInstanceStorage = [];
 
   /**
    * Construct the Allocator Algorithm
@@ -193,10 +220,39 @@ class Allocator {
    *
    * @return array
    */
-  public function emptyWorkflow()
+  public function emptyWorkflow($workflow_id)
   {
+    // Let's get the tasks for this workflow
+    $tasks = WorkflowTask::where('workflow_id', '=', $workflow_id)
+      ->get();
+
+    // Setup the instance storage for this workflow
+    $this->taskInstanceStorage[$workflow_id] = $usedInstances = [];
+
     $i = [];
-    foreach($this->roles as $role_id => $role_data) $i[$role_id] = NULL;
+    foreach($this->roles as $role_id => $role_data) :
+      // Determine which task instance this is
+      $taskInstanceId = 0;
+      foreach ($tasks as $task) :
+        // It's a match
+        if ($task->type == $role_data['name'] AND ! in_array($task->task_id, $usedInstances))
+        {
+          $taskInstanceId = $task->task_id;
+          $usedInstances[] = $task->task_id;
+          break;
+        }
+      endforeach;
+
+      if ($taskInstanceId == 0)
+        throw new AllocatorException(
+          sprintf('Unknown task instance id to assign for role %s of workflow %d', $role_data['name'], $workflow_id)
+        );
+      else
+        $this->taskInstanceStorage[$workflow_id][$role_id] = $taskInstanceId;
+
+      // Add this to the tempory storage
+      $i[$role_id] = NULL;
+    endforeach;
 
     return $i;
   }
@@ -208,8 +264,11 @@ class Allocator {
    */
   protected function resetWorkflows()
   {
+    // Clear the instance storage
+    $this->taskInstanceStorage = [];
+
     foreach ($this->workflows as $workflow_id => $workflow) 
-      $this->workflows[$workflow_id] = $this->emptyWorkflow();
+      $this->workflows[$workflow_id] = $this->emptyWorkflow($workflow_id);
   }
 
   /**
@@ -245,6 +304,19 @@ class Allocator {
   public function getWorkflow($workflow_id)
   {
     return (isset($this->workflows[$workflow_id])) ? $this->workflows[$workflow_id] : NULL;
+  }
+
+  /**
+   * Get the task instance storage
+   *
+   * This is the associative IDs to associate the internal role ID inside of
+   * the `getWorkflow()` data to the task instance ID from the workflow.
+   * 
+   * @return array
+   */
+  public function getTaskInstanceStorage()
+  {
+    return $this->taskInstanceStorage;
   }
 
   /**
@@ -308,8 +380,6 @@ class Allocator {
    */
   public function dump()
   {
-    var_dump($this->workflows);
-    exit;
     ?>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script type="text/javascript">
