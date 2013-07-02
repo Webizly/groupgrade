@@ -2,7 +2,9 @@
 namespace Drupal\ClassLearning\Models;
 use Illuminate\Database\Eloquent\Model as ModelBase,
   Drupal\ClassLearning\Exception as ModelException,
-  Carbon\Carbon;
+  Carbon\Carbon,
+  Drupal\ClassLearning\Workflow\Manager as WorkflowManager;
+
 
 class WorkflowTask extends ModelBase {
   protected $table = 'task';
@@ -232,6 +234,15 @@ class WorkflowTask extends ModelBase {
         endforeach;
         break;
 
+      // This will cause a task to be trigged if all other tasks in the workflow are not triggered
+      case 'first task trigger' :
+        if (WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+          ->where('status', '!=', 'not triggered')
+          ->where('task_id', '!=', $this->task_id)
+          ->count() == 0)
+          return TRUE;
+        break;
+
       // Unknown type
       default :
         throw new ModelException('Workflow task condition does not have registered type', 500, null, $condition);
@@ -239,6 +250,49 @@ class WorkflowTask extends ModelBase {
 
     // If they've passed this far, they're good
     return TRUE;
+  }
+
+  /**
+   * Trigger the task
+   *
+   * Be careful with the function!
+   *
+   * @param bool
+   */
+  public function trigger($force = false)
+  {
+    // Nothing to trigger
+    if ($this->status !== 'not triggered' AND ! $force)
+      return true;
+
+    // Update the status
+    $this->status = 'triggered';
+    
+    // Notify user
+    WorkflowManager::notifyUser('triggered', $this);
+
+    $this->save();
+  }
+
+  /**
+   * Timeout of the task
+   */
+  public function timeout()
+  {
+    // Update the status
+    $this->status = 'timed out';
+    $this->save();
+  }
+
+  /**
+   * Completion of the task
+   */
+  public function complete()
+  {
+
+    // Update the status
+    $this->status = 'complete';
+    $this->save();
   }
 
   // ============================

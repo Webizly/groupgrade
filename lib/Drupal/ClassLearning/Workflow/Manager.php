@@ -38,7 +38,7 @@ class Manager {
       ->get();
 
     if (count($tasks) > 0) : foreach ($tasks as $task) :
-      $this->checkTaskInstance($task);
+      self::checkTaskInstance($task);
     endforeach; endif;
   }
 
@@ -51,7 +51,100 @@ class Manager {
    */
   public static function checkTaskInstance(WorkflowTask $task)
   {
+    if ($task->triggerConditionsAreMet())
+      $task->trigger();
+  }
 
+  /**
+   * Notify the user of a status change on their assigned tasks
+   *
+   * @param string Type of change (triggered/expiring/expired)
+   * @param WorkflowTask Workflow task to work with
+   * @throws Drupal\ClassLearning\Exception
+   */
+  public static function notifyUser($event, &$task)
+  {
+    // Determine a few things
+    $subject = $body = '';
+    $user = user_load($task->user_id);
+
+    // Determine what they're doing in a human format
+    switch ($task->type)
+    {
+      case 'create problem' :
+        $action_human = 'Create a Problem';
+        break;
+
+      case 'edit problem' :
+        $action_human = 'Edit a Problem';
+        break;
+      
+      case 'grade solution' :
+        $action_human = 'Grade a Solution';
+        break;
+      
+      case 'create solution' :
+        $action_human = 'Create a Solution';
+        break;
+      
+      case 'resolution grader' :
+        $action_human = 'Resolve Grades';
+        break;
+
+      case 'dispute' :
+        $action_human = 'Dispute Grade';
+        break;
+
+      case 'resolve dispute' :
+        $action_human = 'Resolve Dispute';
+        break;  
+
+      default :
+        $action_human = 'Unknown Action';    
+    }
+
+    // triggered/expiring/expired
+    switch ($event)
+    {
+      case 'triggered' :
+        $subject = 'CLASS: New Assignment Action';
+        $body = sprintf('You have been assigned to :%s. You can view the task at <a href="%s">%s</a>', $action_human, url('class'), url('class'));
+        break;
+
+      case 'expiring' :
+        $body = sprintf(
+          'Your task that you have been assigned to (%s) is going to be ending soon.
+          You should complete it to ensure you recieve full credit. You can view the task at <a href="%s">%s</a>',
+          $action_human, 
+          url('class'), 
+          url('class')
+        );
+        break;
+
+      case 'expiring' :
+        $body = sprintf(
+          'Your task that you have been assigned to (%s) has expired. You can no longer complete the task. View all of your tasks at <a href="%s">%s</a>',
+          $action_human, 
+          url('class'), 
+          url('class')
+        );
+        break;
+
+      default :
+        throw new ManagerException(sprintf('Unknown event type %s to notify for task %d', $event, $task->task_id));
+    }
+
+    $from = variable_get('site_mail', 'noreply@groupgrade.dev');
+    $params = compact($body, $subject, $event, $task);
+
+    $result = drupal_mail('groupgrade', 'notify '.$event, $user->mail, language_default(), $params, $from, TRUE);
+
+    if ($result['result'] !== TRUE)
+      throw new ManagerException(
+        sprintf('Error notifing user for task %s %s: %s', $event, $task->task_id, print_r($result))
+      );
+    else
+      return TRUE;
   }
 
   /**
@@ -192,7 +285,9 @@ class Manager {
       'create problem' => [
         'duration' => 3,
         'trigger' => [
-
+          [
+            'type' => 'first task trigger',
+          ]
         ],
       ],
 

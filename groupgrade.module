@@ -68,9 +68,10 @@ function groupgrade_admin_menu_output_alter(&$content) {
 
 function groupgrade_test_form()
 {
+
   $asec = AssignmentSection::find(3);
   var_dump(WorkflowManager::checkAssignment($asec));
-
+  var_dump(WorkflowManager::checkTaskInstances());
   exit;
   //return '';
 }
@@ -146,69 +147,28 @@ function groupgrade_problem_form($node, $form_state) {
 }
 
 /**
- * Implement hook_form().
- *
- * Drupal needs for us to provide a form that lets the user
- * add content. This is the form that the user will see if
- * they go to node/add/node-example.
- *
- * You can get fancy with this form, or you can just punt
- * and return the default form that node_content will provide.
+ * Impliments hook_mail()
  */
-function groupgrade_solution_form($node, $form_state) {
-  $form = array();
-   $type = node_type_get_type($node);
+function groupgrade_mail($key, &$message, $params) {
+  global $user;
 
-  // We want the body and filter elements to be adjacent. We could try doing
-  // this by setting their weights, but another module might add elements to the
-  // form with the same weights and end up between ours. By putting them into a
-  // sub-array together, we're able force them to be rendered together.
-  $form['body_filter']['body'] = array(
-    '#type' => 'textarea',
-    '#title' => 'Solution',
-    '#default_value' => '',
-    '#required' => FALSE
+  // Each message is associated with a language, which may or may not be the
+  // current user's selected language, depending on the type of e-mail being
+  // sent. This $options array is used later in the t() calls for subject
+  // and body to ensure the proper translation takes effect.
+  $options = array(
+    'langcode' => $message['language']->language,
   );
-  //$form['body_filter']['filter'] = filter_form($node->format);
 
-  // NOTE in node_example there is some addition code here not needed for this simple node-type
-
-  return $form;
-}
-
-/**
- * Impliments hook_node_info()
- */
-function groupgrade_node_info() {
-  return array(
-    'assignment' => array(
-      'name' => t('Assignment'),
-      'base' => 'groupgrade_assignment',
-      'description' => t('An assignment for use inside of a course section.'),
-      'locked' => TRUE,
-    ),
-
-    'problem' => array(
-      'name' => t('Problem'),
-      'base' => 'groupgrade_problem',
-      'description' => t('A problem for use inside of an assignment.'),
-      'locked' => TRUE,
-    ),
-
-    'solution' => array(
-      'name' => t('Solution'),
-      'base' => 'groupgrade_solution',
-      'description' => t('A solution for use inside of an problem.'),
-      'locked' => TRUE,
-    ),
-
-    'grade' => array(
-      'name' => t('Grade'),
-      'base' => 'groupgrade_grade',
-      'description' => t('A grade for use inside of a solution.'),
-      'locked' => TRUE,
-    ),
+  $message['subject'] = t($params['subject']);
+  $message['body'] = [];
+  $message['body'][] = t(
+    'Hello, This is a notification sent to you from @site-name',
+    ['@site-name' => variable_get('site_name', 'CLASS Development')],
+    $options
   );
+
+  $message['body'][] = t($params['body']);
 }
 
 /**
@@ -361,31 +321,6 @@ function gg_has_role_in_section($role, $section)
   return (! acl_has_user($acl_id, $user->uid)) ? FALSE : TRUE;
 }
 
-/**
- * Interface to manage nodes
- *
- * Impliments hook_node_insert()
- * 
- * @access private
- * @param object
- */
-function groupgrade_node_insert($node) {
-  return;
-
-  switch($node->type)
-  {
-    case 'assignment' :
-      $a = new Assignment;
-      $a->user_id = $node->uid;
-      $a->assignment_title = $node->title;
-      $a->assignment_node = $node->nid;
-      $a->save();
-
-      //drupal_set_message(sprintf('Assignment %d created.', $a->assignment_id));
-      //return drupal_goto('class/instructor/assignments/'.$a->assignment_id);
-      break;
-  }
-}
 
 /**
  * We use carbon to handle a datetime and present it in human time diff
