@@ -101,12 +101,12 @@ class Allocator {
       throw new AllocatorException('No workflows to allocate to.');
     
     // Now let's find the assignes
-    foreach($this->roles as $role) :
+    foreach($this->roles as $role_id => $role_data) :
       // Get just their student IDs
-      $this->roles_queue[$role] = array_keys($this->users);
+      $this->roles_queue[$role_id] = array_keys($this->users);
 
       // Let's keep this very random
-      shuffle($this->roles_queue[$role]);
+      shuffle($this->roles_queue[$role_id]);
     endforeach;
 
     // Go though the workflows
@@ -118,16 +118,16 @@ class Allocator {
       // 
       // Can join: assign and remove from queue
       // Can't join: point to next user in queue
-      foreach($workflow as $role => $ignore) :
+      foreach($workflow as $role_id => $ignore) :
         // Start from the beginning of the queue
-        foreach($this->roles_queue[$role] as $queue_id => $user_id) :
+        foreach($this->roles_queue[$role_id] as $queue_id => $user_id) :
           // They're not a match -- skip to the next user in queue
           if ($this->canEnterWorkflow($user_id, $this->workflows[$workflow_id]))
           {
-            $this->workflows[$workflow_id][$role] = $user_id;
+            $this->workflows[$workflow_id][$role_id] = $user_id;
 
             // Remove this student from the queue
-            unset($this->roles_queue[$role][$queue_id]);
+            unset($this->roles_queue[$role_id][$queue_id]);
             break;
           }
         endforeach;
@@ -196,7 +196,7 @@ class Allocator {
   public function emptyWorkflow()
   {
     $i = [];
-    foreach($this->roles as $r) $i[$r] = NULL;
+    foreach($this->roles as $role_id => $role_data) $i[$role_id] = NULL;
 
     return $i;
   }
@@ -220,8 +220,10 @@ class Allocator {
    */
   public function createRole($name, $rules = [])
   {
-    $this->roles[] = $name;
-    $this->roles_rules[$name] = $rules;
+    $this->roles[] = [
+      'name' => $name,
+      'rules' => $rules,
+    ];
   }
 
   /**
@@ -307,13 +309,6 @@ class Allocator {
   public function dump()
   {
     ?>
-<form action="/" method="GET">
-  <input type="number" name="size" value="<?php if (isset($_GET['size'])) echo $_GET['size']; ?>" />
-  <button type="submit">Generate Allocation</button>
-</form>
-
-<p><a href="/">Random Allocation</a></p>
-
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script type="text/javascript">
   $(document).ready(function()
@@ -337,26 +332,26 @@ class Allocator {
 <table width="100%" border="1">
   <thead>
     <tr>
-      <?php foreach($this->roles as $role) : ?>
-        <th><?php echo $role; ?></th>
+      <?php foreach($this->roles as $role_id =>$role_data) : ?>
+        <th><?php echo $role_data['name']; ?></th>
       <?php endforeach; ?>
     </tr>
   </thead>
   <tbody>
-    <?php foreach($this->workflows as $student_id => $workflow) : ?>
+    <?php foreach($this->workflows as $user_id => $workflow) : ?>
       <tr <?php if ($this->contains_error($workflow)) echo 'bgcolor="orange"'; ?>>
         <?php foreach($workflow as $role => $assigne) :
           if ($assigne === NULL) :
             ?><td bgcolor="red">NONE</td><?php
           else :
-            ?><td><?php echo $this->users[$assigne]; ?></td><?php
+            $user = user_load($assigne);
+            ?><td><?php echo $user->name; ?></td><?php
           endif;
         endforeach; ?>
       </tr>
     <?php endforeach; ?>
   </tbody>
 </table>
-
 <!-- Now Show a user's membership table -->
 <p>&nbsp;</p>
 
@@ -365,21 +360,21 @@ class Allocator {
     <tr>
       <th>Student</th>
 
-      <?php foreach($this->roles as $role) : ?>
-        <th>is <?php echo $role; ?>?</th>
+      <?php foreach($this->roles as $role_id => $role_data) : ?>
+        <th>is <?php echo $role_data['name']; ?>?</th>
       <?php endforeach; ?>
     </tr>
   </thead>
 
   <tbody>
-    <?php foreach($this->users as $student_id => $student) : ?>
+    <?php foreach($this->users as $user_id => $student) : ?>
     <tr>
-      <td><?php echo $student; ?></td>
+      <td><?php echo user_load($user_id)->name; ?></td>
 
-    <?php foreach($this->roles as $role) : $found = false; ?>
+    <?php foreach($this->roles as $role_id => $role_data) : $found = false; ?>
       <?php
       foreach($this->workflows as $workflow) :
-        if ($workflow[$role] !== NULL AND $workflow[$role] == $student_id) :
+        if ($workflow[$role_id] !== NULL AND $workflow[$role_id] == $user_id) :
           ?><td bgcolor="blue">YES</td><?php
         $found = true;
         endif;
@@ -398,5 +393,7 @@ class Allocator {
 <?php echo print_r($this->workflows); ?>
 </pre>
 <?php
+
+exit;
   }
 }
