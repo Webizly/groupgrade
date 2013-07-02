@@ -93,11 +93,17 @@ function groupgrade_view_task($task_id, $action = 'default')
     $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
       ->whereType('create problem')
       ->first();
-  }
-  elseif ($task->type == 'create solution')
-  {
-    $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+  } else {
+    // Automatically include the edited problem working with
+    $params['problem'] = Task::where('workflow_id', '=', $task->workflow_id)
       ->whereType('edit problem')
+      ->first();
+  }
+  
+  if ($task->type == 'grade solution')
+  {
+    $params['solution'] = Task::where('workflow_id', '=', $task->workflow_id)
+      ->whereType('create solution')
       ->first();
   }
 
@@ -201,7 +207,6 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
     return drupal_goto('class/default/completed');
 }
 
-
 /**
  * Impliments a edit problem form
  */
@@ -249,6 +254,72 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
     $task->complete();
   
   drupal_set_message(sprintf('Solution %s.', ($save) ? 'saved' : 'completed'));
+
+  if (! $save)
+    return drupal_goto('class/default/completed');
+}
+
+
+
+/**
+ * Impliments a edit problem form
+ */
+function gg_task_grade_solution_form($form, &$form_state, $params) {
+  $problem = $params['problem'];
+  $solution = $params['solution'];
+  $task = $params['task'];
+
+  $items = [];
+  $items['problem'] = [
+    '#markup' => '<h4>Problem</h4><p>'.$problem->data['problem'].'</p><hr />',
+  ];
+  $items['solution'] = [
+    '#markup' => '<h4>Solution</h4><p>'.$solution->data['solution'].'</p><hr />',
+  ];
+  $items['grade'] = [
+    '#type' => 'textfield',
+    '#title' => 'Grade (0-100)',
+    '#required' => true,
+    '#default_value' => (isset($task->data['grade'])) ? $task->data['grade'] : '',
+  ];
+
+  $items['justification'] = [
+    '#type' => 'textarea',
+    '#title' => 'Grade Justification',
+    '#required' => true,
+    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
+  ];
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Grade For Later',
+  ];
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Submit Grade',
+  ];
+  return $items;
+}
+
+/**
+ * Callback submit function for class/task/%
+ */
+function gg_task_grade_solution_form_submit($form, &$form_state) {
+  $params = $form_state['build_info']['args'][0];
+  $task = $params['task'];
+
+  $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
+  $task->setDataAttribute([
+    'grade' =>  (int) $form['grade']['#value'],
+    'justification' => $form['justification']['#value']
+  ]);
+
+  $task->status = ($save) ? 'started' : 'completed';
+  $task->save();
+
+  if (! $save)
+    $task->complete();
+  
+  drupal_set_message(sprintf('Grade %s.', ($save) ? 'saved' : 'submitted'));
 
   if (! $save)
     return drupal_goto('class/default/completed');

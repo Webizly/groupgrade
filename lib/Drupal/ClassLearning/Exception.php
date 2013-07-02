@@ -13,10 +13,9 @@ class Exception extends \Exception {
   public function __construct($message, $code = 0, $previous = NULL, $data = NULL)
   {
     parent::__construct($messge, $code, $previous);
-
+    
     // Pass to watchdog
     watchdog('groupgrade',
-      sprintf('Exception thown inside groupgrade module: %s &mdash; %s', $message, print_r($data))
-    \WATCHDOG_ERROR);
+      sprintf('Exception thown inside groupgrade module: %s &mdash; %s', $message, print_r($data)), WATCHDOG_ERROR);
   } 
 }

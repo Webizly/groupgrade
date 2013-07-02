@@ -137,11 +137,15 @@ class Manager {
     $from = variable_get('site_mail', 'noreply@groupgrade.dev');
     $params = compact('body', 'subject', 'event', 'task');
 
+    // Can't send mail if no email
+    if (empty($user->mail))
+      return;
+    
     $result = drupal_mail('groupgrade', 'notify '.$event, $user->mail, language_default(), $params, $from, TRUE);
 
-    if ($result['result'] !== TRUE)
+    if (! $result['result'])
       throw new ManagerException(
-        sprintf('Error notifing user for task %s %s: %s', $event, $task->task_id, print_r($result))
+        sprintf('Error notifing user for task %s %s : %s', $event, $task->task_id, print_r($result))
       );
     else
       return TRUE;
