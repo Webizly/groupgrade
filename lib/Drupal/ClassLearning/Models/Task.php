@@ -16,14 +16,46 @@ class Task extends ModelBase {
    */
   public static function queryByStatus($user, $status = 'pending')
   {
-    return self::where('user_id', '=', $user)
-      ->whereStatus($status)
-      ->orderBy('force_end', 'asc')
-      ->get();
+    $query = self::where('user_id', '=', $user)
+      ->orderBy('force_end', 'asc');
+
+    switch ($status)
+    {
+      case 'pending' :
+        $query->whereIn('status', ['triggered', 'started']);
+        break;
+
+      case 'completed' :
+        $query->whereIn('status', ['complete', 'timed out']);
+        break;
+
+      // No filter
+      case 'all' :
+        $query->where('status', '!=', 'not triggered');
+        $query->where('status', '!=', 'expired');
+
+        break;
+    }
+    return $query;
+  }
+
+  public function workflow()
+  {
+    return $this->belongsTo('Drupal\ClassLearning\Models\Workflow');
+  }
+
+  public function assignmentSection()
+  {
+    return $this->workflow()->first()->assignmentSection();
+  }
+
+  public function section()
+  {
+    return $this->assignmentSection()->first()->section();
   }
 
   public function assignment()
   {
-    return $this->belongsTo('Drupal\ClassLearning\Models\Assignment');
+    return $this->assignmentSection()->first()->assignment();
   }
 }

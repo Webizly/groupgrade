@@ -12,4 +12,9 @@ class Workflow extends ModelBase {
   {
     return $this->hasMany('Drupal\ClassLearning\Models\WorkflowTask');
   }
+
+  public function assignmentSection()
+  {
+    return $this->belongsTo('Drupal\ClassLearning\Models\AssignmentSection', 'assignment_id');
+  }
 }
