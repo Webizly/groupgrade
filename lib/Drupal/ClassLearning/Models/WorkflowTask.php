@@ -232,6 +232,9 @@ class WorkflowTask extends ModelBase {
           if ($task !== NULL AND $task->status == $condition['task status'])
             return TRUE;
         endforeach;
+
+        // Nothing found, so no good
+        return FALSE;
         break;
 
       // This will cause a task to be trigged if all other tasks in the workflow are not triggered

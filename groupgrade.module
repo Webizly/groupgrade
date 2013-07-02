@@ -150,6 +150,7 @@ function groupgrade_problem_form($node, $form_state) {
  * Impliments hook_mail()
  */
 function groupgrade_mail($key, &$message, $params) {
+  var_dump($params); exit;
   global $user;
 
   // Each message is associated with a language, which may or may not be the

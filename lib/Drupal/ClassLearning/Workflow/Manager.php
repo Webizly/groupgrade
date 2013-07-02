@@ -108,7 +108,7 @@ class Manager {
     {
       case 'triggered' :
         $subject = 'CLASS: New Assignment Action';
-        $body = sprintf('You have been assigned to :%s. You can view the task at <a href="%s">%s</a>', $action_human, url('class'), url('class'));
+        $body = sprintf('You have been assigned to: %s. You can view the task at <a href="%s">%s</a>', $action_human, url('class'), url('class'));
         break;
 
       case 'expiring' :
@@ -135,7 +135,7 @@ class Manager {
     }
 
     $from = variable_get('site_mail', 'noreply@groupgrade.dev');
-    $params = compact($body, $subject, $event, $task);
+    $params = compact('body', 'subject', 'event', 'task');
 
     $result = drupal_mail('groupgrade', 'notify '.$event, $user->mail, language_default(), $params, $from, TRUE);
 
@@ -158,7 +158,7 @@ class Manager {
     $date = Carbon::createFromFormat('Y-m-d H:i:s', $assignment->asec_start);
 
     // Did it pass yet?
-    if ($date->isPast() AND ! $this->isStarted())
+    if ($date->isPast() AND ! self::isStarted($assignment))
       return self::trigger($assignment);
     else
       return FALSE;
