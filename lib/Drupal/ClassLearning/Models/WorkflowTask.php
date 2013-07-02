@@ -11,6 +11,8 @@ class WorkflowTask extends ModelBase {
   protected $primaryKey = 'task_id';
   public $timestamps = false;
 
+  protected $attributes = ['workflow_id', 'user_id', 'group_id', 'type', 'referenced_task', 'status', 'start', 'end', 'force_end', 'data', 'settings'];
+
   /**
    * Add a trigger condition to the task
    * 
@@ -293,7 +295,6 @@ class WorkflowTask extends ModelBase {
    */
   public function complete()
   {
-
     // Update the status
     $this->status = 'complete';
     $this->save();
@@ -349,6 +350,7 @@ class WorkflowTask extends ModelBase {
   // ============================
   public function getSettingsAttribute($value)
   {
+    if ($value == '') return [];
     return json_decode($value, TRUE);
   }
 
@@ -359,6 +361,7 @@ class WorkflowTask extends ModelBase {
 
   public function getDataAttribute($value)
   {
+    if ($value == '') return [];
     return json_decode($value, TRUE);
   }
 
@@ -366,6 +369,7 @@ class WorkflowTask extends ModelBase {
   {
     $this->attributes['data'] = json_encode($value);
   }
+
 
   // =============================
   // Relations

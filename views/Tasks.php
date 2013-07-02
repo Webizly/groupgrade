@@ -76,7 +76,60 @@ function groupgrade_view_task($task_id, $action = 'default')
   if ($task == NULL OR (int) $task->user_id !== (int) $user->uid)
     return drupal_not_found();
 
+  // Related Information
+  $assignment = $task->assignment()->first();
+
   $return = '';
-  drupal_set_title(t(sprintf('%s: #%d', ucwords($task->type), $task_id)));
+  drupal_set_title(t(sprintf('%s: %s', ucwords($task->type), $assignment->assignment_title)));
+
+  $return .= sprintf('<p class="summary">%s</p>', $assignment->assignment_description);
+  $return .= '<p><strong>'.ucwords($task->type).'</strong></p>';
+
+  $form = drupal_get_form('gg_task_'.str_replace(' ', '_', $task->type).'_form', $task);
+  $return .= drupal_render($form);
   return $return;
+}
+
+/**
+ * Impliments a create problem form
+ */
+function gg_task_create_problem_form($form, &$form_state, $task) {
+  $items = [];
+
+  $items['body'] = [
+    '#type' => 'textarea',
+    '#required' => true,
+    '#default_value' => (isset($task->data['problem'])) ? $task->data['problem'] : '',
+  ];
+
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Problem For Later',
+  ];
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Submit Problem',
+  ];
+  return $items;
+}
+
+/**
+ * Callback submit function for class/task/%
+ */
+function gg_task_create_problem_form_submit($form, &$form_state) {
+  $task_id = $form_state['build_info']['args'][0]->task_id;
+  $task = Task::find($task_id);
+
+  $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
+  $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
+  $task->status = ($save) ? 'started' : 'completed';
+  $task->save();
+
+  if (! $save)
+    $task->complete();
+  
+  drupal_set_message(sprintf('Problem %s.', ($save) ? 'saved' : 'completed'));
+
+  if (! $save)
+    return drupal_goto('class/default/completed');
 }
