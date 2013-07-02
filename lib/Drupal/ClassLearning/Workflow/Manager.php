@@ -23,6 +23,38 @@ use Drupal\ClassLearning\Models\SectionUsers,
  */
 class Manager {
   /**
+   * Check on Task Instances
+   * 
+   * Checks on the non-trigger tasks to see if they should be
+   * triggered to start.
+   *
+   * This is handled by the cron
+   * 
+   * @access public
+   */
+  public static function checkTaskInstances()
+  {
+    $tasks = WorkflowTask::whereStatus('not triggered')
+      ->get();
+
+    if (count($tasks) > 0) : foreach ($tasks as $task) :
+      $this->checkTaskInstance($task);
+    endforeach; endif;
+  }
+
+  /**
+   * Check on a Task Instance
+   * 
+   * Checks on a task to see if it should be triggered to start.
+   * 
+   * @access public
+   */
+  public static function checkTaskInstance(WorkflowTask $task)
+  {
+
+  }
+
+  /**
    * Check to see if an assignment section should be triggered to start
    * 
    * @param AssignmentSection
@@ -30,24 +62,6 @@ class Manager {
    */
   public static function checkAssignment(AssignmentSection &$assignment)
   {
-    // Debugging for now
-    WorkflowTask::truncate();
-    Workflow::truncate();
-
-    /*whereIn('task.workflow_id', function($query) use ($assignment)
-    {
-       $query->select('workflow_id')
-        ->from('workflow')
-        ->where('assignment_id', '=', $assignment->assignment_id);
-    })->delete();
-
-    Workflow::where('assignment_id', '=', $assignment->assignment_id)
-      ->delete();
-    */
-   
-    //if (self::isStarted($assignment))
-    //  return TRUE;
-
     $date = Carbon::createFromFormat('Y-m-d H:i:s', $assignment->asec_start);
 
     // Did it pass yet?
