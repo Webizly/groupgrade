@@ -85,7 +85,23 @@ function groupgrade_view_task($task_id, $action = 'default')
   $return .= sprintf('<p class="summary">%s</p>', $assignment->assignment_description);
   $return .= '<p><strong>'.ucwords($task->type).'</strong></p>';
 
-  $form = drupal_get_form('gg_task_'.str_replace(' ', '_', $task->type).'_form', $task);
+  $params = [];
+  $params['task'] = $task;
+
+  if ($task->type == 'edit problem')
+  {
+    $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+      ->whereType('create problem')
+      ->first();
+  }
+  elseif ($task->type == 'create solution')
+  {
+    $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+      ->whereType('edit problem')
+      ->first();
+  }
+
+  $form = drupal_get_form('gg_task_'.str_replace(' ', '_', $task->type).'_form', $params);
   $return .= drupal_render($form);
   return $return;
 }
@@ -93,13 +109,13 @@ function groupgrade_view_task($task_id, $action = 'default')
 /**
  * Impliments a create problem form
  */
-function gg_task_create_problem_form($form, &$form_state, $task) {
+function gg_task_create_problem_form($form, &$form_state, $params) {
   $items = [];
 
   $items['body'] = [
     '#type' => 'textarea',
     '#required' => true,
-    '#default_value' => (isset($task->data['problem'])) ? $task->data['problem'] : '',
+    '#default_value' => (isset($params['task']->data['problem'])) ? $params['task']->data['problem'] : '',
   ];
 
   $items['save'] = [
@@ -117,8 +133,7 @@ function gg_task_create_problem_form($form, &$form_state, $task) {
  * Callback submit function for class/task/%
  */
 function gg_task_create_problem_form_submit($form, &$form_state) {
-  $task_id = $form_state['build_info']['args'][0]->task_id;
-  $task = Task::find($task_id);
+  $task = $form_state['build_info']['args'][0]['task'];
 
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
@@ -129,6 +144,111 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
     $task->complete();
   
   drupal_set_message(sprintf('Problem %s.', ($save) ? 'saved' : 'completed'));
+
+  if (! $save)
+    return drupal_goto('class/default/completed');
+}
+
+/**
+ * Impliments a edit problem form
+ */
+function gg_task_edit_problem_form($form, &$form_state, $params) {
+  $problem = '';
+  $problem = $params['previous task']->data['problem'];
+
+  if (! empty($params['task']->data['problem']))
+    $problem = $params['task']->data['problem'];
+
+  $items = [];
+  $items['original problem'] = [
+    '#markup' => '<p><strong>Original Problem:</strong></p><p>'.$params['previous task']->data['problem'].'</p><hr />'
+  ];
+
+  $items['body'] = [
+    '#type' => 'textarea',
+    '#required' => true,
+    '#default_value' => $problem,
+  ];
+
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Edited Problem For Later',
+  ];
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Submit Edited Problem',
+  ];
+  return $items;
+}
+
+/**
+ * Callback submit function for class/task/%
+ */
+function gg_task_edit_problem_form_submit($form, &$form_state) {
+  $task = $form_state['build_info']['args'][0]['task'];
+
+  $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
+  $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
+  $task->status = ($save) ? 'started' : 'completed';
+  $task->save();
+
+  if (! $save)
+    $task->complete();
+  
+  drupal_set_message(sprintf('Edited problem %s.', ($save) ? 'saved' : 'completed'));
+
+  if (! $save)
+    return drupal_goto('class/default/completed');
+}
+
+
+/**
+ * Impliments a edit problem form
+ */
+function gg_task_create_solution_form($form, &$form_state, $params) {
+  $problem = '';
+  $problem = $params['previous task']->data['problem'];
+
+  if (! empty($params['task']->data['problem']))
+    $problem = $params['task']->data['problem'];
+
+  $items = [];
+  $items['original problem'] = [
+    '#markup' => '<p><strong>Problem:</strong></p><p>'.$params['previous task']->data['problem'].'</p><hr />'
+  ];
+
+  $items['body'] = [
+    '#type' => 'textarea',
+    '#required' => true,
+    '#default_value' => (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '',
+  ];
+
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Solution For Later',
+  ];
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Submit Solution',
+  ];
+  return $items;
+}
+
+/**
+ * Callback submit function for class/task/%
+ */
+function gg_task_create_solution_form_submit($form, &$form_state) {
+  $task = $form_state['build_info']['args'][0]['task'];
+
+  $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
+  $task->setDataAttribute(['solution' =>  $form['body']['#value']]);
+  $task->status = ($save) ? 'started' : 'completed';
+  $task->save();
+
+  if (! $save)
+    $task->complete();
+  
+  drupal_set_message(sprintf('Solution %s.', ($save) ? 'saved' : 'completed'));
 
   if (! $save)
     return drupal_goto('class/default/completed');
