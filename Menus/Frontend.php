@@ -141,6 +141,45 @@ return array(
     'weight' => 1,
   ),
 
+  // ==========================
+  // Task View
+  // ==========================
+  'class/task/%' => array(
+    //'type' => MENU_NORMAL_ITEM,
+    'title' => 'View Task',
+    'page callback' => 'groupgrade_view_task',
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(2),
+    'access arguments' => array(2),
+    'access callback' => true,
+  ),
+
+  'class/task/%/first' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+    'title' => 'Task',
+  ),
+
+  'class/task/%/options' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Options',
+    
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_user',
+    'page arguments' => array(2),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => true,
+    'weight' => 2,
+  ),
+
+  // =================================
+  // Instructor Mgmt
+  // =================================
   'class/instructor' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Instructor Management',

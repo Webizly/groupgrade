@@ -1,5 +1,6 @@
 <?php
-use Drupal\ClassLearning\Models\WorkflowTask as Task;
+use Drupal\ClassLearning\Models\WorkflowTask as Task,
+  Drupal\ClassLearning\Models\Workflow;
 
 function groupgrade_tasks_dashboard() {
   return groupgrade_tasks_view_specific('pending');
@@ -60,4 +61,22 @@ function groupgrade_tasks_view_specific($specific = '') {
     'attributes' => ['width' => '100%'],
     'empty' => 'No tasks found.',
   ));
+}
+
+/**
+ * View a specific task
+ * 
+ */
+function groupgrade_view_task($task_id, $action = 'default')
+{
+  global $user;
+
+  $task = Task::find($task_id);
+
+  if ($task == NULL OR (int) $task->user_id !== (int) $user->uid)
+    return drupal_not_found();
+
+  $return = '';
+  drupal_set_title(t(sprintf('%s: #%d', ucwords($task->type), $task_id)));
+  return $return;
 }
