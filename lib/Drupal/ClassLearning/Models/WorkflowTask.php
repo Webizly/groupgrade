@@ -11,8 +11,6 @@ class WorkflowTask extends ModelBase {
   protected $primaryKey = 'task_id';
   public $timestamps = false;
 
-  protected $attributes = ['workflow_id', 'user_id', 'group_id', 'type', 'referenced_task', 'status', 'start', 'end', 'force_end', 'data', 'settings'];
-
   /**
    * Add a trigger condition to the task
    * 
