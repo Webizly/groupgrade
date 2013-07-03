@@ -488,7 +488,7 @@ $schema['pla_task'] = array(
       'description' => 'Start time of this task. Null if not triggered yet.',
       'type' => 'varchar',
       'mysql_type' => 'datetime',
-      'not null' => TRUE,
+      'not null' => FALSE,
     ),
     'end' => array(
       'description' => 'End time of this task. Null if not ended yet.',
