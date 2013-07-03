@@ -68,9 +68,7 @@ function groupgrade_admin_menu_output_alter(&$content) {
 
 function groupgrade_test_form()
 {
-
-  $asec = AssignmentSection::find(3);
-  var_dump(WorkflowManager::checkAssignment($asec));
+  var_dump(WorkflowManager::checkAssignments());
   var_dump(WorkflowManager::checkTaskInstances());
   exit;
   //return '';
