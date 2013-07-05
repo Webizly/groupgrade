@@ -4,10 +4,9 @@ return array(
   // Administrator
   //==================
   'admin/pla' => array(
-    'type' => MENU_NORMAL_ITEM,
     'title' => 'PLA Learning Method',
-    'page callback' => 'groupgrade_admin_dash',
-    'file' => 'Admin.php',
+    'page callback' => 'groupgrade_organization_main',// 'groupgrade_admin_dash',
+    'file' => 'Organization.php',// 'Admin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     //'access callback' => TRUE,
@@ -18,14 +17,14 @@ return array(
 
     'menu_name' => 'primary-links'
   ),
-
+  /*
   // /class/
   'admin/pla/default' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Dashboard',
     'weight' => 1,
   ),
-
+  
   // Organization MGMT
   'admin/pla/organization' => array(
     'type' => MENU_LOCAL_TASK,
@@ -40,6 +39,7 @@ return array(
     // entries, allowing us to get our tabs in the order we want.
     'weight' => 2,
   ),
+  */
   'admin/pla/organization/new' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Create New Organization',
