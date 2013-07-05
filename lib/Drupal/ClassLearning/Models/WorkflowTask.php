@@ -294,6 +294,7 @@ class WorkflowTask extends ModelBase {
   public function complete()
   {
     // Update the status
+    $this->end = Carbon::now()->toDateTimeString();
     $this->status = 'complete';
     $this->save();
   }

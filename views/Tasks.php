@@ -41,13 +41,13 @@ function groupgrade_tasks_view_specific($specific = '') {
 
     // All/completed tasks
     default :
-      $headers = array('Assignment', 'Task', 'Problem', 'Date Completed');
+      $headers = array('Assignment', 'Task', /*'Problem',*/ 'Date Completed');
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
         $rowt = [];
         $rowt[] = $task->assignment()->first()->assignment_title;
         $rowt[] = $task->type;
-        $rowt[] = '';
+        //$rowt[] = '';
         $rowt[] = $task->end;
 
         $rows[] = $rowt;
