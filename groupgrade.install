@@ -553,6 +553,11 @@ $schema['pla_workflow'] = array(
       'type' => 'varchar',
     'mysql_type' => 'datetime','not null' => FALSE,
     ),
+    'data' => array(
+      'description' => 'Data about the workflow (grade, feedback etc.)',
+      'type' => 'blob',
+      'not null' => false,
+    ),
   ),
   'primary key' => array('workflow_id'),
   'indexes' => array(

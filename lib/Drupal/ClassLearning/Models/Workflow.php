@@ -17,4 +17,31 @@ class Workflow extends ModelBase {
   {
     return $this->belongsTo('Drupal\ClassLearning\Models\AssignmentSection', 'assignment_id');
   }
+
+  // ============================
+  // Mutators
+  // ============================
+  public function getDataAttribute($value)
+  {
+    if ($value == '') return [];
+    return json_decode($value, TRUE);
+  }
+
+  public function setDataAttribute($value)
+  {
+    $this->attributes['data'] = json_encode($value);
+  }
+
+  /**
+   * Set a Data point
+   * 
+   * @param string Key
+   * @param mixed Value
+   */
+  public function setData($key, $value = NULL)
+  {
+    $data = $this->data;
+    $data[$key] = $value;
+    $this->data = $data;
+  }
 }
