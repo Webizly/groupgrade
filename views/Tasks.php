@@ -135,7 +135,7 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     ];
     $items['edited problem'] = [
       '#type' => 'item',
-      '#markup' => nl2br($params['task']->data[')problem'],
+      '#markup' => nl2br($params['task']->data['problem']),
     ];
 
     return $items;
