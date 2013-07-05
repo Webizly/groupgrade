@@ -271,7 +271,8 @@ class WorkflowTask extends ModelBase {
     // Update the status
     $this->status = 'triggered';
     $this->start = Carbon::now()->toDateTimeString();
-
+    $this->force_end = $this->timeoutTime()->toDateTimeString();
+    
     // Notify user
     WorkflowManager::notifyUser('triggered', $this);
 
@@ -322,7 +323,7 @@ class WorkflowTask extends ModelBase {
   public static function queryByStatus($user, $status = 'pending')
   {
     $query = self::where('user_id', '=', $user)
-      ->orderBy('force_end', 'asc');
+      ->orderBy('end', 'desc');
 
     switch ($status)
     {
