@@ -76,6 +76,10 @@ class InternalCallback {
     $average = array_sum($index)/count($index);
 
     $task->setData('value', $average);
+
+    // Update the workflow
+    $workflow = $task->workflow()->first();
+    $workflow->setSetting('grade', $average);
     
     return $task->complete();
   }
