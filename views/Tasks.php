@@ -75,7 +75,7 @@ function groupgrade_view_task($task_id, $action = 'default')
 
   $task = Task::find($task_id);
 
-  if ($task == NULL OR (int) $task->user_id !== (int) $user->uid)
+  if ($task == NULL OR (int) $task->user_id !== (int) $user->uid OR $task->status == 'not triggered')
     return drupal_not_found();
 
   // Related Information
@@ -102,7 +102,7 @@ function groupgrade_view_task($task_id, $action = 'default')
       ->first();
   }
   
-  if ($task->type == 'grade solution')
+  if ($task->type == 'grade solution' OR ($task->type == 'dispute'))
   {
     $params['solution'] = Task::where('workflow_id', '=', $task->workflow_id)
       ->whereType('create solution')
@@ -113,6 +113,13 @@ function groupgrade_view_task($task_id, $action = 'default')
   {
     $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
       ->whereType('edit problem')
+      ->first();
+  }
+
+  if ($task->type == 'dispute')
+  {
+    $params['grade'] = Task::where('workflow_id', '=', $task->workflow_id)
+      ->whereType('grades ok')
       ->first();
   }
 
@@ -404,3 +411,61 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   if (! $save)
     return drupal_goto('class/default/completed');
 }
+
+/**
+ * Dispute
+ */
+function gg_task_dispute_form($form, &$form_state, $params)
+{
+  $items = [];
+  $items[] = [
+    '#markup' => '<h3>'.t('Grade Recieved').': '.$params['grade']->data['value'].'%',
+  ];
+  $items[] = [
+    '#markup' => '<h4>Problem:</h4>'
+    .'<p>'.nl2br($params['problem']->data['problem']).'</p>'
+  ];
+
+  $items[] = [
+    '#markup' => '<h4>Solution:</h4>'
+    .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
+  ];
+
+  if (! $params['edit']) :
+    $items[] = [
+      '#markup' => '<p>You already opted to <strong>'.(($params['task']->data['value']) ? 'dispute' : 'not dispute').'</strong>.</p>'
+    ];
+    return $items;
+  endif;
+
+  $items[] = [
+    '#markup' => '<p>Would you like to dispute this grade?</p>',
+  ];
+
+  $items['dispute'] = [
+    '#type' => 'submit',
+    '#value' => 'Dispute',
+  ];
+  $items['no-dispute'] = [
+    '#type' => 'submit',
+    '#value' => 'Do Not Dispute',
+  ];
+  return $items;
+}
+
+function gg_task_dispute_form_submit($form, &$form_state)
+{
+  $params = $form_state['build_info']['args'][0];
+  $task = $params['task'];
+
+  if (! $form_state['build_info']['args'][0]['edit'])
+    return drupal_not_found();
+
+  $dispute = ($form_state['clicked_button']['#id'] == 'edit-dispute') ? true : false;
+  $task->setData('value', $dispute);
+  $task->complete();
+
+  drupal_set_message(t('Your selection has been submitted.'));
+  return drupal_goto('class/default/completed');
+}
+
