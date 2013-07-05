@@ -35,7 +35,7 @@ function groupgrade_class_view($id)
     );
   endforeach; endif;
   $return .= theme('table', array(
-    'header' => array('Section Name', 'Description', 'Students', 'Semester'),
+    'header' => array('Section Name', 'Description', 'Users', 'Semester'),
     'rows' => $rows,
     'attributes' => array('width' => '100%'),
     'empty' => 'No sections found.'
