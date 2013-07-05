@@ -8,7 +8,7 @@
 namespace Drupal\ClassLearning\Workflow;
 
 use Drupal\ClassLearning\Models\WorkflowTask,
-  Drupal\ClassLearning\Exception;
+  Drupal\ClassLearning\Exception as CallbackException;
 
 /**
  * Internal Callback Class
@@ -60,9 +60,26 @@ class InternalCallback {
    */
   public static function grades_ok(WorkflowTask $task)
   {
+    if (! isset($task->settings['reference task']))
+      throw new CallbackException('Workflow task grades_ok does not have reference task.');
 
+    // Get the grades
+    $tasks = WorkflowTask::where('workflow_id', '=', $task->workflow_id)
+      ->whereType($task->settings['reference task'])
+      ->get();
+
+    $index = [];
+
+    foreach ($tasks as $it)
+      $index[] = (int) $it->data['grade'];
+
+    $average = array_sum($index)/count($index);
+
+    $task->setData('value', $average);
+    
+    return $task->complete();
   }
-  
+
   /**
    * Unknown method handler
    *

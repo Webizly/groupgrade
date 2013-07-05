@@ -60,7 +60,7 @@ class Manager {
   {
     if ($task->triggerConditionsAreMet())
       $task->trigger();
-    
+
     if ($task->expireConditionsAreMet())
       $task->expire();
   }
@@ -394,6 +394,8 @@ class Manager {
             'compare value' => true,
           ]
         ],
+
+        'reference task' => 'grade solution',
         
         // Expire if grades are out of range
         'expire' => [
