@@ -8,6 +8,8 @@ use Drupal\ClassLearning\Models\Course;
  */
 function groupgrade_class_view($id)
 {
+  global $user;
+
   $course = Course::find($id);
   if ($course == NULL) return drupal_not_found();
   $sections = $course->sections()->get();
@@ -20,6 +22,9 @@ function groupgrade_class_view($id)
 
   $rows = array();
   if (count($sections) > 0) : foreach($sections as $section) :
+    if (! gg_has_role_in_section('instructor', $section->section_id) AND ! user_access('administer'))
+      continue;
+
     $semester = $section->semester()->first();
 
     $rows[] = array(
