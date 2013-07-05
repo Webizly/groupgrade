@@ -202,6 +202,16 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#required' => true
   );
 
+  $items['start-now'] = [
+    '#type' => 'checkbox',
+    '#title' => 'Start Now',
+    '#default_value' => 'yes'
+  ];
+
+  $items['start info'] = [
+    '#markup' => '<p>or specify the start time below</p>',
+  ];
+
   $items['start-date'] = array(
     '#type' => 'date_select',
 
@@ -212,7 +222,6 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     // The minute increment.
     '#date_increment' => '15',
     '#default_value' => '',
-    '#required' => TRUE,
   );
 
 
@@ -237,8 +246,28 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   $s = new AssignmentSection;
   $s->assignment_id = (int) $form['assignment_id']['#value'];
   $s->section_id = (int) $section;
-  $s->asec_start = sprintf('%d-%d-%d %d:%d:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
-  $s->save();
+
+  foreach (['year', 'month', 'day', 'hour', 'minute'] as $i) :
+    if ($start[$i] == '')
+      $start[$i] = '00';
+    elseif ((int) $start[$i] < 9)
+      $start[$i] = '0'.intval($start[$i]);
+    else
+      $start[$i] = (string) $start[$i];
+
+    if ($i == 'year' AND intval($start[$i]) == 0)
+      $start[$i] = '0000';
+  endforeach;
+
+  if ($form['start-now']['#checked'])
+    $s->asec_start = Carbon\Carbon::now()->toDayDateTimeString();
+  else
+    $s->asec_start = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
+
+  if ($s->asec_start == '0000-00-00 00:00:00')
+    return drupal_set_message(t('Start time not specified.'), 'error');
+  else
+    $s->save();
 
   return drupal_set_message(sprintf('Added assignment section %d to section %d', $s->asec_id, $section));
 }
