@@ -64,6 +64,9 @@ class Manager {
    */
   public static function notifyUser($event, &$task)
   {
+    // Nobody to notify
+    if ($task->user_id == NULL) return;
+
     // Determine a few things
     $subject = $body = '';
     $user = user_load($task->user_id);
@@ -321,6 +324,8 @@ class Manager {
             'task status' => 'complete',
           ],
         ],
+
+        'reference task' => 'create problem',
       ],
 
       'create solution' => [
@@ -332,6 +337,8 @@ class Manager {
             'task status' => 'complete',
           ],
         ],
+
+        'reference task' => 'edit problem',
       ],
 
       'grade solution' => [
@@ -344,6 +351,8 @@ class Manager {
             'task status' => 'complete',
           ],
         ],
+
+        'reference task' => 'create solution',
       ],
 
       // Resolve the grades
@@ -361,6 +370,8 @@ class Manager {
             'task status' => 'complete',
           ],
         ],
+
+        'reference task' => 'grade solution',
       ],
 
       // Grades are fine, store them in the workflow
@@ -410,6 +421,8 @@ class Manager {
             'range' => 15,
           ]
         ],
+
+        'reference task' => 'create solution',
       ],
 
       // Dispute grades
