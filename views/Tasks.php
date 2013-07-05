@@ -135,7 +135,7 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     ];
     $items['edited problem'] = [
       '#type' => 'item',
-      '#markup' => $params['task']->data['problem'],
+      '#markup' => nl2br($params['task']->data[')problem'],
     ];
 
     return $items;
@@ -193,7 +193,7 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
 
   $items = [];
   $items['original problem'] = [
-    '#markup' => '<p><strong>Original Problem:</strong></p><p>'.$params['previous task']->data['problem'].'</p><hr />'
+    '#markup' => '<p><strong>Original Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
   ];
 
   if (! $params['edit']) :
@@ -202,7 +202,7 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     ];
     $items['edited problem'] = [
       '#type' => 'item',
-      '#markup' => $problem,
+      '#markup' => nl2br($problem),
     ];
 
     return $items;
@@ -260,7 +260,7 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 
   $items = [];
   $items['original problem'] = [
-    '#markup' => '<p><strong>Problem:</strong></p><p>'.$params['previous task']->data['problem'].'</p><hr />'
+    '#markup' => '<p><strong>Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
   ];
 
   if (! $params['edit']) :
@@ -269,7 +269,7 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     ];
     $items['problem'] = [
       '#type' => 'item',
-      '#markup' => $problem,
+      '#markup' => nl2br($problem),
     ];
 
     return $items;
@@ -327,10 +327,10 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items = [];
   $items['problem'] = [
-    '#markup' => '<h4>Problem</h4><p>'.$problem->data['problem'].'</p><hr />',
+    '#markup' => '<h4>Problem</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
   ];
   $items['solution'] = [
-    '#markup' => '<h4>Solution</h4><p>'.$solution->data['solution'].'</p><hr />',
+    '#markup' => '<h4>Solution</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
 
   if (! $params['edit']) :
@@ -347,7 +347,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     ];
     $items['justice'] = [
       '#type' => 'item',
-      '#markup' => $task->data['justification'],
+      '#markup' => nl2br($task->data['justification']),
     ];
 
     return $items;
