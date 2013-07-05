@@ -27,7 +27,7 @@ return array(
     'file' => 'Classes.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
+    'page arguments' => array(),
     'access callback' => TRUE,
 
     'weight' => 3,
@@ -40,7 +40,7 @@ return array(
     'file' => 'Assignments.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page arguments' => array(t('This is the tab "@tabname" in the "basic tabs" example', array('@tabname' => $tabname))),
+    'page arguments' => array(),
     'access callback' => TRUE,
 
     'weight' => 4,

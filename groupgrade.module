@@ -290,8 +290,8 @@ function gg_has_acl_role($role) {
     'uid' => $user->uid,
     'role' => $role
   ))->fetchField();
-  
-  if ($select !== FALSE AND $select !== NULL)
+
+  if ((int) $select > 0)
     return TRUE;
   else
     return FALSE;
