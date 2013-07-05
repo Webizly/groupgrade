@@ -7,7 +7,8 @@
  */
 namespace Drupal\ClassLearning\Workflow;
 
-use Drupal\ClassLearning\Models\WorkflowTask;
+use Drupal\ClassLearning\Models\WorkflowTask,
+  Drupal\ClassLearning\Exception;
 
 /**
  * Internal Callback Class
@@ -26,8 +27,32 @@ class InternalCallback {
    */
   public static function resolve_grades(WorkflowTask $task)
   {
-    var_dump($task);
-    exit;
+    if (! isset($task->settings['reference task']))
+      throw new CallbackException('Workflow task resolve_grades does not have reference task.');
+
+    // Get the grades
+    $tasks = WorkflowTask::where('workflow_id', '=', $task->workflow_id)
+      ->whereType($task->settings['reference task'])
+      ->get();
+
+    $num = -1;
+    $range = (isset($task->settings['resolve range'])) ? (int) $task->settings['resolve range'] : 15;
+
+    foreach ($tasks as $it) :
+      if ($num === -1) :
+        $num = (int) $it->data['grade'];
+      else :
+        if (abs($num-(int) $it->data['grade']) > $range)
+        {
+          // Not in range
+          $task->setData('value', false);
+          return $task->complete();
+        }
+      endif;
+    endforeach;
+
+    $task->setData('value', true);
+    return $task->complete();
   }
 
   /**

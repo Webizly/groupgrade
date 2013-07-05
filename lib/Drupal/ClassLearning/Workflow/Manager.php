@@ -379,22 +379,18 @@ class Manager {
         'internal' => true,
         'trigger' => [
           [
-            'type' => 'value of task in range',
+            'type' => 'compare value of task',
             'task type' => 'resolve grades',
-
-            // Range of 15 points
-            'range' => 15,
+            'compare value' => true,
           ]
         ],
         
         // Expire if grades are out of range
         'expire' => [
           [
-            'type' => 'value of task out of range',
+            'type' => 'compare value of task',
             'task type' => 'resolve grades',
-
-            // Range of 15 points
-            'range' => 15,
+            'compare value' => false,
           ]
         ],
       ],
@@ -403,22 +399,18 @@ class Manager {
       'resolution grader' => [
         'trigger' => [
           [
-            'type' => 'value of task out of range',
+            'type' => 'compare value of task',
             'task type' => 'resolve grades',
-
-            // Range of 15 points
-            'range' => 15,
+            'compare value' => false,
           ]
         ],
 
         // Expire if grades are in range
         'expire' => [
           [
-            'type' => 'value of task in range',
+            'type' => 'compare value of task',
             'task type' => 'resolve grades',
-
-            // Range of 15 points
-            'range' => 15,
+            'compare value' => true,
           ]
         ],
 

@@ -201,7 +201,8 @@ class WorkflowTask extends ModelBase {
         // FALSE == NULL
         if ($value !== $condition['compare value'])
           return FALSE;
-
+        else
+          return TRUE;
         break;
 
       // See if a certain time has elapsed since this task was triggered
@@ -277,11 +278,11 @@ class WorkflowTask extends ModelBase {
     // Notify user
     WorkflowManager::notifyUser('triggered', $this);
 
+    //$this->save();
+
     // Lastly, the callback
     $callbackName = str_replace(' ', '_', $this->type);
     InternalCallback::$callbackName($this);
-
-    $this->save();
   }
 
   /**
@@ -375,6 +376,31 @@ class WorkflowTask extends ModelBase {
     $this->attributes['data'] = json_encode($value);
   }
 
+  /**
+   * Set a Data point
+   * 
+   * @param string Key
+   * @param mixed Value
+   */
+  public function setData($key, $value = NULL)
+  {
+    $data = $this->data;
+    $data[$key] = $value;
+    $this->data = $data;
+  }
+
+  /**
+   * Set a Setting
+   * 
+   * @param string Key
+   * @param mixed Value
+   */
+  public function setSetting($key, $value = NULL)
+  {
+    $settings = $this->settings;
+    $settings[$key] = $value;
+    $this->settings = $settings;
+  }
 
   // =============================
   // Relations
