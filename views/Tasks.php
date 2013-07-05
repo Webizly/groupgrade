@@ -45,10 +45,12 @@ function groupgrade_tasks_view_specific($specific = '') {
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
         $rowt = [];
-        $rowt[] = $task->assignment()->first()->assignment_title;
+        $rowt[] = sprintf(
+        '<a href="%s">%s</a>',
+          url('class/task/'.$task->task_id), $task->assignment()->first()->assignment_title
+        );
         $rowt[] = $task->type;
-        //$rowt[] = '';
-        $rowt[] = $task->end;
+        $rowt[] = ($task->end == NULL) ? 'n/a' : gg_time_human($task->end);
 
         $rows[] = $rowt;
       endforeach; endif;
@@ -107,6 +109,8 @@ function groupgrade_view_task($task_id, $action = 'default')
       ->first();
   }
 
+  $params['edit'] = ($task->status == 'triggered' OR $task->status == 'started');
+
   $form = drupal_get_form('gg_task_'.str_replace(' ', '_', $task->type).'_form', $params);
   $return .= drupal_render($form);
   return $return;
@@ -117,6 +121,18 @@ function groupgrade_view_task($task_id, $action = 'default')
  */
 function gg_task_create_problem_form($form, &$form_state, $params) {
   $items = [];
+
+  if (! $params['edit']) :
+    $items['edited problem lb'] = [
+      '#markup' => '<strong>Submitted Problem:</strong>',
+    ];
+    $items['edited problem'] = [
+      '#type' => 'item',
+      '#markup' => $params['task']->data['problem'],
+    ];
+
+    return $items;
+  endif;
 
   $items['body'] = [
     '#type' => 'textarea',
@@ -141,6 +157,9 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
 function gg_task_create_problem_form_submit($form, &$form_state) {
   $task = $form_state['build_info']['args'][0]['task'];
 
+  if (! $form_state['build_info']['args'][0]['edit'])
+    return drupal_not_found();
+  
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
   $task->status = ($save) ? 'started' : 'completed';
@@ -170,6 +189,18 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     '#markup' => '<p><strong>Original Problem:</strong></p><p>'.$params['previous task']->data['problem'].'</p><hr />'
   ];
 
+  if (! $params['edit']) :
+    $items['edited problem lb'] = [
+      '#markup' => '<strong>Submitted Problem:</strong>',
+    ];
+    $items['edited problem'] = [
+      '#type' => 'item',
+      '#markup' => $problem,
+    ];
+
+    return $items;
+  endif;
+
   $items['body'] = [
     '#type' => 'textarea',
     '#required' => true,
@@ -192,6 +223,9 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
  */
 function gg_task_edit_problem_form_submit($form, &$form_state) {
   $task = $form_state['build_info']['args'][0]['task'];
+
+  if (! $form_state['build_info']['args'][0]['edit'])
+    return drupal_not_found();
 
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
@@ -245,6 +279,9 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 function gg_task_create_solution_form_submit($form, &$form_state) {
   $task = $form_state['build_info']['args'][0]['task'];
 
+  if (! $form_state['build_info']['args'][0]['edit'])
+    return drupal_not_found();
+  
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute(['solution' =>  $form['body']['#value']]);
   $task->status = ($save) ? 'started' : 'completed';
@@ -307,6 +344,9 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   $params = $form_state['build_info']['args'][0];
   $task = $params['task'];
 
+  if (! $form_state['build_info']['args'][0]['edit'])
+    return drupal_not_found();
+  
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute([
     'grade' =>  (int) $form['grade']['#value'],
