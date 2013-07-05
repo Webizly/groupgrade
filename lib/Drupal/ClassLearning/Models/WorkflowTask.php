@@ -3,7 +3,8 @@ namespace Drupal\ClassLearning\Models;
 use Illuminate\Database\Eloquent\Model as ModelBase,
   Drupal\ClassLearning\Exception as ModelException,
   Carbon\Carbon,
-  Drupal\ClassLearning\Workflow\Manager as WorkflowManager;
+  Drupal\ClassLearning\Workflow\Manager as WorkflowManager,
+  Drupal\ClassLearning\Workflow\InternalCallback;
 
 
 class WorkflowTask extends ModelBase {
@@ -275,6 +276,10 @@ class WorkflowTask extends ModelBase {
     
     // Notify user
     WorkflowManager::notifyUser('triggered', $this);
+
+    // Lastly, the callback
+    $callbackName = str_replace(' ', '_', $this->type);
+    InternalCallback::$callbackName($this);
 
     $this->save();
   }
