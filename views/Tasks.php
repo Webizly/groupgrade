@@ -109,6 +109,13 @@ function groupgrade_view_task($task_id, $action = 'default')
       ->first();
   }
 
+  if ($task->type == 'create solution')
+  {
+    $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+      ->whereType('edit problem')
+      ->first();
+  }
+  
   $params['edit'] = ($task->status == 'triggered' OR $task->status == 'started');
 
   $form = drupal_get_form('gg_task_'.str_replace(' ', '_', $task->type).'_form', $params);
