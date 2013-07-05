@@ -56,6 +56,14 @@ class InternalCallback {
   }
 
   /**
+   * Impliments hook for type "grades ok"
+   */
+  public static function grades_ok(WorkflowTask $task)
+  {
+
+  }
+  
+  /**
    * Unknown method handler
    *
    * @param void

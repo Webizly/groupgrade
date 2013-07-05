@@ -28,18 +28,25 @@ class Manager {
    * Checks on the non-trigger tasks to see if they should be
    * triggered to start.
    *
+   * Checks on the triggered to tasks to see if they should
+   * be expiring.
+   *
    * This is handled by the cron
    * 
    * @access public
    */
   public static function checkTaskInstances()
   {
-    $tasks = WorkflowTask::whereStatus('not triggered')
+    // Check expired
+    $tasksOngoing = WorkflowTask::whereIn('status', [
+        'not triggered', 'triggered', 'started',
+    ])
       ->get();
 
-    if (count($tasks) > 0) : foreach ($tasks as $task) :
-      self::checkTaskInstance($task);
-    endforeach; endif;
+    if (count($tasksOngoing) > 0) {
+      foreach ($tasksOngoing as $task)
+        self::checkTaskInstance($task);
+    }
   }
 
   /**
@@ -53,6 +60,9 @@ class Manager {
   {
     if ($task->triggerConditionsAreMet())
       $task->trigger();
+    
+    if ($task->expireConditionsAreMet())
+      $task->expire();
   }
 
   /**

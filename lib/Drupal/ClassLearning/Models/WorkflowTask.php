@@ -90,7 +90,7 @@ class WorkflowTask extends ModelBase {
    * @todo determine what to do if conditions are false
    * @return bool
    */
-  public function expirationConditionsAreMet()
+  public function expireConditionsAreMet()
   {
     $conditions = $this->getExpireConditions();
 
@@ -278,7 +278,7 @@ class WorkflowTask extends ModelBase {
     // Notify user
     WorkflowManager::notifyUser('triggered', $this);
 
-    //$this->save();
+    $this->save();
 
     // Lastly, the callback
     $callbackName = str_replace(' ', '_', $this->type);
@@ -292,6 +292,18 @@ class WorkflowTask extends ModelBase {
   {
     // Update the status
     $this->status = 'timed out';
+    $this->end = Carbon::now()->toDateTimeString();
+    $this->save();
+  }
+
+  /**
+   * Expire the task
+   */
+  public function expire()
+  {
+    // Update the status
+    $this->status = 'expired';
+    $this->end = Carbon::now()->toDateTimeString();
     $this->save();
   }
 
