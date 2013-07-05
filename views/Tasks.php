@@ -115,7 +115,7 @@ function groupgrade_view_task($task_id, $action = 'default')
       ->whereType('edit problem')
       ->first();
   }
-  
+
   $params['edit'] = ($task->status == 'triggered' OR $task->status == 'started');
 
   $form = drupal_get_form('gg_task_'.str_replace(' ', '_', $task->type).'_form', $params);
@@ -263,6 +263,18 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     '#markup' => '<p><strong>Problem:</strong></p><p>'.$params['previous task']->data['problem'].'</p><hr />'
   ];
 
+  if (! $params['edit']) :
+    $items['problem lb'] = [
+      '#markup' => '<strong>Submitted Solution:</strong>',
+    ];
+    $items['problem'] = [
+      '#type' => 'item',
+      '#markup' => $problem,
+    ];
+
+    return $items;
+  endif;
+
   $items['body'] = [
     '#type' => 'textarea',
     '#required' => true,
@@ -320,6 +332,27 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $items['solution'] = [
     '#markup' => '<h4>Solution</h4><p>'.$solution->data['solution'].'</p><hr />',
   ];
+
+  if (! $params['edit']) :
+    $items['grade lb'] = [
+      '#markup' => '<strong>Grade:</strong>',
+    ];
+    $items['grade'] = [
+      '#type' => 'item',
+      '#markup' => $task->data['grade'],
+    ];
+
+    $items['justice lb'] = [
+      '#markup' => '<strong>Grade Justification:</strong>',
+    ];
+    $items['justice'] = [
+      '#type' => 'item',
+      '#markup' => $task->data['justification'],
+    ];
+
+    return $items;
+  endif;
+
   $items['grade'] = [
     '#type' => 'textfield',
     '#title' => 'Grade (0-100)',
