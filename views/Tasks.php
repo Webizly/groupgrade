@@ -85,7 +85,7 @@ function groupgrade_view_task($task_id, $action = 'display')
     return drupal_not_found();
 
   if ($task->status !== 'complete' AND (int) $task->user_id !== (int) $user->uid)
-    drupal_not_found();
+    return drupal_not_found();
 
   $anon = ((int) $task->user_id !== (int) $user->uid AND ! user_access('administer')) ? TRUE : FALSE;
 
