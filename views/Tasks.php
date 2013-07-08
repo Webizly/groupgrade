@@ -619,9 +619,9 @@ function gg_view_workflow($workflow_id)
   return $return;
 }
 
-function gg_task_grades_ok_form($form, &$form_state) {
+function gg_task_grades_ok_form($form, &$form_state, $params) {
   $workflow = $params['task']->workflow()->first();
-  
+
   $items = [];
   $items['final grade'] = [
     '#markup' => sprintf('<p><strong>%s:</strong> %d%', t('Final Grade'), $workflow->data['grade']),
