@@ -60,7 +60,7 @@ function gg_view_assignment_listing($section_id, $asec_id)
     $rows[] = [sprintf(
       '<a href="%s">%s</a>',
       url('class/workflow/'.$t->workflow_id),
-      word_limiter($t->data['problem'], 10)
+      word_limiter($t->data['problem'], 20)
     )];
   endforeach; endif;
 
