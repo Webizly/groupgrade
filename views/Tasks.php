@@ -75,8 +75,14 @@ function groupgrade_view_task($task_id, $action = 'default')
 
   $task = Task::find($task_id);
 
-  if ($task == NULL OR (int) $task->user_id !== (int) $user->uid OR $task->status == 'not triggered')
+  // Permissions
+  if ($task == NULL OR ! in_array($task->status, ['triggered', 'started', 'complete']))
     return drupal_not_found();
+
+  if ($task->status !== 'complete' AND (int) $task->user_id !== (int) $user->uid)
+    drupal_not_found();
+
+  $anon = ((int) $task->user_id !== (int) $user->uid AND ! user_access('administer')) ? TRUE : FALSE;
 
   // Related Information
   $assignment = $task->assignment()->first();
@@ -89,7 +95,8 @@ function groupgrade_view_task($task_id, $action = 'default')
 
   $params = [];
   $params['task'] = $task;
-
+  $params['anon'] = $anon;
+  
   if ($task->type == 'edit problem')
   {
     $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
