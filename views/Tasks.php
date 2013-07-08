@@ -271,9 +271,8 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
  */
 function gg_task_create_solution_form($form, &$form_state, $params) {
   $problem = '';
-  $problem = $params['solution']->data['problem'];
-  var_dump($params);
-  exit;
+  $problem = $params['task']->data['problem'];
+
   $items = [];
 
   if ($params['action'] == 'display')
