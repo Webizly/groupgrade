@@ -607,7 +607,7 @@ function gg_view_workflow($workflow_id)
   $return .= '<p>'.nl2br($assignment->assignment_description).'</p><hr />';
 
   if (count($tasks) > 0) : foreach ($tasks as $task) :
-    if (isset($task->data['interna']) AND $task->data['internal'])
+    if (isset($task->data['internal']) AND $task->data['internal'])
       continue;
 
     
