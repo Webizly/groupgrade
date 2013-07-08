@@ -45,7 +45,6 @@ class Manager {
 
     if (count($tasksOngoing) > 0) {
       foreach ($tasksOngoing as $task) :
-        var_dump($task);
         self::checkTaskInstance($task);
       endforeach;
     }
@@ -60,6 +59,9 @@ class Manager {
    */
   public static function checkTaskInstance(WorkflowTask $task)
   {
+    if ($task->task_id == 193)
+      var_dump($task->triggerConditionsAreMet());
+
     if ($task->triggerConditionsAreMet())
       $task->trigger();
 
