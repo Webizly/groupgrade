@@ -607,7 +607,7 @@ function gg_view_workflow($workflow_id)
   $return .= '<p>'.nl2br($assignment->assignment_description).'</p><hr />';
 
   if (count($tasks) > 0) : foreach ($tasks as $task) :
-    if (isset($task->settings['internal']) AND $task->settings['internal'])
+    if ($task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
       continue;
 
 
@@ -617,5 +617,14 @@ function gg_view_workflow($workflow_id)
   drupal_set_title('View Workflow: '.$workflow_id);
 
   return $return;
+}
 
+function gg_task_grades_ok_form($form, &$form_state) {
+  $workflow = $params['task']->workflow()->first();
+  
+  $items = [];
+  $items['final grade'] = [
+    '#markup' => sprintf('<p><strong>%s:</strong> %d%', t('Final Grade'), $workflow->data['grade']),
+  ];
+  return $items;
 }
