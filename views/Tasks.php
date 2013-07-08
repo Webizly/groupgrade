@@ -194,7 +194,7 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
   drupal_set_message(sprintf('Problem %s.', ($save) ? 'saved' : 'completed'));
 
   if (! $save)
-    return drupal_goto('class/default/completed');
+    return drupal_goto('class');
 }
 
 /**
@@ -263,7 +263,7 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
   drupal_set_message(sprintf('Edited problem %s.', ($save) ? 'saved' : 'completed'));
 
   if (! $save)
-    return drupal_goto('class/default/completed');
+    return drupal_goto('class');
 }
 
 /**
@@ -327,7 +327,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   drupal_set_message(sprintf('Solution %s.', ($save) ? 'saved' : 'completed'));
 
   if (! $save)
-    return drupal_goto('class/default/completed');
+    return drupal_goto('class');
 }
 
 /**
@@ -419,7 +419,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   drupal_set_message(sprintf('Grade %s.', ($save) ? 'saved' : 'submitted'));
 
   if (! $save)
-    return drupal_goto('class/default/completed');
+    return drupal_goto('class');
 }
 
 /**
@@ -476,7 +476,7 @@ function gg_task_dispute_form_submit($form, &$form_state)
   $task->complete();
 
   drupal_set_message(t('Your selection has been submitted.'));
-  return drupal_goto('class/default/completed');
+  return drupal_goto('class');
 }
 
 
@@ -574,7 +574,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
     // Save to the workflow
     $params['workflow']->setData('grade', $grade);
 
-    return drupal_goto('class/default/completed');
+    return drupal_goto('class');
   endif;
 }
 
@@ -717,5 +717,5 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   drupal_set_message(sprintf('Grade %s.', ($save) ? 'saved' : 'submitted'));
 
   if (! $save)
-    return drupal_goto('class/default/completed');
+    return drupal_goto('class');
 }
