@@ -92,5 +92,6 @@ class InternalCallback {
   public static function __callStatic($name, $arguments = [])
   {
     // Ignore...
+    echo sprintf('No callback function for %s \n', $name);
   }
 }
