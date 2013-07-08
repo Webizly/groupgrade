@@ -402,6 +402,49 @@ function gg_in_section($section_id)
   ) ? TRUE : FALSE;
 }
 
+
+/**
+ * CodeIgniter Text Helpers
+ *
+ * @package   CodeIgniter
+ * @subpackage  Helpers
+ * @category  Helpers
+ * @author    EllisLab Dev Team
+ * @link    http://codeigniter.com/user_guide/helpers/text_helper.html
+ */
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('word_limiter'))
+{
+  /**
+   * Word Limiter
+   *
+   * Limits a string to X number of words.
+   *
+   * @param string
+   * @param int
+   * @param string  the end character. Usually an ellipsis
+   * @return  string
+   */
+  function word_limiter($str, $limit = 100, $end_char = '&#8230;')
+  {
+    if (trim($str) === '')
+    {
+      return $str;
+    }
+
+    preg_match('/^\s*+(?:\S++\s*+){1,'.(int) $limit.'}/', $str, $matches);
+
+    if (strlen($str) === strlen($matches[0]))
+    {
+      $end_char = '';
+    }
+
+    return rtrim($matches[0]).$end_char;
+  }
+}
+
 /**
  * Impliments hook_cron()
  */
