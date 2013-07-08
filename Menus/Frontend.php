@@ -59,6 +59,19 @@ return array(
 
   ),
 
+  'class/workflow/%' => array(
+    //'type' => MENU_LOCAL_TASK,
+    'title' => 'View Workflow',
+    'page callback' => 'gg_view_workflow',
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(2),
+    'access callback' => true,
+    'access arguments' => array(2),
+
+  ),
+
   'class/default/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Pending',

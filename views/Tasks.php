@@ -67,13 +67,18 @@ function groupgrade_tasks_view_specific($specific = '') {
 
 /**
  * View a specific task
- * 
+ *
+ * @param int Task ID
+ * @param string How to display it (default = everything, overview = Just submitted data, no other info)
  */
-function groupgrade_view_task($task_id, $action = 'default')
+function groupgrade_view_task($task_id, $action = 'display')
 {
   global $user;
 
-  $task = Task::find($task_id);
+  if (is_object($task_id))
+    $task = $task_id;
+  else
+    $task = Task::find($task_id);
 
   // Permissions
   if ($task == NULL OR ! in_array($task->status, ['triggered', 'started', 'complete']))
@@ -90,13 +95,16 @@ function groupgrade_view_task($task_id, $action = 'default')
   $return = '';
   drupal_set_title(t(sprintf('%s: %s', ucwords($task->type), $assignment->assignment_title)));
 
-  $return .= sprintf('<p class="summary">%s</p>', $assignment->assignment_description);
-  $return .= '<p><strong>'.ucwords($task->type).'</strong></p>';
+  if ($action == 'display') :
+    $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
+    $return .= '<p><strong>'.ucwords($task->type).'</strong></p>';
+  endif;
 
   $params = [];
   $params['task'] = $task;
   $params['anon'] = $anon;
-  
+  $params['action'] = $action;
+
   if ($task->type == 'edit problem')
   {
     $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
@@ -200,13 +208,15 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     $problem = $params['task']->data['problem'];
 
   $items = [];
-  $items['original problem'] = [
-    '#markup' => '<p><strong>Original Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
-  ];
+
+  if ($params['action'] == 'display')
+    $items['original problem'] = [
+      '#markup' => '<p><strong>Original Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
+    ];
 
   if (! $params['edit']) :
     $items['edited problem lb'] = [
-      '#markup' => '<strong>Submitted Problem:</strong>',
+      '#markup' => '<strong>Submitted Edited Problem:</strong>',
     ];
     $items['edited problem'] = [
       '#type' => 'item',
@@ -267,9 +277,11 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     $problem = $params['task']->data['problem'];
 
   $items = [];
-  $items['original problem'] = [
-    '#markup' => '<p><strong>Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
-  ];
+
+  if ($params['action'] == 'display')
+    $items['original problem'] = [
+      '#markup' => '<p><strong>Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
+    ];
 
   if (! $params['edit']) :
     $items['problem lb'] = [
@@ -571,4 +583,35 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 
     return drupal_goto('class/default/completed');
   endif;
+}
+
+/**
+ * View a workflow
+ * @param int
+ */
+function gg_view_workflow($workflow_id)
+{
+  $workflow = Workflow::find($workflow_id);
+  if ($workflow == NULL) return drupal_not_found();
+
+  $tasks = $workflow->tasks()
+    ->whereStatus('complete')
+    ->get();
+
+  $return = '';
+
+  $assignment = $workflow->assignmentSection()->first()
+    ->assignment()->first();
+
+  $return .= '<p class="summary">'.t('Assignment: ').$assignment->assignment_title.'</p>';
+  $return .= '<p>'.nl2br($assignment->assignment_description).'</p><hr />';
+
+  if (count($tasks) > 0) : foreach ($tasks as $task) :
+    $return .= groupgrade_view_task($task, 'overview');
+  endforeach; endif;
+
+  drupal_set_title('View Workflow: '.$workflow_id);
+
+  return $return;
+
 }

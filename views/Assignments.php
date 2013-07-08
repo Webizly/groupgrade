@@ -59,7 +59,7 @@ function gg_view_assignment_listing($section_id, $asec_id)
   if (count($createProblems) > 0) : foreach ($createProblems as $t) :
     $rows[] = [sprintf(
       '<a href="%s">%s</a>',
-      url('class/task/'.$t->task_id),
+      url('class/workflow/'.$t->workflow_id),
       word_limiter($t->data['problem'], 10)
     )];
   endforeach; endif;
