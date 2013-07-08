@@ -80,8 +80,10 @@ class InternalCallback {
     // Update the workflow
     $workflow = $task->workflow()->first();
     var_dump($workflow);
-    $workflow->setSetting('grade', $average);
-    
+    $workflow->setData('grade', $average);
+    $workflow->save();
+    var_dump($workflow);
+
     return $task->complete();
   }
 
