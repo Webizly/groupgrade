@@ -3,6 +3,7 @@ namespace Drupal\ClassLearning\Models;
 use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Section,
   Drupal\ClassLearning\Models\Semester,
+  Drupal\ClassLearning\Models\AssignmentSection,
   Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
@@ -124,5 +125,29 @@ class User {
       ->join('section', 'section.section_id', '=', 'section_user.section_id')
       ->where('su_role', '=', $role)
       ->select(array('section_user.su_role', 'section_user.su_status', 'section.*'));
+  }
+
+  /**
+   * Get a user's assignments they're apart of
+   *
+   * 
+   */
+  public static function assignedAssignments()
+  {
+    return AssignmentSection::whereIn('assignment_section.section_id', function($query)
+    {
+      global $user;
+
+      $query->select('section_id')
+        ->from('section_user')
+        ->where('user_id', '=', $user->uid);
+    })
+    ->join('assignment', 'assignment.assignment_id', '=', 'assignment_section.assignment_id')
+    ->join('section', 'assignment_section.section_id', '=', 'section.section_id')
+    ->join('course', 'course.course_id', '=', 'section.course_id')
+    ->select('assignment.*', 'assignment_section.asec_id', 'assignment_section.section_id', 'assignment_section.asec_start')
+    ->addSelect('section.course_id', 'section.section_name')
+    ->addSelect('course.*')
+    ->orderBy('assignment_section.asec_start', 'desc');
   }
 }
