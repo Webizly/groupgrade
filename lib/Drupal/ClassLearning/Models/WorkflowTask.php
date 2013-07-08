@@ -77,7 +77,7 @@ class WorkflowTask extends ModelBase {
     if ($conditions == NULL) return FALSE;
 
     foreach ($conditions as $condition) {
-      if ($this->task_id = 193 AND ! $this->conditionMet($Condition))
+      if ($this->task_id = 193 AND ! $this->conditionMet($condition))
         var_dump($condition);
 
       if (! $this->conditionMet($condition))
