@@ -366,6 +366,43 @@ function groupgrade_carbon_span(Carbon\Carbon $time)
 }
 
 /**
+ * See if a user can access an assignment in a section
+ *
+ * @param int section id
+ * @param int asec_id
+ */
+function gg_can_access_asec($section_id, $asec_id)
+{
+  global $user_id;
+
+  $count = AssignmentSection::whereIn('assignment_section.section_id', function($query)
+  {
+    global $user;
+
+    $query->select('section_id')
+      ->from('section_user')
+      ->where('user_id', '=', $user->uid);
+  });
+}
+
+/**
+ * Is a user in a section?
+ * 
+ * @param integer section id
+ * @return bool
+ */
+function gg_in_section($section_id)
+{
+  global $user;
+
+  return (
+    SectionUsers::where('user_id', '=', $user->uid)
+    ->where('section_id', '=', $section_id)
+    ->count() > 0
+  ) ? TRUE : FALSE;
+}
+
+/**
  * Impliments hook_cron()
  */
 function groupgrade_cron() {

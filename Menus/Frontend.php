@@ -46,6 +46,19 @@ return array(
     'weight' => 4,
   ),
 
+  'class/assignments/%/%' => array(
+    //'type' => MENU_LOCAL_TASK,
+    'title' => 'View Assignment',
+    'page callback' => 'gg_view_assignment_listing',
+    'file' => 'Assignments.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(2, 3),
+    'access callback' => true,
+    'access arguments' => array(2),
+
+  ),
+
   'class/default/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Pending',
