@@ -703,14 +703,16 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
     'justification' => $form['justification']['#value']
   ]);
 
-  $workflow = $task->workflow()->first();
-  $workflow->setData('grade', $grade);
-
   $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
-  if (! $save)
+  if (! $save) :
     $task->complete();
+
+    $workflow = $task->workflow()->first();
+    $workflow->setData('grade', $grade);
+    $workflow->save();
+  endif;
   
   drupal_set_message(sprintf('Grade %s.', ($save) ? 'saved' : 'submitted'));
 
