@@ -181,7 +181,7 @@ return array(
     'access arguments' => array(2),
     'access callback' => true,
   ),
-
+  /*
   'class/task/%/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 1,
@@ -202,7 +202,7 @@ return array(
     'access callback' => true,
     'weight' => 2,
   ),
-
+  */
   // =================================
   // Instructor Mgmt
   // =================================
