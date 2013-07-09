@@ -35,7 +35,7 @@ return array(
 
   'class/assignments' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Assignments',
+    'title' => 'Everyone\'s Work',
     'page callback' => 'groupgrade_assignments_dashboard',
     'file' => 'Assignments.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',

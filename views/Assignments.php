@@ -64,10 +64,15 @@ function gg_view_assignment_listing($section_id, $asec_id)
     )];
   endforeach; endif;
 
-  return theme('table', array(
+  $return = '';
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, 'Back to Assignment List');
+  
+  $return .= theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
     'empty' => 'No problems found.',
     'attributes' => array('width' => '100%')
   ));
+
+  return $return;
 }
