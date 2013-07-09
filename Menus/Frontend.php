@@ -307,6 +307,20 @@ return array(
     'access arguments' => array('section-instructor'),
   ),
 
+   'class/instructor/assignments/%/remove-section/%' => array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Remove Section',
+    
+    'file' => 'AssignmentAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_remove_assignment_section', 3, 5),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+  ),
+
   'class/instructor/assignments/%/add-section' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Add Section',

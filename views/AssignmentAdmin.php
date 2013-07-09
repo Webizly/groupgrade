@@ -103,7 +103,9 @@ function groupgrade_view_assignment($id) {
   if (count($sections) > 0) : foreach($sections as $section) :
 
     $rows[] = array($section->section_name, gg_time_human($section->asec_start),
-        '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$section->asec_id).'">Edit</a>');
+        '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$section->asec_id).'">Edit</a>'
+        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$section->asec_id).'">Delete</a>'
+      );
   endforeach; endif;
 
   $return .= theme('table', array(
@@ -272,7 +274,6 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   return drupal_set_message(sprintf('Added assignment section %d to section %d', $s->asec_id, $section));
 }
 
-
 /**
  * Edit a section on an assignment
  */
@@ -318,7 +319,6 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
   return $items;
 }
 
-
 function groupgrade_edit_assignment_section_submit($form, &$form_state)
 {
   $section = (int) $form['asec_id']['#value'];
@@ -331,4 +331,64 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
   $section->save();
 
   return drupal_set_message(sprintf('Updated assignment section %d on section %d', $section->asec_id, $section->section_id));
+}
+
+/**
+ * Remove a section from an assignment
+ */
+function groupgrade_remove_assignment_section($form, &$form_state, $assignment, $section)
+{
+  global $user;
+  $section = AssignmentSection::find($section);
+  if ($section == NULL) return drupal_not_found();
+
+  $items = array();
+  $items['m'] = array(
+    '#markup' => '<p><a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment</a></p>',
+  );
+
+  $items[] = [
+    '#markup' => '<p>Are you <strong>sure</strong> you want to remove this assignment from the section? It is irreversible!</p>'
+  ];
+
+  $items['assignment_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $assignment
+  );
+
+  $items['asec_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $section->asec_id
+  );
+
+  $items['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Remove Assignment from Section'),
+  );
+  return $items;
+}
+
+function groupgrade_remove_assignment_section_submit($form, &$form_state)
+{
+  // Remove everything
+  $asec_id = $form['asec_id']['#value'];
+  $assignment_id = $form['assignment_id']['#value'];
+
+  $workflows = Drupal\ClassLearning\Models\Workflow::where('assignment_id', '=', $asec_id)
+    ->get();
+
+  $asec = Drupal\ClassLearning\Models\AssignmentSection::find($asec_id);
+  if ($asec == NULL)
+    return drupal_not_found();
+
+  if (count($workflows) > 0) : foreach ($workflows as $workflow) :
+    $workflow->tasks()->delete();
+
+    $workflow->delete();
+  endforeach; endif;
+
+  $asec->delete();
+  
+  drupal_set_message(t('Assignment Section and all related tasks/workflows deleted.'));
+  return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
 }
