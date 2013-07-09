@@ -9,13 +9,13 @@ function groupgrade_organization_main()
   $return = '';
   $return .= '<div class="admin clearfix"><div class="clearfix">';
   $return .= '<h3>Organizations</h3>';
-  $return .= '<p><a href="'.url('admin/pla/organization/new').'">Create Organization</a></p>';
+  $return .= '<p><a href="'.url('admin/class/organization/new').'">Create Organization</a></p>';
 
   $headers = array('Name');
   $rows = array();
 
   if (count($organizations) > 0) : foreach($organizations as $org)
-    $rows[] = array('<a href="'.url('admin/pla/organization/'.$org->organization_id).'">'.
+    $rows[] = array('<a href="'.url('admin/class/organization/'.$org->organization_id).'">'.
       $org->organization_name.'</a>');
   endif;
 
@@ -47,11 +47,11 @@ function groupgrade_organization_view($id)
   $return .= '<h2>Organization <small>'.$org->organization_name.'</small></h2>';
   $return .= '<div class="admin clearfix"><div class="left clearfix">';
   $return .= '<h3>Courses</h3>';
-  $return .= '<p><a href="'.url('admin/pla/courses/new/'.$org->organization_id).'" class="btn btn-primary">Create Course</a></p>';
+  $return .= '<p><a href="'.url('admin/class/courses/new/'.$org->organization_id).'" class="btn btn-primary">Create Course</a></p>';
 
   $rows = array();
   if (count($courses) > 0) : foreach($courses as $course) :
-    $rows[] = array('<a href="'.url('admin/pla/courses/'.$course->course_id).'">'.$course->course_name.'</a>', number_format($course->sections()->count()));
+    $rows[] = array('<a href="'.url('admin/class/courses/'.$course->course_id).'">'.$course->course_name.'</a>', number_format($course->sections()->count()));
   endforeach; endif;
   $return .= theme('table', array(
     'header' => array('Course Name', 'Sections'),
@@ -62,7 +62,7 @@ function groupgrade_organization_view($id)
   
   $return .= '</div><div class="right clearfix">';
   $return .= '<h3>Semesters</h3>';
-  $return .= '<p><a href="'.url('admin/pla/semester/new/'.$org->organization_id).'" class="btn btn-primary">Add Semester</a></p>';
+  $return .= '<p><a href="'.url('admin/class/semester/new/'.$org->organization_id).'" class="btn btn-primary">Add Semester</a></p>';
 
   // Semesters
   $semesters = $org->semesters()
@@ -91,7 +91,7 @@ function groupgrade_organization_new($form, &$form_state) {
   $items['back-text'] = array(
     '#type' => 'link',
     '#title' => 'Back to Organization Listing',
-    '#href' => 'admin/pla/organization',
+    '#href' => 'admin/class/organization',
   );
 
   $items['name'] = array(

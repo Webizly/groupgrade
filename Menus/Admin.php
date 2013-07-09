@@ -3,8 +3,8 @@ return array(
   //==================
   // Administrator
   //==================
-  'admin/pla' => array(
-    'title' => 'PLA Learning Method',
+  'admin/class' => array(
+    'title' => 'CLASS Learning Method',
     'page callback' => 'groupgrade_organization_main',// 'groupgrade_admin_dash',
     'file' => 'Organization.php',// 'Admin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -19,14 +19,14 @@ return array(
   ),
   /*
   // /class/
-  'admin/pla/default' => array(
+  'admin/class/default' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Dashboard',
     'weight' => 1,
   ),
   
   // Organization MGMT
-  'admin/pla/organization' => array(
+  'admin/class/organization' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Organizations',
     'page callback' => 'groupgrade_organization_main',
@@ -40,7 +40,7 @@ return array(
     'weight' => 2,
   ),
   */
-  'admin/pla/organization/new' => array(
+  'admin/class/organization/new' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Create New Organization',
     'page callback' => 'drupal_get_form',
@@ -54,7 +54,7 @@ return array(
     // entries, allowing us to get our tabs in the order we want.
     'weight' => 2,
   ),
-  'admin/pla/organization/%' => array(
+  'admin/class/organization/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'View Organization',
     'page callback' => 'groupgrade_organization_view',
@@ -67,7 +67,7 @@ return array(
     // entries, allowing us to get our tabs in the order we want.
   ),
 
-  'admin/pla/courses' => array(
+  'admin/class/courses' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Courses',
     'page callback' => 'groupgrade_organization_main',
@@ -81,7 +81,7 @@ return array(
     'weight' => 5,
   ),
 
-  'admin/pla/section/%' => array(
+  'admin/class/section/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Sections',
     'page callback' => 'groupgrade_view_section',
@@ -92,7 +92,7 @@ return array(
     'access arguments' => array('access administration pages'), 
   ),
 
-  'admin/pla/courses/new/%' => array(
+  'admin/class/courses/new/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Create Course',
     'page callback' => 'groupgrade_classes_create',
@@ -103,7 +103,7 @@ return array(
     'access arguments' => array('access administration pages'), 
   ),
 
-  'admin/pla/section/remove-user/%/%' => array(
+  'admin/class/section/remove-user/%/%' => array(
     'type' => MENU_CALLBACK,
     'title' => 'Create Course',
     'page callback' => 'groupgrade_remove_user_section',
@@ -114,7 +114,7 @@ return array(
     'access arguments' => array('access administration pages'), 
   ),
   
-  'admin/pla/courses/%' => array(
+  'admin/class/courses/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'View Course',
     'page callback' => 'groupgrade_class_view',
@@ -125,7 +125,7 @@ return array(
     'access arguments' => array('access administration pages'), 
   ),
 
-  'admin/pla/sections/new/%' => array(
+  'admin/class/sections/new/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'New Section',
     'page callback' => 'groupgrade_section_view',
@@ -136,7 +136,7 @@ return array(
     'access arguments' => array('access administration pages'), 
   ),
 
-  'admin/pla/courses/sections' => array(
+  'admin/class/courses/sections' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Sections',
     'page callback' => 'groupgrade_organization_main',
@@ -147,7 +147,7 @@ return array(
   ),
 
   // Semester
-  'admin/pla/semester/new/%' => array(
+  'admin/class/semester/new/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Add Semester',
     'page callback' => 'groupgrade_semester_add',

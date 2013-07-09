@@ -60,8 +60,8 @@ function groupgrade_menu() {
  */
 function groupgrade_admin_menu_output_alter(&$content) {
   $content['menu']['pla'] = array(
-    '#title' => t('PLA Learning System'),
-    '#href' => 'admin/pla',
+    '#title' => t('CLASS Learning System'),
+    '#href' => 'admin/class',
     '#weight' => 10,
   );
 }

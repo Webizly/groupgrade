@@ -2,7 +2,7 @@
 return array(
 // My Tasks/Classes/Assignment
   'class' => array(
-    'title' => 'PLA Learning System Dashboard',
+    'title' => 'CLASS Learning System',
     'page callback' => 'groupgrade_tasks_dashboard',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Tasks.php',

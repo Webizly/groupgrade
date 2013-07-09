@@ -15,7 +15,7 @@ function groupgrade_semester_add_form($form, &$form_state, $org_id)
   $items['back-text'] = array(
     '#type' => 'link',
     '#title' => 'Back to Organization',
-    '#href' => 'admin/pla/organization/'.$org_id,
+    '#href' => 'admin/class/organization/'.$org_id,
   );
   $items['name'] = array(
     '#title' => 'Semester Name (Fall 2013, Spring 2014, etc.)',

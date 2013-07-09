@@ -26,7 +26,7 @@ function groupgrade_section_view_form($form, &$form_state, $course)
   $items['back-text'] = array(
     '#type' => 'link',
     '#title' => 'Back to Course',
-    '#href' => 'admin/pla/courses/'.$course,
+    '#href' => 'admin/class/courses/'.$course,
   );
 
   $items['name'] = array(
@@ -116,8 +116,8 @@ function groupgrade_view_section($section_id)
       $rows[] = array(
         ggPrettyName($user),
         $student->su_status,
-        '<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
-        <a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
+        '<a href="'.url('admin/class/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
+        <a href="'.url('admin/class/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
       );
     endforeach; endif;
 
@@ -217,5 +217,5 @@ function groupgrade_remove_user_section($user, $section)
     gg_acl_remove_user('section-'.$role, $user, $section);
 
   drupal_set_message(sprintf('User %d removed from section %d', $user, $section));
-  return drupal_goto('admin/pla/section/'.$section);
+  return drupal_goto('admin/class/section/'.$section);
 }

@@ -18,7 +18,7 @@ function groupgrade_class_view($id)
   $return .= '<h2>Course <small>'.$course->course_name.' &mdash; '.$course->course_title.'</small></h2>';
   $return .= '<div class="admin clearfix"><div class=" clearfix">';
   $return .= '<h3>Sections</h3>';
-  $return .= '<p><a href="'.url('admin/pla/sections/new/'.$course->course_id).'" class="btn btn-primary">Create Section</a></p>';
+  $return .= '<p><a href="'.url('admin/class/sections/new/'.$course->course_id).'" class="btn btn-primary">Create Section</a></p>';
 
   $rows = array();
   if (count($sections) > 0) : foreach($sections as $section) :
@@ -28,7 +28,7 @@ function groupgrade_class_view($id)
     $semester = $section->semester()->first();
 
     $rows[] = array(
-      '<a href="'.url('admin/pla/section/'.$section->section_id).'">'.$section->section_name.'</a>',
+      '<a href="'.url('admin/class/section/'.$section->section_id).'">'.$section->section_name.'</a>',
       $section->section_description,
       number_format($section->students()->count()),
       $semester->semester_name
@@ -60,7 +60,7 @@ function groupgrade_classes_create_form($form, &$form_state, $org_id)
   $items['back-text'] = array(
     '#type' => 'link',
     '#title' => 'Back to Organization',
-    '#href' => 'admin/pla/organization/'.$org_id,
+    '#href' => 'admin/class/organization/'.$org_id,
   );
 
   $items['name'] = array(

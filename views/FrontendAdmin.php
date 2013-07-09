@@ -65,8 +65,8 @@ function groupgrade_view_user($id) {
       $rows[] = array(
         ggPrettyName($user),
         $student->su_status//,
-        //'<a href="'.url('admin/pla/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
-        //<a href="'.url('admin/pla/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
+        //'<a href="'.url('admin/class/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
+        //<a href="'.url('admin/class/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
       );
     endforeach; endif;
 
