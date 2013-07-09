@@ -21,7 +21,12 @@ function groupgrade_assignments_dashboard() {
     ];
   endforeach; endif;
 
-  return theme('table', array(
+  $return .= sprintf('<p>%s <em>%s</em><p>',
+    t('Select a question to see the work on that question so far.'),
+    t('Note that you might not be allowed to see some work in progress.')
+  );
+  
+  $return .= theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
     'empty' => 'No assignments found.',
@@ -66,7 +71,7 @@ function gg_view_assignment_listing($section_id, $asec_id)
 
   $return = '';
   $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, 'Back to Assignment List');
-  
+
   $return .= theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
