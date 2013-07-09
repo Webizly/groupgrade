@@ -15,6 +15,8 @@ use Drupal\ClassLearning\Models\User,
 function groupgrade_assignment_dash() {
   global $user;
 
+  drupal_set_title(t('Assignment Management'));
+
   $assignments = Assignment::where('user_id', '=', $user->uid)
     ->orderBy('assignment_id', 'desc')
     ->get();
@@ -388,7 +390,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
   endforeach; endif;
 
   $asec->delete();
-  
+
   drupal_set_message(t('Assignment Section and all related tasks/workflows deleted.'));
   return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
 }

@@ -244,7 +244,7 @@ return array(
 
   'class/instructor/assignments/new' => array(
     'type' => MENU_LOCAL_ACTION,
-    'title' => 'New Assignment',
+    'title' => 'Create Assignment',
     
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
