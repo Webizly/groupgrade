@@ -260,10 +260,10 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   endforeach;
 
   if ($form['start-now']['#checked'])
-    $s->asec_start = Carbon\Carbon::now()->toDayDateTimeString();
+    $s->asec_start = Carbon\Carbon::now()->toDateTimeString();
   else
     $s->asec_start = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
-
+  
   if ($s->asec_start == '0000-00-00 00:00:00')
     return drupal_set_message(t('Start time not specified.'), 'error');
   else
