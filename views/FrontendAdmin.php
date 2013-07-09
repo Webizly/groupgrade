@@ -43,7 +43,10 @@ function groupgrade_view_section($id) {
   $section = Section::find((int) $id);
   if ($section == NULL) return drupal_not_found();
 
+  drupal_set_title(t('Section Dashboard'));
+
   $return = '';
+
   return $return;
 }
 
@@ -52,6 +55,8 @@ function groupgrade_view_user($id) {
   $section = Section::find($id);
   
   if ($section == NULL) return drupal_not_found();
+
+  drupal_set_title(t('Section Users'));
 
   foreach(array('instructor', 'student') as $role):
     $return .= '<h4>'.ucfirst($role).'s</h4>';
@@ -83,7 +88,7 @@ function groupgrade_view_user($id) {
 
 function groupgrade_view_assignments($id) {
   $return = '';
-  $return .= '<h3>Assignments</h3>';
+  drupal_set_title(t('Section Assignments'));
 
   $section = Section::find($id);
   
@@ -93,7 +98,10 @@ function groupgrade_view_assignments($id) {
   $rows = array();
 
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
-    $rows[] = array($assignment->assignment_title, gg_time_human($assignment->asec_start), '');
+    $rows[] = array($assignment->assignment_title, gg_time_human($assignment->asec_start), 
+       '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$assignment->asec_id).'">Edit</a>'
+        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$assignment->asec_id).'">Remove Section</a>'
+    );
   endforeach; endif;
 
   $return .= theme('table', array(
