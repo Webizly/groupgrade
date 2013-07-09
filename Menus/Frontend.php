@@ -243,7 +243,7 @@ return array(
   ),
 
   'class/instructor/assignments/new' => array(
-    'type' => MENU_LOCAL_ACTION,
+   // 'type' => MENU_LOCAL_ACTION,
     'title' => 'Create Assignment',
     
     'file' => 'AssignmentAdmin.php',

@@ -23,6 +23,7 @@ function groupgrade_assignment_dash() {
 
   $return = '';
   $return .= '<h3>Your Assignments</h3>';
+  $return .= sprintf('<p><a href="%s">%s</a></p>', url('class/instructor/assignments/new'), t('Create Assignment'));
 
   $rows = array();
 
@@ -44,6 +45,9 @@ function groupgrade_assignment_dash() {
 function groupgrade_create_assignment()
 {
   $items = array();
+  $items[] = [
+    '#markup' => sprintf('<p><a href="%s">%s</a></p>', url('class/instructor/assignments'), t('Back to Assignment Management'))
+  ];
   $items['title'] = array(
     '#title' => 'Assignment Title',
     '#type' => 'textfield',
@@ -93,7 +97,7 @@ function groupgrade_view_assignment($id) {
 
   $sections = $assignment->sections()->get();
 
-  $return = '<p><a href="'.url('class/instructor/assignments').'">Back to Assignments</a></p>';
+  $return = '<p><a href="'.url('class/instructor/assignments').'">Back to Assignment Management</a></p>';
   $return .= '<div class="well">';
     $return .= '<h3>'.$assignment->assignment_title.'</h3>';
     $return .= '<p>'.$assignment->assignment_description.'</p>';
@@ -106,7 +110,7 @@ function groupgrade_view_assignment($id) {
 
     $rows[] = array($section->section_name, gg_time_human($section->asec_start),
         '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$section->asec_id).'">Edit</a>'
-        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$section->asec_id).'">Delete</a>'
+        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$section->asec_id).'">Remove Section</a>'
       );
   endforeach; endif;
 
