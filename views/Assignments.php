@@ -25,11 +25,11 @@ function groupgrade_assignments_dashboard() {
     t('Select a question to see the work on that question so far.'),
     t('Note that you might not be allowed to see some work in progress.')
   );
-  
+
   $return .= theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
-    'empty' => 'No assignments found.',
+    'empty' => t('No assignments found.'),
     'attributes' => array('width' => '100%')
   ));
 

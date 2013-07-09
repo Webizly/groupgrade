@@ -148,7 +148,7 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
 
   if (! $params['edit']) :
     $items['edited problem lb'] = [
-      '#markup' => '<strong>Submitted Problem:</strong>',
+      '#markup' => '<strong>'.t('Submitted Problem').':</strong>',
     ];
     $items['edited problem'] = [
       '#type' => 'item',
@@ -192,7 +192,7 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf('Problem %s.', ($save) ? 'saved' : 'completed'));
+  drupal_set_message(sprintf('%s %s.', t('Problem'), ($save) ? 'saved' : 'completed'));
 
   if (! $save)
     return drupal_goto('class');
@@ -296,12 +296,12 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 
   if ($params['action'] == 'display')
     $items['original problem'] = [
-      '#markup' => '<p><strong>Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
+      '#markup' => '<p><strong>'.t('Problem').':</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
     ];
 
   if (! $params['edit']) :
     $items['problem lb'] = [
-      '#markup' => '<strong>Submitted Solution:</strong>',
+      '#markup' => '<strong>'.t('Submitted Solution').':</strong>',
     ];
     $items['problem'] = [
       '#type' => 'item',
@@ -345,7 +345,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf('Solution %s.', ($save) ? 'saved' : 'completed'));
+  drupal_set_message(sprintf(t('Solution').' %s.', ($save) ? 'saved' : 'completed'));
 
   if (! $save)
     return drupal_goto('class');
@@ -361,15 +361,15 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items = [];
   $items['problem'] = [
-    '#markup' => '<h4>Problem</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
+    '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
   ];
   $items['solution'] = [
-    '#markup' => '<h4>Solution</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
+    '#markup' => '<h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
 
   if (! $params['edit']) :
     $items['grade lb'] = [
-      '#markup' => '<strong>Grade:</strong>',
+      '#markup' => '<strong>'.t('Grade').':</strong>',
     ];
     $items['grade'] = [
       '#type' => 'item',
@@ -377,7 +377,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     ];
 
     $items['justice lb'] = [
-      '#markup' => '<strong>Grade Justification:</strong>',
+      '#markup' => '<strong>'.t('Grade Justification').':</strong>',
     ];
     $items['justice'] = [
       '#type' => 'item',
@@ -437,7 +437,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf('Grade %s.', ($save) ? 'saved' : 'submitted'));
+  drupal_set_message(sprintf(t('Grade').' %s.', ($save) ? 'saved' : 'submitted'));
 
   if (! $save)
     return drupal_goto('class');
@@ -470,7 +470,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
   endif;
 
   $items[] = [
-    '#markup' => '<p>Would you like to dispute this grade?</p>',
+    '#markup' => sprintf('<p>%s</p>', t('Would you like to dispute this grade?')),
   ];
 
   $items['dispute'] = [
@@ -514,12 +514,12 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     '#markup' => '<h3>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%',
   ];
   $items[] = [
-    '#markup' => '<h4>Problem:</h4>'
+    '#markup' => '<h4>'.t('Problem').':</h4>'
     .'<p>'.nl2br($params['problem']->data['problem']).'</p>'
   ];
 
   $items[] = [
-    '#markup' => '<h4>Solution:</h4>'
+    '#markup' => '<h4>'.t('Solution').':</h4>'
     .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
   ];
 
@@ -533,7 +533,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     ];
 
     $items['justice lb'] = [
-      '#markup' => '<strong>Grade Justification:</strong>',
+      '#markup' => '<strong>'.t('Grade Justification').':</strong>',
     ];
     $items['justice'] = [
       '#type' => 'item',
