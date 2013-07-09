@@ -96,6 +96,7 @@ function groupgrade_view_task($task_id, $action = 'display')
   drupal_set_title(t(sprintf('%s: %s', ucwords($task->type), $assignment->assignment_title)));
 
   if ($action == 'display') :
+    $return .= sprintf('<p><a href="%s">%s %s</a>', url('class'), HTML_BACK_ARROW, t('Back to Tasks'));
     $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
     $return .= '<p><strong>'.ucwords($task->type).'</strong></p>';
   endif;

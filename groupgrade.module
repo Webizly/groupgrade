@@ -21,6 +21,13 @@ use Illuminate\Database\Capsule\Manager as Capsule,
 define('MYSQL_DATETIME', 'Y-m-d H:i:s');
 
 /**
+ * Back Arrow HTML
+ *
+ * @global string
+ */
+define('HTML_BACK_ARROW', '&lsaquo;');
+
+/**
  * Loading of the system
  *
  * @access private
