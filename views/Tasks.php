@@ -201,11 +201,14 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
  * Impliments a edit problem form
  */
 function gg_task_edit_problem_form($form, &$form_state, $params) {
-  $problem = '';
+  $problem = $comment = '';
   $problem = $params['previous task']->data['problem'];
 
   if (! empty($params['task']->data['problem']))
     $problem = $params['task']->data['problem'];
+
+  if (! empty($params['task']->data['comment']))
+    $comment = $params['task']->data['comment'];
 
   $items = [];
 
@@ -223,6 +226,14 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
       '#markup' => nl2br($problem),
     ];
 
+    $items['comment lb'] = [
+      '#markup' => '<strong>Edited Problem Comment:</strong>',
+    ];
+    $items['comment'] = [
+      '#type' => 'item',
+      '#markup' => nl2br($comment),
+    ];
+
     return $items;
   endif;
 
@@ -230,6 +241,12 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     '#type' => 'textarea',
     '#required' => true,
     '#default_value' => $problem,
+  ];
+
+  $items['comment'] = [
+    '#type' => 'textarea',
+    '#required' => true,
+    '#default_value' => $comment,
   ];
 
   $items['save'] = [
@@ -253,7 +270,10 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
     return drupal_not_found();
 
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
-  $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
+  $task->setDataAttribute([
+    'problem' =>  $form['body']['#value'],
+    'comment' => $form['comment']['#value'],
+  ]);
   $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
