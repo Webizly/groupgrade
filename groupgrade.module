@@ -446,6 +446,15 @@ if ( ! function_exists('word_limiter'))
 }
 
 /**
+ * Impliments hook_user_login()
+ */
+function groupgrade_user_login(&$edit, $account)
+{
+  $edit['redirect'] = 'class';
+  $_GET['destination'] = 'class';
+}
+
+/**
  * Impliments hook_cron()
  */
 function groupgrade_cron() {
