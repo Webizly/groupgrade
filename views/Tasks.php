@@ -97,10 +97,18 @@ function groupgrade_view_task($task_id, $action = 'display')
 
   if ($action == 'display') :
     $return .= sprintf('<p><a href="%s">%s %s</a>', url('class'), HTML_BACK_ARROW, t('Back to Tasks'));
+
+    // Course information
+    $section = $task->section()->first();
+    $course = $section->course()->first();
+
+    $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s', t('Course'), $course->course_name, $section->section_name);
+    $return .= '<hr />';
+    
     $return .= sprintf('<h4>%s</h4>', t('Assignment Description'));
     $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
     $return .= '<hr />';
-    $return .= '<p><strong>'.ucwords($task->type).'</strong></p>';
+    $return .= '<p><strong>'.t(ucwords($task->type)).'</strong></p>';
   endif;
 
   $params = [];
