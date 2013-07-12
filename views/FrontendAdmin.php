@@ -83,6 +83,13 @@ function groupgrade_view_user($id) {
     ));
   endforeach;
 
+  // Add User Form
+  require_once (__DIR__.'/SectionAdmin.php');
+  $form = drupal_get_form('groupgrade_add_student_form', $section->section_id);
+
+  $return .= sprintf('<h5>%s</h5>', t('Add Users to Section'));
+  $return .= drupal_render($form);
+
   return $return;
 }
 

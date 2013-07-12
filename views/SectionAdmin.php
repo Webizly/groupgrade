@@ -76,7 +76,7 @@ function groupgrade_section_view_form_submit($form, &$form_state) {
   drupal_set_message(sprintf('Section "%s" created.', $name));
 }
 
-function groupgrade_view_section($section_id)
+function groupgrade_view_sectionadmin($section_id)
 {
   $section = Section::find($section_id);
   if ($section == NULL) return drupal_not_found();
@@ -123,13 +123,13 @@ function groupgrade_view_section($section_id)
 
     $return .= theme('table', array(
       'rows' => $rows,
-      'header' => array('User', 'Status', 'Operations'),
+      'header' => ['User', 'Status', 'Operations'],
       'empty' => 'No users found.',
     ));
   endforeach;
 
   $return .= '</div></div><div class="admin"><div class="clearfix">';
-  $return .= '<h5>Add Users to Section</h5>';
+  $return .= sprintf('<h5>%s</h5>', t('Add Users to Section'));
 
   $return .= '</div></div>';
   $form = drupal_get_form('groupgrade_add_student_form', $section->section_id);

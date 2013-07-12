@@ -84,7 +84,7 @@ return array(
   'admin/class/section/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Sections',
-    'page callback' => 'groupgrade_view_section',
+    'page callback' => 'groupgrade_view_sectionadmin',
     'file' => 'SectionAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
