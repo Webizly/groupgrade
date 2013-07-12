@@ -323,6 +323,10 @@ class Manager {
             'type' => 'first task trigger',
           ]
         ],
+
+        'instructions' => 'Read the assignment instructions and enter '
+          .'a problem in the box below. Make your problem as clear as '
+          .'possible so the person solving it will understand what you mean.',
       ],
 
       'edit problem' => [
@@ -337,6 +341,12 @@ class Manager {
         ],
 
         'reference task' => 'create problem',
+        'instructions' => 'Rephrase the problem (if necessary) so it is '
+          .'appropriate to the assignment and clear to the person solving '
+          .'it. The solver and graders will only see your edited version, not '
+          .'the original version. (Others not involved in solving or grading '
+          .'will see both the original and edited versions.) You can also'
+          .'leave a comment to explain any rephrasing.',
       ],
 
       'create solution' => [
@@ -350,6 +360,8 @@ class Manager {
         ],
 
         'reference task' => 'edit problem',
+        'instructions' => 'Solve the problem as fully and as clearly as you '
+          .'can. Explain your reasoning (if necessary).',
       ],
 
       'grade solution' => [
@@ -364,6 +376,12 @@ class Manager {
         ],
 
         'reference task' => 'create solution',
+        'instructions' => 'Grade the solution to the specific problem shown '
+          .'above. (There are several different problems so be sure to read '
+          .'the one being solved here.) Each grade has several parts. Give '
+          .'a score and an explanation of that score for each part of the '
+          .'grade. Your explanation should be detailed, and several sentences '
+          .'long.',
       ],
 
       // Resolve the grades
@@ -428,6 +446,10 @@ class Manager {
         ],
 
         'reference task' => 'create solution',
+        'instructions' => 'Because the regular graders did give the same '
+          .'grade, please resolve the grade disagreement. Assign your '
+          .'own score and justification for each part of the grade, and also '
+          .'please provide an explanation.',
       ],
 
       // Dispute grades
@@ -449,6 +471,11 @@ class Manager {
             'task status' => 'complete'
           ],
         ],
+
+        'instructions' => 'You have the option to dispute your grade. To do '
+          .'so, you need to fully grade your own solution. Assign your own '
+          .'score and justification for each part of the grade. You must also '
+          .'explain why the other graders were wrong.',
       ],
 
       // Resolve a dispute and end the workflow
@@ -464,6 +491,11 @@ class Manager {
             'compare value' => true,
           ],
         ],
+
+        'instructions' => 'The problem solver is disputing his or her grade. '
+          .'You need to provide the final grade. Assign a final score with '
+          .'justification for each part of the grade, and also please provide '
+          .'an explanation.',
       ],
     ];
   }
