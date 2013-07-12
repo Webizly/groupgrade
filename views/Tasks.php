@@ -97,7 +97,9 @@ function groupgrade_view_task($task_id, $action = 'display')
 
   if ($action == 'display') :
     $return .= sprintf('<p><a href="%s">%s %s</a>', url('class'), HTML_BACK_ARROW, t('Back to Tasks'));
+    $return .= sprintf('<h4>%s</h4>', t('Assignment Description'));
     $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
+    $return .= '<hr />';
     $return .= '<p><strong>'.ucwords($task->type).'</strong></p>';
   endif;
 
@@ -157,6 +159,11 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
 
     return $items;
   endif;
+
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
 
   $items['body'] = [
     '#type' => 'textarea',
@@ -238,6 +245,11 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     return $items;
   endif;
 
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
+
   $items['body'] = [
     '#type' => 'textarea',
     '#required' => true,
@@ -310,6 +322,11 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 
     return $items;
   endif;
+
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
 
   $items['body'] = [
     '#type' => 'textarea',
@@ -386,6 +403,11 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
     return $items;
   endif;
+
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
 
   $items['grade'] = [
     '#type' => 'textfield',
@@ -469,6 +491,11 @@ function gg_task_dispute_form($form, &$form_state, $params)
     return $items;
   endif;
 
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
+
   $items[] = [
     '#markup' => sprintf('<p>%s</p>', t('Would you like to dispute this grade?')),
   ];
@@ -541,6 +568,11 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     ];
     return $items;
   endif;
+
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
 
   $items['grade'] = [
     '#type' => 'textfield',
@@ -679,6 +711,11 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
 
     return $items;
   endif;
+
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
 
   $items['grade'] = [
     '#type' => 'textfield',
