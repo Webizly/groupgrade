@@ -22,7 +22,7 @@ function groupgrade_class_view($id)
 
   $rows = array();
   if (count($sections) > 0) : foreach($sections as $section) :
-    if (! gg_has_role_in_section('instructor', $section->section_id) AND ! user_access('administer'))
+    if (! user_access('administer site configuration') AND ! gg_has_role_in_section('instructor', $section->section_id))
       continue;
 
     $semester = $section->semester()->first();
