@@ -323,7 +323,7 @@ return array(
 
   'class/instructor/assignments/%/add-section' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Add Section',
+    'title' => 'Assign to Section',
     
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',

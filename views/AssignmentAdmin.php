@@ -289,6 +289,8 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
   $section = AssignmentSection::find($section);
   if ($section == NULL) return drupal_not_found();
 
+  drupal_set_title(sprintf('%s%s', t('Assignment Details for Section #'), $section->section_id));
+
   $items = array();
   $items['m'] = array(
     '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment</a>',
