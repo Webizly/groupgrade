@@ -61,6 +61,32 @@ class Allocator {
   protected $roles_rules = [];
 
   /**
+   * Pools of users
+   * 
+   * A two level array:
+   * <code>
+   * [
+   *   'pool name' => [
+   *     'users' => [
+   *       'UserObject',
+   *       'UserObject',
+   *       ...
+   *     ],
+   *     'settings' => [
+   *       'setting name' => 'setting value',
+   *       'setting name' => 'setting value',
+   *       ...
+   *     ]
+   *   ]
+   * ]
+   * </code>
+   * 
+   * @var array
+   * @see Allocator::getPools()
+   */
+  protected $pools = [];
+
+  /**
    * Temporary storage for users being added to roles
    *
    * @access private
@@ -102,16 +128,11 @@ class Allocator {
   /**
    * Construct the Allocator Algorithm
    *
-   * @todo Restructure how we store users
-   * @param SectionUsers $users Users from a section
+   * @return void
    */
   public function __construct($users)
   {
-    if (count($users) > 0) : foreach ($users as $user) :
-      $this->users[$user->user_id] = [
-        'role' => $user->su_role,
-      ];
-    endforeach; endif;
+
   }
 
   /**
@@ -154,8 +175,11 @@ class Allocator {
       foreach($workflow as $role_id => $ignore) :
         // Start from the beginning of the queue
         foreach($this->roles_queue[$role_id] as $queue_id => $user_id) :
+          // Check for user alias
+          
+
           // They're not a match -- skip to the next user in queue
-          if ($this->canEnterWorkflow($user_id, $this->workflows[$workflow_id]))
+          if ($this->canEnterWorkflow($user_id, $workflow))
           {
             $this->workflows[$workflow_id][$role_id] = $user_id;
 
@@ -216,7 +240,7 @@ class Allocator {
    * @return bool
    * @param array $workflow The workflow data
    */
-  public function hasTaskAlias($workflow)
+  public function hasTaskAlias($task, $workflow)
   {
     if (! isset($workflow['user alias']))
       return false;
@@ -366,6 +390,32 @@ class Allocator {
   public function getRoles()
   {
     return $this->roles;
+  }
+
+  /**
+   * Add a pool of users
+   *
+   * @param string $name The name of the pool
+   * @param Illuminate\Container\Container $users Users of the pool
+   *   which are just a database record from SectionUsers
+   * @param array $settings Settings for the pool
+   */
+  public function addPool($name, &$users, $settings = [])
+  {
+    $this->pools[$name] = [
+      'users' => $users,
+      'settings' => $settings
+    ];
+  }
+
+  /**
+   * Retrieve the pools of users
+   *
+   * @return array
+   */
+  public function getPools()
+  {
+    return $this->pools;
   }
 
   /**
