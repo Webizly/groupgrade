@@ -16,13 +16,13 @@ return array(
   // /class/
   'class/default' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'Tasks',
+    'title' => 'My Tasks',
     'weight' => 1,
   ),
 
   'class/classes' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Classes',
+    'title' => 'My Classes',
     'page callback' => 'groupgrade_classes_dashboard',
     'file' => 'Classes.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
