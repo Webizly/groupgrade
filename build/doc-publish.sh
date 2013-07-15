@@ -17,5 +17,5 @@ rm -rf *
 mv ../groupgrade-docs/* ./
 rm -rf ../groupgrade-docs
 
-git commit-a -m "Importing documentation"
+git commit -a -m "Importing documentation"
 git push origin gh-pages
