@@ -208,6 +208,24 @@ class Allocator {
   }
 
   /**
+   * Check for a User Alias of a workflow task
+   * 
+   * See if a task instance has a task alias
+   * If it has a task alias, then furthur test to see if the alias task is
+   * also assigned to a user already. Return true if it's already assigned.
+   * @return bool
+   * @param array $workflow The workflow data
+   */
+  public function hasTaskAlias($workflow)
+  {
+    if (! isset($workflow['user alias']))
+      return false;
+
+    // It has one
+    
+  }
+
+  /**
    * See if an array of workflows contains any errors
    *
    * @return bool

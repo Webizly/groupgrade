@@ -74,7 +74,8 @@ function groupgrade_schema() {
       'assignment_settings' => array(
         'description' => 'Describes the # of instances',
         'type' => 'blob',
-        'not null' => TRUE,
+        'not null' => FALSE,
+        'default' => '[]',
       ),
       'assignment_grade_destrib' => array(
         'description' => 'Array to describe the distribution of the grades for the steps in the workflow',
