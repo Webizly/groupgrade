@@ -172,6 +172,11 @@ class Manager {
    */
   public static function checkAssignments()
   {
+    // Remove all workflows
+    $c = Capsule::connection();
+    $c->statement('delete from `pla_task` WHERE `workflow_id` IN ( SELECT `workflow_id` FROM `pla_workflow` WHERE `assignment_id` = 6 );');
+    $c->statement('delete  FROM `pla_workflow` WHERE `assignment_id` = 6;');
+
     $assignments = AssignmentSection::whereNull('asec_end')
       ->get();
 
@@ -217,12 +222,12 @@ class Manager {
    */
   public static function trigger(AssignmentSection &$a)
   {
-    // Let's get all the users and all the different roles
-    $users = SectionUsers::where('section_id', '=', $a->section_id)
-      ->where('su_status', '=', 'active')
-      ->get();
-
     $workflows = [];
+
+    $users = SectionUsers::where('section_id', '=', $a->section_id)
+        ->where('su_status', '=', 'active')
+        ->where('su_role', '=', 'student')
+        ->get();
 
     // We're just creating a workflow for each user
     // They're not actually assigned to this workflow
@@ -252,8 +257,9 @@ class Manager {
    */
   public static function allocateUsers(AssignmentSection $a, $users, &$workflows)
   {
-    $allocator = new Allocator($users);
+    $allocator = new Allocator();
 
+    // Add the roles
     foreach (self::getTasks() as $role_name => $role)
     {
       if (! isset($role['internal']) OR ! $role['internal']) :
@@ -267,6 +273,12 @@ class Manager {
       endif;
     }
 
+    // Setup the user pools for the allocation
+    foreach (self::getUserRoles() as $role) :
+      $allocator->addPool($role, $users);
+    endforeach;
+
+    // Add the workflows from the database
     foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
 
@@ -324,7 +336,7 @@ class Manager {
           ]
         ],
 
-        //'user alias' => '',
+        'user alias' => 'grade solution',
 
         'instructions' => 'Read the assignment instructions and enter '
           .'a problem in the box below. Make your problem as clear as '
@@ -338,6 +350,7 @@ class Manager {
         ],
 
         'duration' => 1,
+
         'trigger' => [
           [
             'type' => 'reference task status',
@@ -365,6 +378,8 @@ class Manager {
           ],
         ],
 
+        'user alias' => 'dispute',
+
         'reference task' => 'edit problem',
         'instructions' => 'Solve the problem as fully and as clearly as you '
           .'can. Explain your reasoning (if necessary).',
@@ -373,6 +388,8 @@ class Manager {
       'grade solution' => [
         'count' => 2,
         'duration' => 3,
+        'user alias' => 'create problem',
+
         'trigger' => [
           [
             'type' => 'reference task status',
@@ -463,10 +480,7 @@ class Manager {
       // soln to yet-another-grader
       'dispute' => [
         'duration' => 2,
-        'alias user' => 'create solution',
-        
-        // Default value
-        'value' => false,
+        'user alias' => 'create solution',
 
         // Trigger this if one of the tasks "resolution grader" or
         // "grades ok" is complete.
@@ -508,5 +522,15 @@ class Manager {
           .'an explanation.',
       ],
     ];
+  }
+
+  /**
+   * Retrieve the roles a user can have in a section
+   *
+   * @return array
+   */
+  public static function getUserRoles()
+  {
+    return ['student', 'instructor'];
   }
 }

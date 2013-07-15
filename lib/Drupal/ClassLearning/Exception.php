@@ -10,9 +10,9 @@ class Exception extends \Exception {
    * @param Exception The previous exception used for the exception chaining.
    * @param mixed Data used to pass to exception class for debugging
    */
-  public function __construct($message, $code = 0, $previous = NULL, $data = NULL)
+  public function __construct($message = '', $code = 0, $previous = NULL, $data = NULL)
   {
-    parent::__construct($messge, $code, $previous);
+    parent::__construct($message, $code, $previous);
     
     // Pass to watchdog
     watchdog('groupgrade',

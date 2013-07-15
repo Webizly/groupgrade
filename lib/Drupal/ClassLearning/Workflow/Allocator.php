@@ -63,21 +63,12 @@ class Allocator {
   /**
    * Pools of users
    * 
-   * A two level array:
+   * A one level array:
    * <code>
    * [
-   *   'pool name' => [
-   *     'users' => [
-   *       'UserObject',
-   *       'UserObject',
-   *       ...
-   *     ],
-   *     'settings' => [
-   *       'setting name' => 'setting value',
-   *       'setting name' => 'setting value',
-   *       ...
-   *     ]
-   *   ]
+   *   'UserObject',
+   *   'UserObject',
+   *   ...
    * ]
    * </code>
    * 
@@ -130,7 +121,7 @@ class Allocator {
    *
    * @return void
    */
-  public function __construct($users)
+  public function __construct()
   {
 
   }
@@ -148,6 +139,9 @@ class Allocator {
     if (count($this->roles) == 0)
       throw new AllocatorException('Roles are not defined for allocation.');
 
+    if (count($this->pools) == 0)
+      throw new AllocatorException('Pools are not defined for allocation.');
+    
     // Reset it
     $this->resetWorkflows();
 
@@ -157,15 +151,14 @@ class Allocator {
     // Now let's find the assignes
     foreach($this->roles as $role_id => $role_data) :
       // Get just their student IDs
-      $this->roles_queue[$role_id] = array_keys($this->users);
+      $this->roles_queue[$role_id] = $this->getPool($role_data['rules']['pool']['name']);
 
       // Let's keep this very random
       shuffle($this->roles_queue[$role_id]);
     endforeach;
 
     // Go though the workflows
-    foreach($this->workflows as $workflow_id => $workflow)
-    {
+    foreach($this->workflows as $workflow_id => $workflow) :
       // Loop though each role inside of the workflow
       // 
       // Loop though all the users in the queue
@@ -173,23 +166,35 @@ class Allocator {
       // Can join: assign and remove from queue
       // Can't join: point to next user in queue
       foreach($workflow as $role_id => $ignore) :
-        // Start from the beginning of the queue
-        foreach($this->roles_queue[$role_id] as $queue_id => $user_id) :
-          // Check for user alias
-          
+        // Just check if it's already assigned to be sure
+        if ($ignore !== NULL)
+          throw new AllocatorException(sprintf('Workflow role %d is already assigned to %d', $role_id, $ignore));
+        
+        $currentRole = $this->roles[$role_id];
 
-          // They're not a match -- skip to the next user in queue
-          if ($this->canEnterWorkflow($user_id, $workflow))
-          {
-            $this->workflows[$workflow_id][$role_id] = $user_id;
+        // See if the task instance has a workflow alias
+        if ($this->workflowTaskHasAlias($role_id, $currentRole, $this->workflows[$workflow_id]))
+        {
+          // Assign the user based upon the task alias
+          $this->assignTaskAlias($role_id, $currentRole, $this->workflows[$workflow_id]);
+        } else {
+          // Start from the beginning of the queue
+          foreach($this->roles_queue[$role_id] as $queue_id => $user) :
+            // They're not a match -- skip to the next user in queue
+            if ($this->canEnterWorkflow($user, $workflow))
+            {
+              $this->workflows[$workflow_id][$role_id] = $user;
 
-            // Remove this student from the queue
-            unset($this->roles_queue[$role_id][$queue_id]);
-            break;
-          }
+              // Should they be removed from the pool?
+              if ($currentRole['rules']['pool']['pull after'])
+                unset($this->roles_queue[$role_id][$queue_id]);
+
+              break;
+            }
+          endforeach;
+        }
         endforeach;
       endforeach;
-    }
   }
 
   /**
@@ -206,7 +211,7 @@ class Allocator {
   {
     foreach($workflow as $role => $assigne)
     {
-      if ($assigne !== NULL AND (int) $assigne === (int) $user_id)
+      if ($assigne !== NULL AND (int) $assigne === (int) $user->user_id)
         return FALSE;
     }
     return TRUE;
@@ -237,17 +242,80 @@ class Allocator {
    * See if a task instance has a task alias
    * If it has a task alias, then furthur test to see if the alias task is
    * also assigned to a user already. Return true if it's already assigned.
+   * 
    * @return bool
+   * @param integer $role_id The Role ID
+   * @param array $role The data pertaining to the role
    * @param array $workflow The workflow data
    */
-  public function hasTaskAlias($task, $workflow)
+  public function workflowTaskHasAlias($role_id, $role, $workflow)
   {
-    if (! isset($workflow['user alias']))
+    if (! isset($role['rules']['user alias']))
       return false;
 
-    // It has one
+    // It has one -- let's find the other task instance
+    $aliasRole = $role['rules']['user alias'];
+
+    foreach ($this->roles as $role_id => $role_data)
+    {
+      if ($role_data['name'] !== $aliasRole)
+        continue;
+
+      // We've got a match!
+      $aliasRoleData = $role_data;
+      $aliasRoleId = $role_id;
+      break;
+    }
+
+    if ($aliasRoleId == $role_id)
+      throw new AllocatorException(sprintf('Alias role ID is the same as parent role ID: %d %d', $aliasRoleId, $role_id));
     
+    if ($workflow[$aliasRoleId] !== NULL)
+      return TRUE;
+    else
+      return FALSE;
   }
+
+  /**
+   * Assign the user based upon the task alias
+   *
+   * The function will assume you've already checked to see if there
+   * actually is a task alias via {@link Allocator::workflowTaskHasAlias()}
+   *
+   * @param integer $role_id The Role ID
+   * @param array $role The data pertaining to the role
+   * @param array $workflow The workflow data
+   */
+  public function assignTaskAlias($role_id, $role, &$workflow)
+  {
+    if (! isset($role['rules']['user alias']))
+      return false;
+
+    // It has one -- let's find the other task instance
+    $aliasRole = $role['rules']['user alias'];
+
+    foreach ($this->roles as $role_id => $role_data)
+    {
+      if ($role_data['name'] !== $aliasRole)
+        continue;
+
+      // We've got a match!
+      $aliasRoleData = $role_data;
+      $aliasRoleId = $role_id;
+      break;
+    }
+
+    if ($aliasRoleId == $role_id)
+      throw new AllocatorException(sprintf('Alias role ID is the same as parent role ID: %d %d', $aliasRoleId, $role_id));
+    
+    if ($workflow[$aliasRoleId] == NULL)
+      throw new AllocatorException('Alias is actually not assigned. Please run Allocator::workflowTaskHasAlias() first.');
+
+    // Since $workflow is passed by reference, we can update the workflow here
+    // and still update the parent workflow.
+    $workflow[$role_id] = $workflow[$aliasRoleId];
+  }
+  
 
   /**
    * See if an array of workflows contains any errors
@@ -323,11 +391,16 @@ class Allocator {
   /**
    * Add a user role (problem creator, solver, etc)
    *
-   * @param string
-   * @param string
+   * @param string Name of the role
+   * @param array
    */
   public function createRole($name, $rules = [])
   {
+    if (! isset($rules['pool']))
+      $rules['pool'] = $this->defaultRolePool();
+    else
+      $rules['pool'] = array_merge($this->defaultRolePool(), $rules['pool']);
+
     $this->roles[] = [
       'name' => $name,
       'rules' => (array) $rules,
@@ -375,7 +448,7 @@ class Allocator {
    *
    * @param int
    */
-  public function addWorkflow(int $workflow_id)
+  public function addWorkflow($workflow_id)
   {
     $this->workflows[$workflow_id] = NULL;
   }
@@ -397,20 +470,10 @@ class Allocator {
    * @param string $name The name of the pool
    * @param Illuminate\Container\Container $users Users of the pool
    *   which are just a database record from SectionUsers
-   * @param array $settings Settings for the pool
    */
-  public function addPool($name, &$users, $settings = [])
+  public function addPool($name, $users, $settings = [])
   {
-    // Ensure some settings
-    if (! isset($settings['pool']))
-      $settings['pool'] = $this->defaultWorkInstancePool();
-    else
-      $settings['pool'] = array_merge($this->defaultWorkInstancePool(), $settings['pool']);
-
-    $this->pools[$name] = [
-      'users' => $users,
-      'settings' => $settings
-    ];
+    $this->pools[$name] = (array) $users;
   }
 
   /**
@@ -421,6 +484,16 @@ class Allocator {
   public function getPools()
   {
     return $this->pools;
+  }
+
+  /**
+   * Retrieve a Full Pool
+   *
+   * @param string Pool Name
+   */
+  public function getPool($name)
+  {
+    return (isset($this->pools[$name])) ? $this->pools[$name] : NULL;
   }
 
   /**
@@ -458,11 +531,11 @@ class Allocator {
    *
    * @return array
    */
-  public function defaultWorkInstancePool()
+  public function defaultRolePool()
   {
     return [
-      'name' => 'students',
-      'pul after' => true,
+      'name' => 'student',
+      'pull after' => true,
     ];
   }
 
