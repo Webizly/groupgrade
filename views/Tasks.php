@@ -14,7 +14,7 @@ function groupgrade_tasks_view_specific($specific = '') {
   switch($specific)
   {
     case 'pending' :
-      $headers = array('Due Date', 'Type', 'Course', 'Assignment', 'Problem');
+      $headers = array('Due Date', 'Type', 'Course', 'Assignment');
       
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
@@ -33,7 +33,6 @@ function groupgrade_tasks_view_specific($specific = '') {
 
         $row_t[] = sprintf('%s &mdash; %s', $course->course_name, $section->section_name);
         $row_t[] = $assignment->assignment_title;
-        $row_t[] = '';
 
         $rows[] = $row_t;
       endforeach; endif;
