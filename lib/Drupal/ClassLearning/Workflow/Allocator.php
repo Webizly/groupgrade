@@ -330,7 +330,7 @@ class Allocator {
   {
     $this->roles[] = [
       'name' => $name,
-      'rules' => $rules,
+      'rules' => (array) $rules,
     ];
   }
 
@@ -345,12 +345,12 @@ class Allocator {
   }
 
   /**
-   * Get a Workflow
+   * Get a Specific Workflow
    *
    * @param integer
    * @return array|void
    */
-  public function getWorkflow($workflow_id)
+  public function getWorkflow(int $workflow_id)
   {
     return (isset($this->workflows[$workflow_id])) ? $this->workflows[$workflow_id] : NULL;
   }
@@ -359,7 +359,7 @@ class Allocator {
    * Get the task instance storage
    *
    * This is the associative IDs to associate the internal role ID inside of
-   * the `getWorkflow()` data to the task instance ID from the workflow.
+   * the {@link Allocator::getWorkflow()} data to the task instance ID from the workflow.
    * 
    * @return array
    */
@@ -373,10 +373,9 @@ class Allocator {
    *
    * This should be called **after** registering all the roles for the allocation
    *
-   * 
    * @param int
    */
-  public function addWorkflow($workflow_id)
+  public function addWorkflow(int $workflow_id)
   {
     $this->workflows[$workflow_id] = NULL;
   }
@@ -402,6 +401,12 @@ class Allocator {
    */
   public function addPool($name, &$users, $settings = [])
   {
+    // Ensure some settings
+    if (! isset($settings['pool']))
+      $settings['pool'] = $this->defaultWorkInstancePool();
+    else
+      $settings['pool'] = array_merge($this->defaultWorkInstancePool(), $settings['pool']);
+
     $this->pools[$name] = [
       'users' => $users,
       'settings' => $settings
@@ -446,6 +451,19 @@ class Allocator {
     endfor;
 
     return $this;
+  }
+
+  /**
+   * Default Pool Settings for a role
+   *
+   * @return array
+   */
+  public function defaultWorkInstancePool()
+  {
+    return [
+      'name' => 'students',
+      'pul after' => true,
+    ];
   }
 
   /**

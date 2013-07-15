@@ -270,27 +270,27 @@ class Manager {
     foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
 
-      $allocator->assignmentRun();
+    $allocator->assignmentRun();
 
-      // Now we have to intepert the response of the allocator
-      $taskInstances = $allocator->getTaskInstanceStorage();
-      $workflows = $allocator->getWorkflows();
+    // Now we have to intepert the response of the allocator
+    $taskInstances = $allocator->getTaskInstanceStorage();
+    $workflows = $allocator->getWorkflows();
 
-      foreach ($workflows as $workflow_id => $workflow)
+    foreach ($workflows as $workflow_id => $workflow)
+    {
+      foreach ($workflow as $role_id => $assigned_user)
       {
-        foreach ($workflow as $role_id => $assigned_user)
-        {
-          $taskInstanceId = $taskInstances[$workflow_id][$role_id];
-          $taskInstance = WorkflowTask::find($taskInstanceId);
+        $taskInstanceId = $taskInstances[$workflow_id][$role_id];
+        $taskInstance = WorkflowTask::find($taskInstanceId);
 
-          if ($taskInstance == NULL)
-            throw new ManagerException(
-              sprintf('Task instance %d cannot be found for workflow %d', $taskInstanceId, $workflow_id));
+        if ($taskInstance == NULL)
+          throw new ManagerException(
+            sprintf('Task instance %d cannot be found for workflow %d', $taskInstanceId, $workflow_id));
 
-          $taskInstance->user_id = $assigned_user;
-          $taskInstance->save();
-        }
+        $taskInstance->user_id = $assigned_user;
+        $taskInstance->save();
       }
+    }
   }
 
   /**
