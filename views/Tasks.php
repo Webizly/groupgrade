@@ -483,6 +483,17 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
 function gg_task_dispute_form($form, &$form_state, $params)
 {
   $items = [];
+
+  if (! $params['edit']) :
+    $items[] = [
+      '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
+        t('The solution grade was'),
+        (($params['task']->data['value']) ? 'disputed' : 'not disputed')
+      )
+    ];
+    return $items;
+  endif;
+
   $items[] = [
     '#markup' => '<h3>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%',
   ];
@@ -499,17 +510,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
       nl2br($params['solution']->data['solution'])
     )
   ];
-
-  if (! $params['edit']) :
-    $items[] = [
-      '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
-        t('The solution grade was'),
-        (($params['task']->data['value']) ? 'disputed' : 'not disputed')
-      )
-    ];
-    return $items;
-  endif;
-
+  
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
