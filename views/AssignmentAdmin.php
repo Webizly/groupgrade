@@ -293,7 +293,7 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
 
   $items = array();
   $items['m'] = array(
-    '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment</a>',
+    '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment Management</a>',
   );
 
   $items['start-date'] = array(
@@ -322,7 +322,7 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
 
   $items['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Update Section'),
+    '#value' => t('Change Assignment Details'),
   );
   return $items;
 }
