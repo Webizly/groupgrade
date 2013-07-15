@@ -510,7 +510,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
       nl2br($params['solution']->data['solution'])
     )
   ];
-  
+
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
@@ -557,18 +557,6 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   $task = $params['task'];
 
   $items = [];
-  $items[] = [
-    '#markup' => '<h3>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%',
-  ];
-  $items[] = [
-    '#markup' => '<h4>'.t('Problem').':</h4>'
-    .'<p>'.nl2br($params['problem']->data['problem']).'</p>'
-  ];
-
-  $items[] = [
-    '#markup' => '<h4>'.t('Solution').':</h4>'
-    .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
-  ];
 
   if (! $params['edit']) :
     $items['grade lb'] = [
@@ -593,6 +581,19 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+
+  $items[] = [
+    '#markup' => '<h3>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%',
+  ];
+  $items[] = [
+    '#markup' => '<h4>'.t('Problem').':</h4>'
+    .'<p>'.nl2br($params['problem']->data['problem']).'</p>'
+  ];
+
+  $items[] = [
+    '#markup' => '<h4>'.t('Solution').':</h4>'
+    .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
+  ];
 
   $items['grade'] = [
     '#type' => 'textfield',
