@@ -415,7 +415,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $items['solution'] = [
     '#markup' => '<h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
-  
+
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
@@ -677,6 +677,7 @@ function gg_view_workflow($workflow_id)
 
 
     $return .= groupgrade_view_task($task, 'overview');
+    $return .= '<hr />';
   endforeach; endif;
 
   drupal_set_title('View Workflow: '.$workflow_id);
