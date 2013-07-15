@@ -474,3 +474,30 @@ function groupgrade_cron() {
   // Check Tasks
   WorkflowManager::checkTaskInstances();
 }
+
+if (! function_exists('shuffle_assoc')) :
+  /**
+   * Shuffle an array while maintaining keys
+   *
+   * Taken from php.net's andjones at gmail dot com
+   *
+   * @link http://changelog.ca/log/2012/02/16/php_shuffle_array_preserve_keys
+   * @param array Input Array
+   * @return array Shuffled Array
+   */
+  function shuffle_assoc($array)
+  {
+    // Initialize
+    $shuffled_array = [];
+
+    // Get array's keys and shuffle them.
+    $shuffled_keys = array_keys($array);
+    shuffle($shuffled_keys);
+
+    // Create same array, but in shuffled order.
+    foreach ( $shuffled_keys as $shuffled_key )
+      $shuffled_array[  $shuffled_key  ] = $array[  $shuffled_key  ];
+
+    return $shuffled_array;
+  }
+endif;

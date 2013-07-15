@@ -147,13 +147,13 @@ class Allocator {
 
     if (count($this->workflows) == 0)
       throw new AllocatorException('No workflows to allocate to.');
-    
+
     // Now let's find the assignes
     foreach($this->roles as $role_id => $role_data) :
       $rolePool = $this->getPool($role_data['rules']['pool']['name'])->all();
 
       // Let's keep this very random
-      shuffle($rolePool);
+      shuffle_assoc($rolePool);
 
       // Add it to a queue
       $this->roles_queue[$role_id] = $rolePool;
@@ -174,9 +174,15 @@ class Allocator {
         
         $currentRole = $this->roles[$role_id];
 
+        // If they aren't pulling from a list, they're going to be taking random items from a list
+        if (! $currentRole['rules']['pool']['pull after'])
+          shuffle_assoc($this->roles_queue[$role_id]);
+
         // See if the task instance has a workflow alias
         if ($this->workflowTaskHasAlias($role_id, $currentRole, $this->workflows[$workflow_id]))
         {
+          var_dump($role_id, $currentRole, $this->workflows[$workflow_id]);
+          exit;
           // Assign the user based upon the task alias
           $this->assignTaskAlias($role_id, $currentRole, $this->workflows[$workflow_id]);
         } else {
@@ -197,6 +203,9 @@ class Allocator {
         }
         endforeach;
       endforeach;
+
+      var_dump($this->workflows);
+      exit;
   }
 
   /**
@@ -205,11 +214,11 @@ class Allocator {
    * Helper function to see if a user is already in a
    * workflow (cannot join then).
    * 
-   * @param int User ID
+   * @param SectionUser User Object
    * @param array Workflow to check for entry
    * @return bool
    */
-  protected function canEnterWorkflow($user_id, $workflow)
+  protected function canEnterWorkflow($user, $workflow)
   {
     foreach($workflow as $role => $assigne)
     {
@@ -269,6 +278,9 @@ class Allocator {
       break;
     }
 
+    var_dump($role, $aliasRoleData['name'], $aliasRole);
+    var_dump($role_id, $aliasRoleId);
+    exit;
     if ($aliasRoleId == $role_id)
       throw new AllocatorException(sprintf('Alias role ID is the same as parent role ID: %d %d', $aliasRoleId, $role_id));
     

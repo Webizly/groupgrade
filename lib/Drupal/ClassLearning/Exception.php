@@ -12,10 +12,13 @@ class Exception extends \Exception {
    */
   public function __construct($message = '', $code = 0, $previous = NULL, $data = NULL)
   {
-    parent::__construct($message, $code, $previous);
-    
+    drupal_set_message(sprintf('Exception thown inside groupgrade module: %s &mdash; %s', $message, print_r($data)), 'error');
+
     // Pass to watchdog
     watchdog('groupgrade',
       sprintf('Exception thown inside groupgrade module: %s &mdash; %s', $message, print_r($data)), WATCHDOG_ERROR);
+
+    
+    parent::__construct($message, $code, $previous);
   } 
 }

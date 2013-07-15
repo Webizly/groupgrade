@@ -283,7 +283,8 @@ class Manager {
       $allocator->addWorkflow($workflow->workflow_id);
 
     $allocator->assignmentRun();
-
+    $allocator->dump();
+    exit;
     // Now we have to intepert the response of the allocator
     $taskInstances = $allocator->getTaskInstanceStorage();
     $workflows = $allocator->getWorkflows();
