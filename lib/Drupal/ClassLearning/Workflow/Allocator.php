@@ -150,11 +150,13 @@ class Allocator {
     
     // Now let's find the assignes
     foreach($this->roles as $role_id => $role_data) :
-      // Get just their student IDs
-      $this->roles_queue[$role_id] = $this->getPool($role_data['rules']['pool']['name']);
+      $rolePool = $this->getPool($role_data['rules']['pool']['name'])->all();
 
       // Let's keep this very random
-      shuffle($this->roles_queue[$role_id]);
+      shuffle($rolePool);
+
+      // Add it to a queue
+      $this->roles_queue[$role_id] = $rolePool;
     endforeach;
 
     // Go though the workflows
@@ -471,9 +473,9 @@ class Allocator {
    * @param Illuminate\Container\Container $users Users of the pool
    *   which are just a database record from SectionUsers
    */
-  public function addPool($name, $users, $settings = [])
+  public function addPool($name, $users)
   {
-    $this->pools[$name] = (array) $users;
+    $this->pools[$name] = $users;
   }
 
   /**
@@ -494,6 +496,20 @@ class Allocator {
   public function getPool($name)
   {
     return (isset($this->pools[$name])) ? $this->pools[$name] : NULL;
+  }
+
+  /**
+   * Convert a Eloquent Collection to a Array of objects
+   *
+   * @param object
+   */
+  public function collection_to_array($collection)
+  {
+    $index = [];
+    foreach ($collection as $c)
+      $index[] = $c;
+
+    return $c;
   }
 
   /**
