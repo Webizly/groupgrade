@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="ApiGen 2.8.0" />
+
+	<title>Class Drupal\ClassLearning\Models\User | groupgrade</title>
+
+	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
+	<script type="text/javascript" src="elementlist.js?2126279693"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Namespaces</h3>
+			<ul>
+				<li class="active"><a href="namespace-Drupal.html">Drupal<span></span></a>
+						<ul>
+				<li class="active"><a href="namespace-Drupal.ClassLearning.html">ClassLearning<span></span></a>
+						<ul>
+				<li><a href="namespace-Drupal.ClassLearning.Activities.html">Activities</a>
+						</li>
+				<li><a href="namespace-Drupal.ClassLearning.Common.html">Common</a>
+						</li>
+				<li class="active"><a href="namespace-Drupal.ClassLearning.Models.html">Models</a>
+						</li>
+				<li><a href="namespace-Drupal.ClassLearning.Workflow.html">Workflow</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-None.html">None</a>
+						</li>
+				<li><a href="namespace-PHP.html">PHP</a>
+						</li>
+			</ul>
+		</div>
+
+		<hr />
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-Drupal.ClassLearning.Models.Assignment.html">Assignment</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.AssignmentSection.html">AssignmentSection</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.Course.html">Course</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.Group.html">Group</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.GroupUser.html">GroupUser</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.Organization.html">Organization</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.Section.html">Section</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.SectionUsers.html">SectionUsers</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.Semester.html">Semester</a></li>
+				<li class="active"><a href="class-Drupal.ClassLearning.Models.User.html">User</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.Workflow.html">Workflow</a></li>
+				<li><a href="class-Drupal.ClassLearning.Models.WorkflowTask.html">WorkflowTask</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="" />
+		<input type="hidden" name="ie" value="UTF-8" />
+		<input type="text" name="q" class="text" />
+		<input type="submit" value="Search" />
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-Drupal.ClassLearning.Models.html" title="Summary of Drupal\ClassLearning\Models"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+			<li>
+				<a href="deprecated.html" title="List of deprecated elements"><span>Deprecated</span></a>
+			</li>
+			<li>
+				<a href="todo.html" title="Todo list"><span>Todo</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class User</h1>
+
+
+	<div class="description">
+	
+<p>User Interface</p>
+
+<p>Unlike the other models, this isn't an Eloquent model (we let Drupal handle
+that part). Instead, we interface with user data thoughout the system here as IF
+it it were an ORM model</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-Drupal.html">Drupal</a>\<a href="namespace-Drupal.ClassLearning.html">ClassLearning</a>\<a href="namespace-Drupal.ClassLearning.Models.html">Models</a><br />
+		<b>Package:</b> groupgrade<br />
+
+		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Models.User.html#9-153" title="Go to source code">lib/Drupal/ClassLearning/Models/User.php</a><br />
+	</div>
+
+
+
+	<table class="summary" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="classes" id="_classes">
+
+		<td class="attributes"><code>
+			 public static
+			object
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_classes">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.User.html#19-65" title="Go to source code">classes</a>( <span>string <var>$filter</var> = <span class="php-quote">'current'</span></span> )</code>
+
+		<div class="description short">
+			
+<p>Retrieve the Classes a user has</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Retrieve the Classes a user has</p>
+
+<p>You can pass a two filters to the method: - current: classes a user is
+currently taking - past: classes a user took in the past - none: no filter,
+retrieve all classes</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$filter</var></dt>
+					<dd><code>string</code><br>$filter [description]</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>object</code><br />
+				</div>
+
+
+				<h4>Todo</h4>
+				<div class="list">
+						impliment caching<br />
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getOrganizationsCanAccess" id="_getOrganizationsCanAccess">
+
+		<td class="attributes"><code>
+			 public static
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getOrganizationsCanAccess">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.User.html#67-78" title="Go to source code">getOrganizationsCanAccess</a>( )</code>
+
+		<div class="description short">
+			
+<p>We query the ACL lists for something along the lines of organization:* with
+the user on it</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>We query the ACL lists for something along the lines of organization:* with
+the user on it</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getKey" id="_getKey">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getKey">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.User.html#80-89" title="Go to source code">getKey</a>( )</code>
+
+		<div class="description short">
+			
+<p>Retrieve the user ID</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Retrieve the user ID</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="key" id="_key">
+
+		<td class="attributes"><code>
+			 public static
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_key">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.User.html#91-100" title="Go to source code">key</a>( )</code>
+
+		<div class="description short">
+			
+<p>Staticlly Retrieve the user ID</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Staticlly Retrieve the user ID</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="assignments" id="_assignments">
+
+		<td class="attributes"><code>
+			 public static
+			object
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_assignments">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.User.html#102-110" title="Go to source code">assignments</a>( )</code>
+
+		<div class="description short">
+			
+<p>Retrieve the Assignments a user has created</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Retrieve the Assignments a user has created</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>object</code><br>Query Builder<br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="sectionsWithRole" id="_sectionsWithRole">
+
+		<td class="attributes"><code>
+			 public static
+			object
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_sectionsWithRole">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.User.html#112-128" title="Go to source code">sectionsWithRole</a>( <span>string <var>$role</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Return the sections that a user is apart of with a specific role</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Return the sections that a user is apart of with a specific role</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$role</var></dt>
+					<dd><code>string</code></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>object</code><br>Query Builder object<br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="assignedAssignments" id="_assignedAssignments">
+
+		<td class="attributes"><code>
+			 public static
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_assignedAssignments">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.User.html#130-152" title="Go to source code">assignedAssignments</a>( )</code>
+
+		<div class="description short">
+			
+<p>Get a user's assignments they're apart of</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Get a user's assignments they're apart of</p>
+
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		groupgrade API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+	</div>
+</div>
+</div>
+</body>
+</html>
