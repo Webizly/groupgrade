@@ -47,6 +47,8 @@ function gg_view_assignment_listing($section_id, $asec_id)
   if ((int) $section->section_id !== (int) $section_id) return drupal_not_found();
 
   $assignment = $asec->assignment()->first();
+  
+  drupal_set_title($assignment->assignment_title);
 
   $createProblems = WorkflowTask::whereIn('workflow_id', function($query) use ($asec_id)
   {
@@ -70,7 +72,7 @@ function gg_view_assignment_listing($section_id, $asec_id)
   endforeach; endif;
 
   $return = '';
-  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, 'Back to Assignment List');
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, t('Back to Assignment List'));
 
   $return .= theme('table', array(
     'header' => $headers, 
