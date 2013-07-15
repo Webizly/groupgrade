@@ -173,21 +173,22 @@ class Allocator {
           throw new AllocatorException(sprintf('Workflow role %d is already assigned to %d', $role_id, $ignore));
         
         $currentRole = $this->roles[$role_id];
-
         // If they aren't pulling from a list, they're going to be taking random items from a list
         if (! $currentRole['rules']['pool']['pull after'])
+        {
           shuffle_assoc($this->roles_queue[$role_id]);
+        }
 
         // See if the task instance has a workflow alias
         if ($this->workflowTaskHasAlias($role_id, $currentRole, $this->workflows[$workflow_id]))
         {
           // Assign the user based upon the task alias
-          $this->assignTaskAlias($role_id, $currentRole, $this->workflows[$workflow_id]);
+          $this->workflows[$workflow_id][$role_id] = $this->assignTaskAlias($role_id, $currentRole, $this->workflows[$workflow_id]);
         } else {
           // Start from the beginning of the queue
           foreach($this->roles_queue[$role_id] as $queue_id => $user) :
             // They're not a match -- skip to the next user in queue
-            if ($this->canEnterWorkflow($user, $workflow))
+            if ($this->canEnterWorkflow($user, $workflow, $role_id))
             {
               $this->workflows[$workflow_id][$role_id] = $user;
 
@@ -196,6 +197,10 @@ class Allocator {
                 unset($this->roles_queue[$role_id][$queue_id]);
 
               break;
+            }
+            else
+            {
+              echo "CANNOT ENTER <BR />";
             }
           endforeach;
         }
@@ -211,10 +216,15 @@ class Allocator {
    * 
    * @param SectionUser User Object
    * @param array Workflow to check for entry
+   * @param integer The Role ID to check
    * @return bool
    */
-  protected function canEnterWorkflow($user, $workflow)
+  protected function canEnterWorkflow($user, $workflow, $role_id)
   {
+    $role = $this->roles[$role_id];
+    var_dump($user, $workflow, $role);
+    exit;
+    
     foreach($workflow as $role => $assigne)
     {
       if ($assigne !== NULL AND (int) $assigne === (int) $user->user_id)
@@ -291,6 +301,7 @@ class Allocator {
    * @param integer $role_id The Role ID
    * @param array $role The data pertaining to the role
    * @param array $workflow The workflow data
+   * @return integer
    */
   public function assignTaskAlias($role_id, $role, &$workflow)
   {
@@ -317,9 +328,7 @@ class Allocator {
     if ($workflow[$aliasRoleId] == NULL)
       throw new AllocatorException('Alias is actually not assigned. Please run Allocator::workflowTaskHasAlias() first.');
 
-    // Since $workflow is passed by reference, we can update the workflow here
-    // and still update the parent workflow.
-    $workflow[$role_id] = $workflow[$aliasRoleId];
+    return $workflow[$aliasRoleId];
   }
   
 

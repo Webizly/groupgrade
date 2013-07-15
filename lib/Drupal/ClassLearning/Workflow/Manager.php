@@ -225,9 +225,9 @@ class Manager {
     $workflows = [];
 
     $users = SectionUsers::where('section_id', '=', $a->section_id)
-        ->where('su_status', '=', 'active')
-        ->where('su_role', '=', 'student')
-        ->get();
+      ->where('su_status', '=', 'active')
+      ->where('su_role', '=', 'student')
+      ->get();
 
     // We're just creating a workflow for each user
     // They're not actually assigned to this workflow
@@ -245,7 +245,7 @@ class Manager {
     endforeach;
 
     // Allocate the users
-    self::allocateUsers($a, $users, $workflows);
+    self::allocateUsers($a, $workflows);
   }
 
   /**
@@ -255,7 +255,7 @@ class Manager {
    * @param SectionUsers
    * @return void
    */
-  public static function allocateUsers(AssignmentSection $a, $users, &$workflows)
+  public static function allocateUsers(AssignmentSection $a, &$workflows)
   {
     $allocator = new Allocator();
 
@@ -275,6 +275,11 @@ class Manager {
 
     // Setup the user pools for the allocation
     foreach (self::getUserRoles() as $role) :
+      $users = SectionUsers::where('section_id', '=', $a->section_id)
+        ->where('su_status', '=', 'active')
+        ->where('su_role', '=', $role)
+        ->get();
+
       $allocator->addPool($role, $users);
     endforeach;
 
