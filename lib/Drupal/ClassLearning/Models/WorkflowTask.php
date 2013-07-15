@@ -282,8 +282,10 @@ class WorkflowTask extends ModelBase {
 
     // Lastly, the callback
     $callbackName = str_replace(' ', '_', $this->type);
-    echo sprintf('Calling internal callback %s with data %s \n', $callbackName, print_r($this, true));
-
+    echo sprintf('Calling internal callback %s with data \n', $callbackName);
+    var_dump($this);
+    echo '\n';
+    
     InternalCallback::$callbackName($this);
   }
 
