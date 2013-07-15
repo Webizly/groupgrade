@@ -260,37 +260,37 @@ class Manager {
         $count = 1;
 
         if (isset($role['count']))
-          $count = $role['count'];
+          $count = (int) $role['count'];
 
         for ($i = 0; $i < $count; $i++)
-          $allocator->createRole($role_name);
+          $allocator->createRole($role_name, $role);
       endif;
     }
 
     foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
 
-    $allocator->assignmentRun();
+      $allocator->assignmentRun();
 
-    // Now we have to intepert the response of the allocator
-    $taskInstances = $allocator->getTaskInstanceStorage();
-    $workflows = $allocator->getWorkflows();
+      // Now we have to intepert the response of the allocator
+      $taskInstances = $allocator->getTaskInstanceStorage();
+      $workflows = $allocator->getWorkflows();
 
-    foreach ($workflows as $workflow_id => $workflow)
-    {
-      foreach ($workflow as $role_id => $assigned_user)
+      foreach ($workflows as $workflow_id => $workflow)
       {
-        $taskInstanceId = $taskInstances[$workflow_id][$role_id];
-        $taskInstance = WorkflowTask::find($taskInstanceId);
+        foreach ($workflow as $role_id => $assigned_user)
+        {
+          $taskInstanceId = $taskInstances[$workflow_id][$role_id];
+          $taskInstance = WorkflowTask::find($taskInstanceId);
 
-        if ($taskInstance == NULL)
-          throw new ManagerException(
-            sprintf('Task instance %d cannot be found for workflow %d', $taskInstanceId, $workflow_id));
+          if ($taskInstance == NULL)
+            throw new ManagerException(
+              sprintf('Task instance %d cannot be found for workflow %d', $taskInstanceId, $workflow_id));
 
-        $taskInstance->user_id = $assigned_user;
-        $taskInstance->save();
+          $taskInstance->user_id = $assigned_user;
+          $taskInstance->save();
+        }
       }
-    }
   }
 
   /**
@@ -324,13 +324,19 @@ class Manager {
           ]
         ],
 
+        //'user alias' => '',
+
         'instructions' => 'Read the assignment instructions and enter '
           .'a problem in the box below. Make your problem as clear as '
           .'possible so the person solving it will understand what you mean.',
       ],
 
       'edit problem' => [
-        'pool' => 'instructor',
+        'pool' => [
+          'name' => 'instructor',
+          'pull after' => false,
+        ],
+
         'duration' => 1,
         'trigger' => [
           [
@@ -481,7 +487,11 @@ class Manager {
       // Resolve a dispute and end the workflow
       // Trigger only if the "dispute" task has a value of true
       'resolve dispute' => [
-        'pool' => 'instructor',
+        'pool' => [
+          'name' => 'instructor',
+          'pull after' => false,
+        ],
+
         'duration' => 2,
 
         'trigger' => [

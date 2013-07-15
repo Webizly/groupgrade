@@ -15,8 +15,14 @@ use Drupal\ClassLearning\Exception as AllocatorException,
  *
  * Used to assign a pool of users to specific roles inside of a work flow.
  * See previous work {@link http://web.njit.edu/~mt85/UsersAlg.php}
+ *
+ * To run an intelligent version of the allocator, you should check out
+ * the {@link Allocator::assignmentRun()} method. It will run the allocation
+ * a few times to ensure there are no errors.
  * 
  * @license MIT
+ * @package groupgrade
+ * @subpackage allocation
  */
 class Allocator {
   /**
@@ -34,8 +40,8 @@ class Allocator {
   /**
    * Workflow Storage
    *
-   * To access, use `getWorkflows()` or `addWorkflow()`
-   * 
+   * @see Allocator::getWorkflows()
+   * @see Allocator::addWorkflow()
    * @var array
    */
   protected $workflows = [];
@@ -97,7 +103,7 @@ class Allocator {
    * Construct the Allocator Algorithm
    *
    * @todo Restructure how we store users
-   * @param SectionUsers Users from a section
+   * @param SectionUsers $users Users from a section
    */
   public function __construct($users)
   {
@@ -168,8 +174,8 @@ class Allocator {
    * Helper function to see if a user is already in a
    * workflow (cannot join then).
    * 
-   * @param int
-   * @param array
+   * @param int User ID
+   * @param array Workflow to check for entry
    * @return bool
    */
   protected function canEnterWorkflow($user_id, $workflow)
@@ -185,6 +191,7 @@ class Allocator {
   /**
    * Does a workflow contain a duplicate error?
    *
+   * @param array $workflow Workflow storage array
    * @return bool
    */
   public function contains_error($workflow)
@@ -323,6 +330,7 @@ class Allocator {
    * Add a workflow
    *
    * This should be called **after** registering all the roles for the allocation
+   *
    * 
    * @param int
    */
@@ -332,8 +340,9 @@ class Allocator {
   }
 
   /**
-   * Get the Roles
+   * Retrieve the Roles
    *
+   * @see Allocator::createRole()
    * @return array
    */
   public function getRoles()
