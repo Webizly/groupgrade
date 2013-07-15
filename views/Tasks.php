@@ -230,12 +230,15 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
 
   if ($params['action'] == 'display')
     $items['original problem'] = [
-      '#markup' => '<p><strong>Original Problem:</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
+      '#markup' => sprintf('<p><strong>%s:</strong></p><p>%s</p><hr />',
+        t('Original Problem'),
+        nl2br($params['previous task']->data['problem'])
+      )
     ];
 
   if (! $params['edit']) :
     $items['edited problem lb'] = [
-      '#markup' => '<strong>Submitted Edited Problem:</strong>',
+      '#markup' => sprintf('<strong>%s:</strong>', t('Submitted Edited Problem')),
     ];
     $items['edited problem'] = [
       '#type' => 'item',
@@ -243,7 +246,7 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     ];
 
     $items['comment lb'] = [
-      '#markup' => '<strong>Edited Problem Comment:</strong>',
+      '#markup' => sprintf('<strong>%s:</strong>', t('Edited Problem Comment')),
     ];
     $items['comment'] = [
       '#type' => 'item',
@@ -483,18 +486,25 @@ function gg_task_dispute_form($form, &$form_state, $params)
     '#markup' => '<h3>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%',
   ];
   $items[] = [
-    '#markup' => '<h4>Problem:</h4>'
-    .'<p>'.nl2br($params['problem']->data['problem']).'</p>'
+    '#markup' => sprintf('<h4>%s:</h4><p>%s</p>',
+      t('Problem'),
+      nl2br($params['problem']->data['problem'])
+    )
   ];
 
   $items[] = [
-    '#markup' => '<h4>Solution:</h4>'
-    .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
+    '#markup' => sprintf('<h4>%s:</h4><p>%s</p><hr />',
+      t('Solution'),
+      nl2br($params['solution']->data['solution'])
+    )
   ];
 
   if (! $params['edit']) :
     $items[] = [
-      '#markup' => '<p>You already opted to <strong>'.(($params['task']->data['value']) ? 'dispute' : 'not dispute').'</strong>.</p>'
+      '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
+        t('You already opted to'),
+        (($params['task']->data['value']) ? 'dispute' : 'not dispute')
+      )
     ];
     return $items;
   endif;
@@ -560,7 +570,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   if (! $params['edit']) :
     $items['grade lb'] = [
-      '#markup' => '<strong>Grade:</strong>',
+      '#markup' => sprintf('<strong>%s:</strong>', t('Grade'))
     ];
     $items['grade'] = [
       '#type' => 'item',
@@ -627,7 +637,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
-  drupal_set_message(sprintf('Grade %s.', ($save) ? 'saved' : 'submitted'));
+  drupal_set_message(sprintf('%s %s.', t('Grade'), ($save) ? 'saved' : 'submitted'));
 
   if (! $save) :
     $task->complete();
@@ -692,6 +702,12 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
   $solution = $params['solution'];
   $task = $params['task'];
 
+  // Previous Grades
+  $grades = Task::where('workflow_id', '=', $task->workflow_id)
+    ->whereType('grade solution')
+    ->whereStatus('complete')
+    ->get();
+
   $items = [];
   $items['problem'] = [
     '#markup' => '<h4>Problem</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
@@ -702,7 +718,7 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
 
   if (! $params['edit']) :
     $items['grade lb'] = [
-      '#markup' => '<strong>Grade:</strong>',
+      '#markup' => sprintf('<strong>%s:</strong>', t('Grade')),
     ];
     $items['grade'] = [
       '#type' => 'item',
@@ -710,7 +726,7 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     ];
 
     $items['justice lb'] = [
-      '#markup' => '<strong>Grade Justification:</strong>',
+      '#markup' => sprintf('<strong>%s:</strong>', t('Grade Justification')),
     ];
     $items['justice'] = [
       '#type' => 'item',
@@ -724,6 +740,17 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+
+  // Previous grades
+  if (count($grades) > 0) : foreach ($grades as $grade) :
+    $items[] = [
+      '#markup' => sprintf('<h4>%s: %s</h4>', t('Grade'), $grade->data['grade'].'%')
+    ];
+
+    $items[] = [
+      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t('Grade Justification'), nl2br($grade->data['justification']))
+    ];
+  endforeach; endif;
 
   $items['grade'] = [
     '#type' => 'textfield',
@@ -780,7 +807,7 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
     $workflow->save();
   endif;
   
-  drupal_set_message(sprintf('Grade %s.', ($save) ? 'saved' : 'submitted'));
+  drupal_set_message(sprintf('%s %s.', t('Grade'), ($save) ? 'saved' : 'submitted'));
 
   if (! $save)
     return drupal_goto('class');
