@@ -181,8 +181,6 @@ class Allocator {
         // See if the task instance has a workflow alias
         if ($this->workflowTaskHasAlias($role_id, $currentRole, $this->workflows[$workflow_id]))
         {
-          var_dump($role_id, $currentRole, $this->workflows[$workflow_id]);
-          exit;
           // Assign the user based upon the task alias
           $this->assignTaskAlias($role_id, $currentRole, $this->workflows[$workflow_id]);
         } else {
@@ -203,9 +201,6 @@ class Allocator {
         }
         endforeach;
       endforeach;
-
-      var_dump($this->workflows);
-      exit;
   }
 
   /**
@@ -267,20 +262,17 @@ class Allocator {
     // It has one -- let's find the other task instance
     $aliasRole = $role['rules']['user alias'];
 
-    foreach ($this->roles as $role_id => $role_data)
+    foreach ($this->roles as $sub_role_id => $sub_role_data)
     {
-      if ($role_data['name'] !== $aliasRole)
+      if ($sub_role_data['name'] !== $aliasRole)
         continue;
 
       // We've got a match!
-      $aliasRoleData = $role_data;
-      $aliasRoleId = $role_id;
+      $aliasRoleData = $sub_role_data;
+      $aliasRoleId = $sub_role_id;
       break;
     }
 
-    var_dump($role, $aliasRoleData['name'], $aliasRole);
-    var_dump($role_id, $aliasRoleId);
-    exit;
     if ($aliasRoleId == $role_id)
       throw new AllocatorException(sprintf('Alias role ID is the same as parent role ID: %d %d', $aliasRoleId, $role_id));
     
@@ -308,14 +300,14 @@ class Allocator {
     // It has one -- let's find the other task instance
     $aliasRole = $role['rules']['user alias'];
 
-    foreach ($this->roles as $role_id => $role_data)
+    foreach ($this->roles as $sub_role_id => $sub_role_data)
     {
-      if ($role_data['name'] !== $aliasRole)
+      if ($sub_role_data['name'] !== $aliasRole)
         continue;
 
       // We've got a match!
-      $aliasRoleData = $role_data;
-      $aliasRoleId = $role_id;
+      $aliasRoleData = $sub_role_data;
+      $aliasRoleId = $sub_role_id;
       break;
     }
 
@@ -612,7 +604,7 @@ class Allocator {
           if ($assigne === NULL) :
             ?><td bgcolor="red">NONE</td><?php
           else :
-            $user = user_load($assigne);
+            $user = user_load($assigne->user_id);
             ?><td><?php echo $user->name; ?></td><?php
           endif;
         endforeach; ?>
@@ -622,7 +614,7 @@ class Allocator {
 </table>
 <!-- Now Show a user's membership table -->
 <p>&nbsp;</p>
-
+<?php exit; ?>
 <table width="100%" border="1">
   <thead>
     <tr>
@@ -635,9 +627,9 @@ class Allocator {
   </thead>
 
   <tbody>
-    <?php foreach($this->users as $user_id => $student) : ?>
+    <?php foreach($this->pools['student'] as $user) : ?>
     <tr>
-      <td><?php echo user_load($user_id)->name; ?></td>
+      <td><?php echo user_load($user->user_id)->name; ?></td>
 
     <?php foreach($this->roles as $role_id => $role_data) : $found = false; ?>
       <?php
@@ -658,7 +650,7 @@ class Allocator {
 <p><strong>Total Students:</strong> <?php echo count($this->users); ?></p>
 <p><strong>Total Runs:</strong> <?php echo $this->runCount; ?></p>
 <pre>
-<?php echo print_r($this->workflows); ?>
+<?php var_dump($this->workflows); ?>
 </pre>
 <?php
   }
