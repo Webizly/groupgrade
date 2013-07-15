@@ -733,6 +733,14 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
       '#markup' => nl2br($task->data['justification']),
     ];
 
+    $items['comment lb'] = [
+      '#markup' => sprintf('<strong>%s:</strong>', t('Why was it resolved it this way?')),
+    ];
+    $items['comment'] = [
+      '#type' => 'item',
+      '#markup' => (isset($task->data['grade comment'])) ? nl2br($task->data['grade comment']) : '',
+    ];
+
     return $items;
   endif;
 
@@ -765,6 +773,13 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     '#required' => true,
     '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
   ];
+
+  $items['comment'] = [
+    '#type' => 'textarea',
+    '#title' => 'Why did you resolve it this way?',
+    '#required' => true,
+    '#default_value' => (isset($task->data['comment'])) ? $task->data['comment'] : '',
+  ];
   $items['save'] = [
     '#type' => 'submit',
     '#value' => 'Save Grade For Later',
@@ -793,7 +808,8 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute([
     'grade' =>  $grade,
-    'justification' => $form['justification']['#value']
+    'justification' => $form['justification']['#value'],
+    'comment' => $form['comment']['#value']
   ]);
 
   $task->status = ($save) ? 'started' : 'completed';
