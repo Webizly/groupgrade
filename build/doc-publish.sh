@@ -1,4 +1,5 @@
 #!/bin/bash
+git pull;
 
 # Build the documentation
 apigen -c build/apigen.neon
@@ -14,3 +15,5 @@ git checkout gh-pages
 rm -rf *
 
 mv ../groupgrade-docs/* ./
+git -a -m "Importing documentation"
+git push origin gh-pages
