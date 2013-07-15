@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="ApiGen 2.8.0" />
+
+	<title>Class Drupal\ClassLearning\Workflow\InternalCallback | groupgrade</title>
+
+	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
+	<script type="text/javascript" src="elementlist.js?2126279693"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Namespaces</h3>
+			<ul>
+				<li class="active"><a href="namespace-Drupal.html">Drupal<span></span></a>
+						<ul>
+				<li class="active"><a href="namespace-Drupal.ClassLearning.html">ClassLearning<span></span></a>
+						<ul>
+				<li><a href="namespace-Drupal.ClassLearning.Activities.html">Activities</a>
+						</li>
+				<li><a href="namespace-Drupal.ClassLearning.Common.html">Common</a>
+						</li>
+				<li><a href="namespace-Drupal.ClassLearning.Models.html">Models</a>
+						</li>
+				<li class="active"><a href="namespace-Drupal.ClassLearning.Workflow.html">Workflow</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-None.html">None</a>
+						</li>
+				<li><a href="namespace-PHP.html">PHP</a>
+						</li>
+			</ul>
+		</div>
+
+		<hr />
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-Drupal.ClassLearning.Workflow.Allocator.html">Allocator</a></li>
+				<li class="active"><a href="class-Drupal.ClassLearning.Workflow.InternalCallback.html">InternalCallback</a></li>
+				<li><a href="class-Drupal.ClassLearning.Workflow.Manager.html">Manager</a></li>
+				<li><a href="class-Drupal.ClassLearning.Workflow.TaskFactory.html">TaskFactory</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="" />
+		<input type="hidden" name="ie" value="UTF-8" />
+		<input type="text" name="q" class="text" />
+		<input type="submit" value="Search" />
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-Drupal.ClassLearning.Workflow.html" title="Summary of Drupal\ClassLearning\Workflow"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+			<li>
+				<a href="deprecated.html" title="List of deprecated elements"><span>Deprecated</span></a>
+			</li>
+			<li>
+				<a href="todo.html" title="Todo list"><span>Todo</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class InternalCallback</h1>
+
+
+	<div class="description">
+	
+<p>Internal Callback Class</p>
+
+<p>Used to handle internal tasks function</p>
+
+<p>The WorkflowTask model will call this class to see if a method exists to
+handle certain types of events for a task type. They look for a function like
+this: task type: resolve grades callback name: resolve_grades</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-Drupal.html">Drupal</a>\<a href="namespace-Drupal.ClassLearning.html">ClassLearning</a>\<a href="namespace-Drupal.ClassLearning.Workflow.html">Workflow</a><br />
+		
+
+		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Workflow.InternalCallback.html#13-100" title="Go to source code">lib/Drupal/ClassLearning/Workflow/InternalCallback.php</a><br />
+	</div>
+
+
+
+	<table class="summary" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="resolve_grades" id="_resolve_grades">
+
+		<td class="attributes"><code>
+			 public static
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_resolve_grades">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.InternalCallback.html#25-56" title="Go to source code">resolve_grades</a>( <span><code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.html">Drupal\ClassLearning\Models\WorkflowTask</a></code> <var>$task</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Impliments hook for resolve_grades</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Impliments hook for resolve_grades</p>
+
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="grades_ok" id="_grades_ok">
+
+		<td class="attributes"><code>
+			 public static
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_grades_ok">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.InternalCallback.html#58-88" title="Go to source code">grades_ok</a>( <span><code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.html">Drupal\ClassLearning\Models\WorkflowTask</a></code> <var>$task</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Impliments hook for type "grades ok"</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Impliments hook for type "grades ok"</p>
+
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__callStatic" id="___callStatic">
+
+		<td class="attributes"><code>
+			 public static
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___callStatic">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.InternalCallback.html#90-99" title="Go to source code">__callStatic</a>( <span> <var>$name</var></span>, <span>mixed <var>$arguments</var> = []</span> )</code>
+
+		<div class="description short">
+			
+<p>Unknown method handler</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Unknown method handler</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$name</var></dt>
+					<dd><code></code></dd>
+					<dt><var>$arguments</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		groupgrade API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+	</div>
+</div>
+</div>
+</body>
+</html>
