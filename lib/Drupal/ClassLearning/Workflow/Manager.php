@@ -286,9 +286,9 @@ class Manager {
     // Add the workflows from the database
     foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
-    
-    $allocator->assignmentRun();
-    $allocator->dump();
+
+    $run = $allocator->assignmentRun();
+    $run->dump();
     exit;
     // Now we have to intepert the response of the allocator
     $taskInstances = $allocator->getTaskInstanceStorage();

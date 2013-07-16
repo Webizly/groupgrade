@@ -146,7 +146,7 @@ class Allocator {
       // Add it to a queue
       $this->roles_queue[$role_id] = $rolePool;
     endforeach;
-    
+
     // Go though the workflows
     foreach($this->workflows as $workflow_id => $workflow) :
       // Loop though each role inside of the workflow
@@ -175,6 +175,7 @@ class Allocator {
           // Start from the beginning of the queue
           foreach($this->roles_queue[$role_id] as $queue_id => $user) :
             // They're not a match -- skip to the next user in queue
+            var_dump($this->canEnterWorkflow($user, $this->workflows[$workflow_id], $role_id));
             if ($this->canEnterWorkflow($user, $this->workflows[$workflow_id], $role_id))
             {
               $this->workflows[$workflow_id][$role_id] = $user;
@@ -537,7 +538,7 @@ class Allocator {
 
       $this->runAssignment();
 
-      $hasErrors = $this->contains_errors($this->getWorkflows());
+      $hasErrors = false; //$this->contains_errors($this->getWorkflows());
 
       if (! $hasErrors)
         return $this;
