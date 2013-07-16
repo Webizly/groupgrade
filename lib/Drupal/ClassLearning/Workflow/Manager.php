@@ -396,6 +396,14 @@ class Manager {
         'duration' => 3,
         'user alias' => 'create problem',
 
+        // This configuration variable defines if the role of the grade solution
+        // should take over multiple instances of the task instance.
+        // 
+        // If there are two instances of 'grade solution', setting this to true will
+        // make sure that only one get's an alias. Setting it to false will make it
+        // it an alias for all the roles.
+        'user alias all types' => true,
+        
         'trigger' => [
           [
             'type' => 'reference task status',
