@@ -27,17 +27,17 @@ define('MYSQL_DATETIME', 'Y-m-d H:i:s');
  */
 define('HTML_BACK_ARROW', '&lsaquo;');
 
+// Check for Composer autoload file.
+if (! file_exists(__DIR__.'/vendor/autoload.php'))
+    return drupal_set_message('Composer is not setup for Groupgrade.
+      You need to run "drush dl composer && drush composer install"', 'error');
+
 /**
  * Loading of the system
  *
  * @access private
  */
 function groupgrade_init() {
-  // Composer
-  if (! file_exists(__DIR__.'/vendor/autoload.php'))
-    die('Composer is not setup for Groupgrade.
-      You need to run "drush dl composer && drush composer install"');
-
   // Load Composer Dependencies
   require_once __DIR__.'/vendor/autoload.php';
   
