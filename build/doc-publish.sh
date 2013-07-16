@@ -1,5 +1,5 @@
 #!/bin/bash
-git pull --all
+git pull --all;
 
 # Build the documentation
 apigen -c build/apigen.neon
