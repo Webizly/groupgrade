@@ -7,7 +7,7 @@
 	<title>Class Drupal\ClassLearning\Workflow\Allocator | groupgrade</title>
 
 	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
-	<script type="text/javascript" src="elementlist.js?2126279693"></script>
+	<script type="text/javascript" src="elementlist.js?3628008223"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
 
 </head>
@@ -131,7 +131,7 @@ times to ensure there are no errors.</p>
 
 				<b>License:</b>
 				<a href="MIT">MIT</a><br />
-		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#13-478" title="Go to source code">lib/Drupal/ClassLearning/Workflow/Allocator.php</a><br />
+		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#13-709" title="Go to source code">lib/Drupal/ClassLearning/Workflow/Allocator.php</a><br />
 	</div>
 
 
@@ -149,7 +149,7 @@ times to ensure there are no errors.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#___construct">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#102-115" title="Go to source code">__construct</a>( <span>SectionUsers <var>$users</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#107-115" title="Go to source code">__construct</a>( )</code>
 
 		<div class="description short">
 			
@@ -163,18 +163,9 @@ times to ensure there are no errors.</p>
 
 
 
-				<h4>Parameters</h4>
-				<div class="list"><dl>
-					<dt><var>$users</var></dt>
-					<dd><code>SectionUsers</code><br>$users Users from a section</dd>
-				</dl></div>
 
 
 
-				<h4>Todo</h4>
-				<div class="list">
-						Restructure how we store users<br />
-				</div>
 
 
 		</div>
@@ -191,7 +182,7 @@ times to ensure there are no errors.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_runAssignment">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#117-169" title="Go to source code">runAssignment</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#117-193" title="Go to source code">runAssignment</a>( )</code>
 
 		<div class="description short">
 			
@@ -227,7 +218,7 @@ detects errors and fixes them. This is a helper processor.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_canEnterWorkflow">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#171-189" title="Go to source code">canEnterWorkflow</a>( <span>integer <var>$user_id</var></span>, <span>array <var>$workflow</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#195-230" title="Go to source code">canEnterWorkflow</a>( <span>SectionUser <var>$user</var></span>, <span>array <var>$workflow</var></span>, <span>integer <var>$role_id</var></span> )</code>
 
 		<div class="description short">
 			
@@ -246,15 +237,153 @@ then).</p>
 
 				<h4>Parameters</h4>
 				<div class="list"><dl>
-					<dt><var>$user_id</var></dt>
-					<dd><code>integer</code><br>User ID</dd>
+					<dt><var>$user</var></dt>
+					<dd><code>SectionUser</code><br>User Object</dd>
 					<dt><var>$workflow</var></dt>
 					<dd><code>array</code><br>Workflow to check for entry</dd>
+					<dt><var>$role_id</var></dt>
+					<dd><code>integer</code><br>The Role ID to check</dd>
 				</dl></div>
 
 				<h4>Returns</h4>
 				<div class="list">
 					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="workflowTaskHasAlias" id="_workflowTaskHasAlias">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_workflowTaskHasAlias">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#232-252" title="Go to source code">workflowTaskHasAlias</a>( <span>integer <var>$role_id</var></span>, <span>array <var>$role</var></span>, <span>array <var>&amp; $workflow</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Check for a User Alias of a workflow task</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Check for a User Alias of a workflow task</p>
+
+<p>See if a task instance has a task alias If it has a task alias, then furthur
+test to see if the alias task is also assigned to a user already. Return true if
+it's already assigned.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$role_id</var></dt>
+					<dd><code>integer</code><br>$role_id The Role ID</dd>
+					<dt><var>$role</var></dt>
+					<dd><code>array</code><br>$role The data pertaining to the role</dd>
+					<dt><var>$workflow</var></dt>
+					<dd><code>array</code><br>$workflow The workflow data</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="assignTaskAlias" id="_assignTaskAlias">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_assignTaskAlias">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#254-273" title="Go to source code">assignTaskAlias</a>( <span>integer <var>$role_id</var></span>, <span>array <var>$role</var></span>, <span>array <var>&amp; $workflow</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Assign the user based upon the task alias</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Assign the user based upon the task alias</p>
+
+<p>The function will assume you've already checked to see if there actually is a
+task alias via <code><a href="class-Drupal.ClassLearning.Workflow.Allocator.html#_workflowTaskHasAlias">Drupal\ClassLearning\Workflow\Allocator::workflowTaskHasAlias()</a></code></p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$role_id</var></dt>
+					<dd><code>integer</code><br>$role_id The Role ID</dd>
+					<dt><var>$role</var></dt>
+					<dd><code>array</code><br>$role The data pertaining to the role</dd>
+					<dt><var>$workflow</var></dt>
+					<dd><code>array</code><br>$workflow The workflow data</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="findWorkflowTaskAlias" id="_findWorkflowTaskAlias">
+
+		<td class="attributes"><code>
+			 protected 
+			array|boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_findWorkflowTaskAlias">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#275-351" title="Go to source code">findWorkflowTaskAlias</a>( <span>mixed <var>$role_id</var></span>, <span>mixed <var>&amp; $workflow</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Helper function to determine the workflow task alias</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Helper function to determine the workflow task alias</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array|boolean</code><br />
 				</div>
 
 
@@ -274,7 +403,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_contains_error">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#191-208" title="Go to source code">contains_error</a>( <span>array <var>$workflow</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#353-371" title="Go to source code">contains_error</a>( <span>array <var>$workflow</var></span> )</code>
 
 		<div class="description short">
 			
@@ -316,7 +445,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_contains_errors">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#210-222" title="Go to source code">contains_errors</a>( <span>mixed <var>$workflows</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#373-385" title="Go to source code">contains_errors</a>( <span>mixed <var>$workflows</var></span> )</code>
 
 		<div class="description short">
 			
@@ -353,7 +482,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_emptyWorkflow">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#224-265" title="Go to source code">emptyWorkflow</a>( <span>mixed <var>$workflow_id</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#387-428" title="Go to source code">emptyWorkflow</a>( <span>mixed <var>$workflow_id</var></span> )</code>
 
 		<div class="description short">
 			
@@ -390,7 +519,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_resetWorkflows">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#267-279" title="Go to source code">resetWorkflows</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#430-442" title="Go to source code">resetWorkflows</a>( )</code>
 
 		<div class="description short">
 			
@@ -423,7 +552,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_createRole">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#281-293" title="Go to source code">createRole</a>( <span>string <var>$name</var></span>, <span>string <var>$rules</var> = []</span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#444-461" title="Go to source code">createRole</a>( <span>string <var>$name</var></span>, <span>array <var>$rules</var> = []</span> )</code>
 
 		<div class="description short">
 			
@@ -440,9 +569,9 @@ then).</p>
 				<h4>Parameters</h4>
 				<div class="list"><dl>
 					<dt><var>$name</var></dt>
-					<dd><code>string</code></dd>
+					<dd><code>string</code><br>Name of the role</dd>
 					<dt><var>$rules</var></dt>
-					<dd><code>string</code></dd>
+					<dd><code>array</code></dd>
 				</dl></div>
 
 
@@ -463,7 +592,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getWorkflows">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#295-303" title="Go to source code">getWorkflows</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#463-471" title="Go to source code">getWorkflows</a>( )</code>
 
 		<div class="description short">
 			
@@ -500,17 +629,17 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getWorkflow">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#305-314" title="Go to source code">getWorkflow</a>( <span>integer <var>$workflow_id</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#473-482" title="Go to source code">getWorkflow</a>( <span>Drupal\ClassLearning\Workflow\int <var>$workflow_id</var></span> )</code>
 
 		<div class="description short">
 			
-<p>Get a Workflow</p>
+<p>Get a Specific Workflow</p>
 
 		</div>
 
 		<div class="description detailed hidden">
 			
-<p>Get a Workflow</p>
+<p>Get a Specific Workflow</p>
 
 
 
@@ -542,7 +671,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getTaskInstanceStorage">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#316-327" title="Go to source code">getTaskInstanceStorage</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#484-495" title="Go to source code">getTaskInstanceStorage</a>( )</code>
 
 		<div class="description short">
 			
@@ -555,7 +684,8 @@ then).</p>
 <p>Get the task instance storage</p>
 
 <p>This is the associative IDs to associate the internal role ID inside of the
-<code>getWorkflow()</code> data to the task instance ID from the workflow.</p>
+<code><a href="class-Drupal.ClassLearning.Workflow.Allocator.html#_getWorkflow">Drupal\ClassLearning\Workflow\Allocator::getWorkflow()</a></code> data to the task instance ID from the
+workflow.</p>
 
 
 
@@ -582,7 +712,7 @@ then).</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_addWorkflow">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#329-340" title="Go to source code">addWorkflow</a>( <span>integer <var>$workflow_id</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#497-507" title="Go to source code">addWorkflow</a>( <span>integer <var>$workflow_id</var></span> )</code>
 
 		<div class="description short">
 			
@@ -623,7 +753,7 @@ the allocation</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getRoles">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#342-351" title="Go to source code">getRoles</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#509-518" title="Go to source code">getRoles</a>( )</code>
 
 		<div class="description short">
 			
@@ -653,6 +783,159 @@ the allocation</p>
 		</div>
 		</div></td>
 	</tr>
+	<tr data-order="addPool" id="_addPool">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addPool">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#520-530" title="Go to source code">addPool</a>( <span>string <var>$name</var></span>, <span>Illuminate\Container\Container <var>$users</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Add a pool of users</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Add a pool of users</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$name</var></dt>
+					<dd><code>string</code><br>$name The name of the pool</dd>
+					<dt><var>$users</var></dt>
+					<dd><code>Illuminate\Container\Container</code><br>$users Users of the pool which are just a database record from SectionUsers</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getPools" id="_getPools">
+
+		<td class="attributes"><code>
+			 public 
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getPools">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#532-540" title="Go to source code">getPools</a>( )</code>
+
+		<div class="description short">
+			
+<p>Retrieve the pools of users</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Retrieve the pools of users</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getPool" id="_getPool">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getPool">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#542-550" title="Go to source code">getPool</a>( <span>string <var>$name</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Retrieve a Full Pool</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Retrieve a Full Pool</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$name</var></dt>
+					<dd><code>string</code><br>Pool Name</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="collection_to_array" id="_collection_to_array">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_collection_to_array">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#552-564" title="Go to source code">collection_to_array</a>( <span>object <var>$collection</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Convert a Eloquent Collection to a Array of objects</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Convert a Eloquent Collection to a Array of objects</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$collection</var></dt>
+					<dd><code>object</code></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
 	<tr data-order="assignmentRun" id="_assignmentRun">
 
 		<td class="attributes"><code>
@@ -664,7 +947,7 @@ the allocation</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_assignmentRun">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#353-381" title="Go to source code">assignmentRun</a>( <span>integer <var>$maxRuns</var> = <span class="php-num">20</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#566-594" title="Go to source code">assignmentRun</a>( <span>integer <var>$maxRuns</var> = <span class="php-num">20</span></span> )</code>
 
 		<div class="description short">
 			
@@ -702,6 +985,43 @@ amount of errors.</p>
 		</div>
 		</div></td>
 	</tr>
+	<tr data-order="defaultRolePool" id="_defaultRolePool">
+
+		<td class="attributes"><code>
+			 public 
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_defaultRolePool">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#596-607" title="Go to source code">defaultRolePool</a>( )</code>
+
+		<div class="description short">
+			
+<p>Default Pool Settings for a role</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Default Pool Settings for a role</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>array</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
 	<tr data-order="dump" id="_dump">
 
 		<td class="attributes"><code>
@@ -713,7 +1033,7 @@ amount of errors.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_dump">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#383-477" title="Go to source code">dump</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#609-708" title="Go to source code">dump</a>( )</code>
 
 		<div class="description short">
 			
@@ -752,33 +1072,6 @@ amount of errors.</p>
 
 	<table class="summary" id="properties">
 	<caption>Properties summary</caption>
-	<tr data-order="user" id="$user">
-		<td class="attributes"><code>
-			protected  
-			array
-		</code></td>
-
-		<td class="name">
-				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#28-33" title="Go to source code"><var>$user</var></a>
-		</td>
-		<td class="value"><code>[]</code></td>
-		<td class="description"><div>
-			<a href="#$user" class="anchor">#</a>
-
-			<div class="description short">
-				
-<p>Storage of the users</p>
-
-			</div>
-
-			<div class="description detailed hidden">
-				
-<p>Storage of the users</p>
-
-
-			</div>
-		</div></td>
-	</tr>
 	<tr data-order="workflows" id="$workflows">
 		<td class="attributes"><code>
 			protected  
@@ -786,7 +1079,7 @@ amount of errors.</p>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#40-47" title="Go to source code"><var>$workflows</var></a>
+				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#28-35" title="Go to source code"><var>$workflows</var></a>
 		</td>
 		<td class="value"><code>[]</code></td>
 		<td class="description"><div>
@@ -818,7 +1111,7 @@ amount of errors.</p>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#49-56" title="Go to source code"><var>$roles</var></a>
+				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#37-44" title="Go to source code"><var>$roles</var></a>
 		</td>
 		<td class="value"><code>[]</code></td>
 		<td class="description"><div>
@@ -840,6 +1133,48 @@ amount of errors.</p>
 			</div>
 		</div></td>
 	</tr>
+	<tr data-order="pools" id="$pools">
+		<td class="attributes"><code>
+			protected  
+			array
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#51-66" title="Go to source code"><var>$pools</var></a>
+		</td>
+		<td class="value"><code>[]</code></td>
+		<td class="description"><div>
+			<a href="#$pools" class="anchor">#</a>
+
+			<div class="description short">
+				
+<p>Pools of users</p>
+
+			</div>
+
+			<div class="description detailed hidden">
+				
+<p>Pools of users</p>
+
+<p>A one level array:</p>
+
+<pre>
+[
+  <span class="php-quote">'UserObject'</span>,
+  <span
+class="php-quote">'UserObject'</span>,
+  ...
+]
+</pre>
+
+
+					<h4>See</h4>
+					<div class="list">
+							<code><code><a href="class-Drupal.ClassLearning.Workflow.Allocator.html#_getPools">Drupal\ClassLearning\Workflow\Allocator::getPools()</a></code></code><br />
+					</div>
+			</div>
+		</div></td>
+	</tr>
 	<tr data-order="roles_queue" id="$roles_queue">
 		<td class="attributes"><code>
 			protected  
@@ -847,7 +1182,7 @@ amount of errors.</p>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#63-69" title="Go to source code"><var>$roles_queue</var></a>
+				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#68-74" title="Go to source code"><var>$roles_queue</var></a>
 		</td>
 		<td class="value"><code>[]</code></td>
 		<td class="description"><div>
@@ -874,7 +1209,7 @@ amount of errors.</p>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#71-77" title="Go to source code"><var>$runCount</var></a>
+				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#76-82" title="Go to source code"><var>$runCount</var></a>
 		</td>
 		<td class="value"><code><span class="php-num">0</span></code></td>
 		<td class="description"><div>
@@ -901,7 +1236,7 @@ amount of errors.</p>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#79-100" title="Go to source code"><var>$taskInstanceStorage</var></a>
+				<a href="source-class-Drupal.ClassLearning.Workflow.Allocator.html#84-105" title="Go to source code"><var>$taskInstanceStorage</var></a>
 		</td>
 		<td class="value"><code>[]</code></td>
 		<td class="description"><div>

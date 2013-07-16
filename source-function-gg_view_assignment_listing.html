@@ -8,7 +8,7 @@
 	<title>File views/Assignments.php | groupgrade</title>
 
 	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
-	<script type="text/javascript" src="elementlist.js?2126279693"></script>
+	<script type="text/javascript" src="elementlist.js?3628008223"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
 
 </head>
@@ -145,6 +145,7 @@
 				<li><a href="function-groupgrade_view_user.html">groupgrade_view_user</a></li>
 				<li><a href="function-groupgrade_xautoload.html">groupgrade_xautoload</a></li>
 				<li><a href="function-ldebug.html">ldebug</a></li>
+				<li><a href="function-shuffle_assoc.html">shuffle_assoc</a></li>
 				<li><a href="function-word_limiter.html">word_limiter</a></li>
 			</ul>
 		</div>
@@ -238,41 +239,43 @@
 </span><span id="47" class="l"><a class="l" href="#47">47: </a>  <span class="php-keyword1">if</span> ((int) <span class="php-var">$section</span>-&gt;section_id !== (int) <span class="php-var">$section_id</span>) <span class="php-keyword1">return</span> drupal_not_found();
 </span><span id="48" class="l"><a class="l" href="#48">48: </a>
 </span><span id="49" class="l"><a class="l" href="#49">49: </a>  <span class="php-var">$assignment</span> = <span class="php-var">$asec</span>-&gt;assignment()-&gt;first();
-</span><span id="50" class="l"><a class="l" href="#50">50: </a>
-</span><span id="51" class="l"><a class="l" href="#51">51: </a>  <span class="php-var">$createProblems</span> = WorkflowTask::whereIn(<span class="php-quote">'workflow_id'</span>, <span class="php-keyword1">function</span>(<span class="php-var">$query</span>) <span class="php-keyword1">use</span> (<span class="php-var">$asec_id</span>)
-</span><span id="52" class="l"><a class="l" href="#52">52: </a>  {
-</span><span id="53" class="l"><a class="l" href="#53">53: </a>    <span class="php-var">$query</span>-&gt;select(<span class="php-quote">'workflow_id'</span>)
-</span><span id="54" class="l"><a class="l" href="#54">54: </a>      -&gt;from(<span class="php-quote">'workflow'</span>)
-</span><span id="55" class="l"><a class="l" href="#55">55: </a>      -&gt;where(<span class="php-quote">'assignment_id'</span>, <span class="php-quote">'='</span>, <span class="php-var">$asec_id</span>);
-</span><span id="56" class="l"><a class="l" href="#56">56: </a>  })
-</span><span id="57" class="l"><a class="l" href="#57">57: </a>    -&gt;whereType(<span class="php-quote">'edit problem'</span>)
-</span><span id="58" class="l"><a class="l" href="#58">58: </a>    -&gt;whereStatus(<span class="php-quote">'complete'</span>)
-</span><span id="59" class="l"><a class="l" href="#59">59: </a>    -&gt;get();
-</span><span id="60" class="l"><a class="l" href="#60">60: </a>
-</span><span id="61" class="l"><a class="l" href="#61">61: </a>  <span class="php-var">$headers</span> = [<span class="php-quote">'Problem'</span>];
-</span><span id="62" class="l"><a class="l" href="#62">62: </a>  <span class="php-var">$rows</span> = [];
-</span><span id="63" class="l"><a class="l" href="#63">63: </a>
-</span><span id="64" class="l"><a class="l" href="#64">64: </a>  <span class="php-keyword1">if</span> (<span class="php-keyword2">count</span>(<span class="php-var">$createProblems</span>) &gt; <span class="php-num">0</span>) : <span class="php-keyword1">foreach</span> (<span class="php-var">$createProblems</span> <span class="php-keyword1">as</span> <span class="php-var">$t</span>) :
-</span><span id="65" class="l"><a class="l" href="#65">65: </a>    <span class="php-var">$rows</span>[] = [<span class="php-keyword2">sprintf</span>(
-</span><span id="66" class="l"><a class="l" href="#66">66: </a>      <span class="php-quote">'&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;'</span>,
-</span><span id="67" class="l"><a class="l" href="#67">67: </a>      url(<span class="php-quote">'class/workflow/'</span>.<span class="php-var">$t</span>-&gt;workflow_id),
-</span><span id="68" class="l"><a class="l" href="#68">68: </a>      word_limiter(<span class="php-var">$t</span>-&gt;data[<span class="php-quote">'problem'</span>], <span class="php-num">20</span>)
-</span><span id="69" class="l"><a class="l" href="#69">69: </a>    )];
-</span><span id="70" class="l"><a class="l" href="#70">70: </a>  <span class="php-keyword1">endforeach</span>; <span class="php-keyword1">endif</span>;
-</span><span id="71" class="l"><a class="l" href="#71">71: </a>
-</span><span id="72" class="l"><a class="l" href="#72">72: </a>  <span class="php-var">$return</span> = <span class="php-quote">''</span>;
-</span><span id="73" class="l"><a class="l" href="#73">73: </a>  <span class="php-var">$return</span> .= <span class="php-keyword2">sprintf</span>(<span class="php-quote">'&lt;p&gt;&lt;a href=&quot;%s&quot;&gt;%s %s&lt;/a&gt;'</span>, url(<span class="php-quote">'class/assignments'</span>), HTML_BACK_ARROW, <span class="php-quote">'Back to Assignment List'</span>);
-</span><span id="74" class="l"><a class="l" href="#74">74: </a>
-</span><span id="75" class="l"><a class="l" href="#75">75: </a>  <span class="php-var">$return</span> .= theme(<span class="php-quote">'table'</span>, <span class="php-keyword1">array</span>(
-</span><span id="76" class="l"><a class="l" href="#76">76: </a>    <span class="php-quote">'header'</span> =&gt; <span class="php-var">$headers</span>, 
-</span><span id="77" class="l"><a class="l" href="#77">77: </a>    <span class="php-quote">'rows'</span> =&gt; <span class="php-var">$rows</span>,
-</span><span id="78" class="l"><a class="l" href="#78">78: </a>    <span class="php-quote">'empty'</span> =&gt; <span class="php-quote">'No problems found.'</span>,
-</span><span id="79" class="l"><a class="l" href="#79">79: </a>    <span class="php-quote">'attributes'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'width'</span> =&gt; <span class="php-quote">'100%'</span>)
-</span><span id="80" class="l"><a class="l" href="#80">80: </a>  ));
-</span><span id="81" class="l"><a class="l" href="#81">81: </a>
-</span><span id="82" class="l"><a class="l" href="#82">82: </a>  <span class="php-keyword1">return</span> <span class="php-var">$return</span>;
-</span><span id="83" class="l"><a class="l" href="#83">83: </a>}
-</span><span id="84" class="l"><a class="l" href="#84">84: </a></span></code></pre>
+</span><span id="50" class="l"><a class="l" href="#50">50: </a>  
+</span><span id="51" class="l"><a class="l" href="#51">51: </a>  drupal_set_title(<span class="php-var">$assignment</span>-&gt;assignment_title);
+</span><span id="52" class="l"><a class="l" href="#52">52: </a>
+</span><span id="53" class="l"><a class="l" href="#53">53: </a>  <span class="php-var">$createProblems</span> = WorkflowTask::whereIn(<span class="php-quote">'workflow_id'</span>, <span class="php-keyword1">function</span>(<span class="php-var">$query</span>) <span class="php-keyword1">use</span> (<span class="php-var">$asec_id</span>)
+</span><span id="54" class="l"><a class="l" href="#54">54: </a>  {
+</span><span id="55" class="l"><a class="l" href="#55">55: </a>    <span class="php-var">$query</span>-&gt;select(<span class="php-quote">'workflow_id'</span>)
+</span><span id="56" class="l"><a class="l" href="#56">56: </a>      -&gt;from(<span class="php-quote">'workflow'</span>)
+</span><span id="57" class="l"><a class="l" href="#57">57: </a>      -&gt;where(<span class="php-quote">'assignment_id'</span>, <span class="php-quote">'='</span>, <span class="php-var">$asec_id</span>);
+</span><span id="58" class="l"><a class="l" href="#58">58: </a>  })
+</span><span id="59" class="l"><a class="l" href="#59">59: </a>    -&gt;whereType(<span class="php-quote">'edit problem'</span>)
+</span><span id="60" class="l"><a class="l" href="#60">60: </a>    -&gt;whereStatus(<span class="php-quote">'complete'</span>)
+</span><span id="61" class="l"><a class="l" href="#61">61: </a>    -&gt;get();
+</span><span id="62" class="l"><a class="l" href="#62">62: </a>
+</span><span id="63" class="l"><a class="l" href="#63">63: </a>  <span class="php-var">$headers</span> = [<span class="php-quote">'Problem'</span>];
+</span><span id="64" class="l"><a class="l" href="#64">64: </a>  <span class="php-var">$rows</span> = [];
+</span><span id="65" class="l"><a class="l" href="#65">65: </a>
+</span><span id="66" class="l"><a class="l" href="#66">66: </a>  <span class="php-keyword1">if</span> (<span class="php-keyword2">count</span>(<span class="php-var">$createProblems</span>) &gt; <span class="php-num">0</span>) : <span class="php-keyword1">foreach</span> (<span class="php-var">$createProblems</span> <span class="php-keyword1">as</span> <span class="php-var">$t</span>) :
+</span><span id="67" class="l"><a class="l" href="#67">67: </a>    <span class="php-var">$rows</span>[] = [<span class="php-keyword2">sprintf</span>(
+</span><span id="68" class="l"><a class="l" href="#68">68: </a>      <span class="php-quote">'&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;'</span>,
+</span><span id="69" class="l"><a class="l" href="#69">69: </a>      url(<span class="php-quote">'class/workflow/'</span>.<span class="php-var">$t</span>-&gt;workflow_id),
+</span><span id="70" class="l"><a class="l" href="#70">70: </a>      word_limiter(<span class="php-var">$t</span>-&gt;data[<span class="php-quote">'problem'</span>], <span class="php-num">20</span>)
+</span><span id="71" class="l"><a class="l" href="#71">71: </a>    )];
+</span><span id="72" class="l"><a class="l" href="#72">72: </a>  <span class="php-keyword1">endforeach</span>; <span class="php-keyword1">endif</span>;
+</span><span id="73" class="l"><a class="l" href="#73">73: </a>
+</span><span id="74" class="l"><a class="l" href="#74">74: </a>  <span class="php-var">$return</span> = <span class="php-quote">''</span>;
+</span><span id="75" class="l"><a class="l" href="#75">75: </a>  <span class="php-var">$return</span> .= <span class="php-keyword2">sprintf</span>(<span class="php-quote">'&lt;p&gt;&lt;a href=&quot;%s&quot;&gt;%s %s&lt;/a&gt;'</span>, url(<span class="php-quote">'class/assignments'</span>), HTML_BACK_ARROW, t(<span class="php-quote">'Back to Assignment List'</span>));
+</span><span id="76" class="l"><a class="l" href="#76">76: </a>
+</span><span id="77" class="l"><a class="l" href="#77">77: </a>  <span class="php-var">$return</span> .= theme(<span class="php-quote">'table'</span>, <span class="php-keyword1">array</span>(
+</span><span id="78" class="l"><a class="l" href="#78">78: </a>    <span class="php-quote">'header'</span> =&gt; <span class="php-var">$headers</span>, 
+</span><span id="79" class="l"><a class="l" href="#79">79: </a>    <span class="php-quote">'rows'</span> =&gt; <span class="php-var">$rows</span>,
+</span><span id="80" class="l"><a class="l" href="#80">80: </a>    <span class="php-quote">'empty'</span> =&gt; <span class="php-quote">'No problems found.'</span>,
+</span><span id="81" class="l"><a class="l" href="#81">81: </a>    <span class="php-quote">'attributes'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'width'</span> =&gt; <span class="php-quote">'100%'</span>)
+</span><span id="82" class="l"><a class="l" href="#82">82: </a>  ));
+</span><span id="83" class="l"><a class="l" href="#83">83: </a>
+</span><span id="84" class="l"><a class="l" href="#84">84: </a>  <span class="php-keyword1">return</span> <span class="php-var">$return</span>;
+</span><span id="85" class="l"><a class="l" href="#85">85: </a>}
+</span><span id="86" class="l"><a class="l" href="#86">86: </a></span></code></pre>
 
 	<div id="footer">
 		groupgrade API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>

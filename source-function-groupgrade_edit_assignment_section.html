@@ -8,7 +8,7 @@
 	<title>File views/AssignmentAdmin.php | groupgrade</title>
 
 	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
-	<script type="text/javascript" src="elementlist.js?2126279693"></script>
+	<script type="text/javascript" src="elementlist.js?3628008223"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
 
 </head>
@@ -145,6 +145,7 @@
 				<li><a href="function-groupgrade_view_user.html">groupgrade_view_user</a></li>
 				<li><a href="function-groupgrade_xautoload.html">groupgrade_xautoload</a></li>
 				<li><a href="function-ldebug.html">ldebug</a></li>
+				<li><a href="function-shuffle_assoc.html">shuffle_assoc</a></li>
 				<li><a href="function-word_limiter.html">word_limiter</a></li>
 			</ul>
 		</div>
@@ -480,116 +481,118 @@
 </span><span id="289" class="l"><a class="l" href="#289">289: </a>  <span class="php-var">$section</span> = AssignmentSection::find(<span class="php-var">$section</span>);
 </span><span id="290" class="l"><a class="l" href="#290">290: </a>  <span class="php-keyword1">if</span> (<span class="php-var">$section</span> == <span class="php-keyword1">NULL</span>) <span class="php-keyword1">return</span> drupal_not_found();
 </span><span id="291" class="l"><a class="l" href="#291">291: </a>
-</span><span id="292" class="l"><a class="l" href="#292">292: </a>  <span class="php-var">$items</span> = <span class="php-keyword1">array</span>();
-</span><span id="293" class="l"><a class="l" href="#293">293: </a>  <span class="php-var">$items</span>[<span class="php-quote">'m'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="294" class="l"><a class="l" href="#294">294: </a>    <span class="php-quote">'#markup'</span> =&gt; <span class="php-quote">'&lt;a href=&quot;'</span>.url(<span class="php-quote">'class/instructor/assignments/'</span>.<span class="php-var">$assignment</span>).<span class="php-quote">'&quot;&gt;Back to Assignment&lt;/a&gt;'</span>,
-</span><span id="295" class="l"><a class="l" href="#295">295: </a>  );
-</span><span id="296" class="l"><a class="l" href="#296">296: </a>
-</span><span id="297" class="l"><a class="l" href="#297">297: </a>  <span class="php-var">$items</span>[<span class="php-quote">'start-date'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="298" class="l"><a class="l" href="#298">298: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'date_select'</span>,
-</span><span id="299" class="l"><a class="l" href="#299">299: </a>
-</span><span id="300" class="l"><a class="l" href="#300">300: </a>    <span class="php-quote">'#date_format'</span> =&gt; <span class="php-quote">'Y-m-d H:i'</span>,
-</span><span id="301" class="l"><a class="l" href="#301">301: </a>    <span class="php-quote">'#title'</span> =&gt; t(<span class="php-quote">'Assignment Start Date'</span>),
-</span><span id="302" class="l"><a class="l" href="#302">302: </a>    <span class="php-quote">'#date_year_range'</span> =&gt; <span class="php-quote">'-0:+2'</span>, 
-</span><span id="303" class="l"><a class="l" href="#303">303: </a>
-</span><span id="304" class="l"><a class="l" href="#304">304: </a>    <span class="php-comment">// The minute increment.</span>
-</span><span id="305" class="l"><a class="l" href="#305">305: </a>    <span class="php-quote">'#date_increment'</span> =&gt; <span class="php-quote">'15'</span>,
-</span><span id="306" class="l"><a class="l" href="#306">306: </a>    <span class="php-quote">'#default_value'</span> =&gt; <span class="php-var">$section</span>-&gt;asec_start,
-</span><span id="307" class="l"><a class="l" href="#307">307: </a>    <span class="php-quote">'#required'</span> =&gt; <span class="php-keyword1">TRUE</span>,
-</span><span id="308" class="l"><a class="l" href="#308">308: </a>  );
-</span><span id="309" class="l"><a class="l" href="#309">309: </a>
-</span><span id="310" class="l"><a class="l" href="#310">310: </a>
-</span><span id="311" class="l"><a class="l" href="#311">311: </a>  <span class="php-var">$items</span>[<span class="php-quote">'assignment_id'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="312" class="l"><a class="l" href="#312">312: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
-</span><span id="313" class="l"><a class="l" href="#313">313: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$assignment</span>
-</span><span id="314" class="l"><a class="l" href="#314">314: </a>  );
-</span><span id="315" class="l"><a class="l" href="#315">315: </a>
-</span><span id="316" class="l"><a class="l" href="#316">316: </a>  <span class="php-var">$items</span>[<span class="php-quote">'asec_id'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="317" class="l"><a class="l" href="#317">317: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
-</span><span id="318" class="l"><a class="l" href="#318">318: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$section</span>-&gt;asec_id
-</span><span id="319" class="l"><a class="l" href="#319">319: </a>  );
-</span><span id="320" class="l"><a class="l" href="#320">320: </a>
-</span><span id="321" class="l"><a class="l" href="#321">321: </a>  <span class="php-var">$items</span>[<span class="php-quote">'submit'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="322" class="l"><a class="l" href="#322">322: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'submit'</span>,
-</span><span id="323" class="l"><a class="l" href="#323">323: </a>    <span class="php-quote">'#value'</span> =&gt; t(<span class="php-quote">'Update Section'</span>),
-</span><span id="324" class="l"><a class="l" href="#324">324: </a>  );
-</span><span id="325" class="l"><a class="l" href="#325">325: </a>  <span class="php-keyword1">return</span> <span class="php-var">$items</span>;
-</span><span id="326" class="l"><a class="l" href="#326">326: </a>}
-</span><span id="327" class="l"><a class="l" href="#327">327: </a>
-</span><span id="328" class="l"><a class="l" href="#328">328: </a><span class="php-keyword1">function</span> <a id="_groupgrade_edit_assignment_section_submit" href="#_groupgrade_edit_assignment_section_submit">groupgrade_edit_assignment_section_submit</a>(<span class="php-var">$form</span>, &amp;<span class="php-var">$form_state</span>)
-</span><span id="329" class="l"><a class="l" href="#329">329: </a>{
-</span><span id="330" class="l"><a class="l" href="#330">330: </a>  <span class="php-var">$section</span> = (int) <span class="php-var">$form</span>[<span class="php-quote">'asec_id'</span>][<span class="php-quote">'#value'</span>];
-</span><span id="331" class="l"><a class="l" href="#331">331: </a>  <span class="php-var">$start</span> = <span class="php-var">$form</span>[<span class="php-quote">'start-date'</span>][<span class="php-quote">'#value'</span>];
-</span><span id="332" class="l"><a class="l" href="#332">332: </a>
-</span><span id="333" class="l"><a class="l" href="#333">333: </a>  <span class="php-var">$section</span> = AssignmentSection::find(<span class="php-var">$section</span>);
-</span><span id="334" class="l"><a class="l" href="#334">334: </a>  <span class="php-keyword1">if</span> (<span class="php-var">$section</span> == <span class="php-keyword1">NULL</span>) <span class="php-keyword1">return</span> drupal_not_found();
-</span><span id="335" class="l"><a class="l" href="#335">335: </a>
-</span><span id="336" class="l"><a class="l" href="#336">336: </a>  <span class="php-var">$section</span>-&gt;asec_start = <span class="php-keyword2">sprintf</span>(<span class="php-quote">'%d-%d-%d %d:%d:00'</span>, <span class="php-var">$start</span>[<span class="php-quote">'year'</span>], <span class="php-var">$start</span>[<span class="php-quote">'month'</span>], <span class="php-var">$start</span>[<span class="php-quote">'day'</span>], <span class="php-var">$start</span>[<span class="php-quote">'hour'</span>], <span class="php-var">$start</span>[<span class="php-quote">'minute'</span>]);
-</span><span id="337" class="l"><a class="l" href="#337">337: </a>  <span class="php-var">$section</span>-&gt;save();
-</span><span id="338" class="l"><a class="l" href="#338">338: </a>
-</span><span id="339" class="l"><a class="l" href="#339">339: </a>  <span class="php-keyword1">return</span> drupal_set_message(<span class="php-keyword2">sprintf</span>(<span class="php-quote">'Updated assignment section %d on section %d'</span>, <span class="php-var">$section</span>-&gt;asec_id, <span class="php-var">$section</span>-&gt;section_id));
-</span><span id="340" class="l"><a class="l" href="#340">340: </a>}
-</span><span id="341" class="l"><a class="l" href="#341">341: </a>
-</span><span id="342" class="l"><a class="l" href="#342">342: </a><span class="php-comment">/**
-</span></span><span id="343" class="l"><a class="l" href="#343">343: </a><span class="php-comment"> * Remove a section from an assignment
-</span></span><span id="344" class="l"><a class="l" href="#344">344: </a><span class="php-comment"> */</span>
-</span><span id="345" class="l"><a class="l" href="#345">345: </a><span class="php-keyword1">function</span> <a id="_groupgrade_remove_assignment_section" href="#_groupgrade_remove_assignment_section">groupgrade_remove_assignment_section</a>(<span class="php-var">$form</span>, &amp;<span class="php-var">$form_state</span>, <span class="php-var">$assignment</span>, <span class="php-var">$section</span>)
-</span><span id="346" class="l"><a class="l" href="#346">346: </a>{
-</span><span id="347" class="l"><a class="l" href="#347">347: </a>  <span class="php-keyword1">global</span> <span class="php-var">$user</span>;
-</span><span id="348" class="l"><a class="l" href="#348">348: </a>  <span class="php-var">$section</span> = AssignmentSection::find(<span class="php-var">$section</span>);
-</span><span id="349" class="l"><a class="l" href="#349">349: </a>  <span class="php-keyword1">if</span> (<span class="php-var">$section</span> == <span class="php-keyword1">NULL</span>) <span class="php-keyword1">return</span> drupal_not_found();
-</span><span id="350" class="l"><a class="l" href="#350">350: </a>
-</span><span id="351" class="l"><a class="l" href="#351">351: </a>  <span class="php-var">$items</span> = <span class="php-keyword1">array</span>();
-</span><span id="352" class="l"><a class="l" href="#352">352: </a>  <span class="php-var">$items</span>[<span class="php-quote">'m'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="353" class="l"><a class="l" href="#353">353: </a>    <span class="php-quote">'#markup'</span> =&gt; <span class="php-quote">'&lt;p&gt;&lt;a href=&quot;'</span>.url(<span class="php-quote">'class/instructor/assignments/'</span>.<span class="php-var">$assignment</span>).<span class="php-quote">'&quot;&gt;Back to Assignment&lt;/a&gt;&lt;/p&gt;'</span>,
-</span><span id="354" class="l"><a class="l" href="#354">354: </a>  );
-</span><span id="355" class="l"><a class="l" href="#355">355: </a>
-</span><span id="356" class="l"><a class="l" href="#356">356: </a>  <span class="php-var">$items</span>[] = [
-</span><span id="357" class="l"><a class="l" href="#357">357: </a>    <span class="php-quote">'#markup'</span> =&gt; <span class="php-quote">'&lt;p&gt;Are you &lt;strong&gt;sure&lt;/strong&gt; you want to remove this assignment from the section? It is irreversible!&lt;/p&gt;'</span>
-</span><span id="358" class="l"><a class="l" href="#358">358: </a>  ];
-</span><span id="359" class="l"><a class="l" href="#359">359: </a>
-</span><span id="360" class="l"><a class="l" href="#360">360: </a>  <span class="php-var">$items</span>[<span class="php-quote">'assignment_id'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="361" class="l"><a class="l" href="#361">361: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
-</span><span id="362" class="l"><a class="l" href="#362">362: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$assignment</span>
-</span><span id="363" class="l"><a class="l" href="#363">363: </a>  );
-</span><span id="364" class="l"><a class="l" href="#364">364: </a>
-</span><span id="365" class="l"><a class="l" href="#365">365: </a>  <span class="php-var">$items</span>[<span class="php-quote">'asec_id'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="366" class="l"><a class="l" href="#366">366: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
-</span><span id="367" class="l"><a class="l" href="#367">367: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$section</span>-&gt;asec_id
-</span><span id="368" class="l"><a class="l" href="#368">368: </a>  );
-</span><span id="369" class="l"><a class="l" href="#369">369: </a>
-</span><span id="370" class="l"><a class="l" href="#370">370: </a>  <span class="php-var">$items</span>[<span class="php-quote">'submit'</span>] = <span class="php-keyword1">array</span>(
-</span><span id="371" class="l"><a class="l" href="#371">371: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'submit'</span>,
-</span><span id="372" class="l"><a class="l" href="#372">372: </a>    <span class="php-quote">'#value'</span> =&gt; t(<span class="php-quote">'Remove Assignment from Section'</span>),
-</span><span id="373" class="l"><a class="l" href="#373">373: </a>  );
-</span><span id="374" class="l"><a class="l" href="#374">374: </a>  <span class="php-keyword1">return</span> <span class="php-var">$items</span>;
-</span><span id="375" class="l"><a class="l" href="#375">375: </a>}
-</span><span id="376" class="l"><a class="l" href="#376">376: </a>
-</span><span id="377" class="l"><a class="l" href="#377">377: </a><span class="php-keyword1">function</span> <a id="_groupgrade_remove_assignment_section_submit" href="#_groupgrade_remove_assignment_section_submit">groupgrade_remove_assignment_section_submit</a>(<span class="php-var">$form</span>, &amp;<span class="php-var">$form_state</span>)
-</span><span id="378" class="l"><a class="l" href="#378">378: </a>{
-</span><span id="379" class="l"><a class="l" href="#379">379: </a>  <span class="php-comment">// Remove everything</span>
-</span><span id="380" class="l"><a class="l" href="#380">380: </a>  <span class="php-var">$asec_id</span> = <span class="php-var">$form</span>[<span class="php-quote">'asec_id'</span>][<span class="php-quote">'#value'</span>];
-</span><span id="381" class="l"><a class="l" href="#381">381: </a>  <span class="php-var">$assignment_id</span> = <span class="php-var">$form</span>[<span class="php-quote">'assignment_id'</span>][<span class="php-quote">'#value'</span>];
-</span><span id="382" class="l"><a class="l" href="#382">382: </a>
-</span><span id="383" class="l"><a class="l" href="#383">383: </a>  <span class="php-var">$workflows</span> = Drupal\ClassLearning\Models\Workflow::where(<span class="php-quote">'assignment_id'</span>, <span class="php-quote">'='</span>, <span class="php-var">$asec_id</span>)
-</span><span id="384" class="l"><a class="l" href="#384">384: </a>    -&gt;get();
-</span><span id="385" class="l"><a class="l" href="#385">385: </a>
-</span><span id="386" class="l"><a class="l" href="#386">386: </a>  <span class="php-var">$asec</span> = Drupal\ClassLearning\Models\AssignmentSection::find(<span class="php-var">$asec_id</span>);
-</span><span id="387" class="l"><a class="l" href="#387">387: </a>  <span class="php-keyword1">if</span> (<span class="php-var">$asec</span> == <span class="php-keyword1">NULL</span>)
-</span><span id="388" class="l"><a class="l" href="#388">388: </a>    <span class="php-keyword1">return</span> drupal_not_found();
-</span><span id="389" class="l"><a class="l" href="#389">389: </a>
-</span><span id="390" class="l"><a class="l" href="#390">390: </a>  <span class="php-keyword1">if</span> (<span class="php-keyword2">count</span>(<span class="php-var">$workflows</span>) &gt; <span class="php-num">0</span>) : <span class="php-keyword1">foreach</span> (<span class="php-var">$workflows</span> <span class="php-keyword1">as</span> <span class="php-var">$workflow</span>) :
-</span><span id="391" class="l"><a class="l" href="#391">391: </a>    <span class="php-var">$workflow</span>-&gt;tasks()-&gt;<span class="php-keyword2">delete</span>();
-</span><span id="392" class="l"><a class="l" href="#392">392: </a>
-</span><span id="393" class="l"><a class="l" href="#393">393: </a>    <span class="php-var">$workflow</span>-&gt;<span class="php-keyword2">delete</span>();
-</span><span id="394" class="l"><a class="l" href="#394">394: </a>  <span class="php-keyword1">endforeach</span>; <span class="php-keyword1">endif</span>;
-</span><span id="395" class="l"><a class="l" href="#395">395: </a>
-</span><span id="396" class="l"><a class="l" href="#396">396: </a>  <span class="php-var">$asec</span>-&gt;<span class="php-keyword2">delete</span>();
+</span><span id="292" class="l"><a class="l" href="#292">292: </a>  drupal_set_title(<span class="php-keyword2">sprintf</span>(<span class="php-quote">'%s%s'</span>, t(<span class="php-quote">'Assignment Details for Section #'</span>), <span class="php-var">$section</span>-&gt;section_id));
+</span><span id="293" class="l"><a class="l" href="#293">293: </a>
+</span><span id="294" class="l"><a class="l" href="#294">294: </a>  <span class="php-var">$items</span> = <span class="php-keyword1">array</span>();
+</span><span id="295" class="l"><a class="l" href="#295">295: </a>  <span class="php-var">$items</span>[<span class="php-quote">'m'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="296" class="l"><a class="l" href="#296">296: </a>    <span class="php-quote">'#markup'</span> =&gt; <span class="php-quote">'&lt;a href=&quot;'</span>.url(<span class="php-quote">'class/instructor/assignments/'</span>.<span class="php-var">$assignment</span>).<span class="php-quote">'&quot;&gt;Back to Assignment Management&lt;/a&gt;'</span>,
+</span><span id="297" class="l"><a class="l" href="#297">297: </a>  );
+</span><span id="298" class="l"><a class="l" href="#298">298: </a>
+</span><span id="299" class="l"><a class="l" href="#299">299: </a>  <span class="php-var">$items</span>[<span class="php-quote">'start-date'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="300" class="l"><a class="l" href="#300">300: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'date_select'</span>,
+</span><span id="301" class="l"><a class="l" href="#301">301: </a>
+</span><span id="302" class="l"><a class="l" href="#302">302: </a>    <span class="php-quote">'#date_format'</span> =&gt; <span class="php-quote">'Y-m-d H:i'</span>,
+</span><span id="303" class="l"><a class="l" href="#303">303: </a>    <span class="php-quote">'#title'</span> =&gt; t(<span class="php-quote">'Assignment Start Date'</span>),
+</span><span id="304" class="l"><a class="l" href="#304">304: </a>    <span class="php-quote">'#date_year_range'</span> =&gt; <span class="php-quote">'-0:+2'</span>, 
+</span><span id="305" class="l"><a class="l" href="#305">305: </a>
+</span><span id="306" class="l"><a class="l" href="#306">306: </a>    <span class="php-comment">// The minute increment.</span>
+</span><span id="307" class="l"><a class="l" href="#307">307: </a>    <span class="php-quote">'#date_increment'</span> =&gt; <span class="php-quote">'15'</span>,
+</span><span id="308" class="l"><a class="l" href="#308">308: </a>    <span class="php-quote">'#default_value'</span> =&gt; <span class="php-var">$section</span>-&gt;asec_start,
+</span><span id="309" class="l"><a class="l" href="#309">309: </a>    <span class="php-quote">'#required'</span> =&gt; <span class="php-keyword1">TRUE</span>,
+</span><span id="310" class="l"><a class="l" href="#310">310: </a>  );
+</span><span id="311" class="l"><a class="l" href="#311">311: </a>
+</span><span id="312" class="l"><a class="l" href="#312">312: </a>
+</span><span id="313" class="l"><a class="l" href="#313">313: </a>  <span class="php-var">$items</span>[<span class="php-quote">'assignment_id'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="314" class="l"><a class="l" href="#314">314: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
+</span><span id="315" class="l"><a class="l" href="#315">315: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$assignment</span>
+</span><span id="316" class="l"><a class="l" href="#316">316: </a>  );
+</span><span id="317" class="l"><a class="l" href="#317">317: </a>
+</span><span id="318" class="l"><a class="l" href="#318">318: </a>  <span class="php-var">$items</span>[<span class="php-quote">'asec_id'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="319" class="l"><a class="l" href="#319">319: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
+</span><span id="320" class="l"><a class="l" href="#320">320: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$section</span>-&gt;asec_id
+</span><span id="321" class="l"><a class="l" href="#321">321: </a>  );
+</span><span id="322" class="l"><a class="l" href="#322">322: </a>
+</span><span id="323" class="l"><a class="l" href="#323">323: </a>  <span class="php-var">$items</span>[<span class="php-quote">'submit'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="324" class="l"><a class="l" href="#324">324: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'submit'</span>,
+</span><span id="325" class="l"><a class="l" href="#325">325: </a>    <span class="php-quote">'#value'</span> =&gt; t(<span class="php-quote">'Change Assignment Details'</span>),
+</span><span id="326" class="l"><a class="l" href="#326">326: </a>  );
+</span><span id="327" class="l"><a class="l" href="#327">327: </a>  <span class="php-keyword1">return</span> <span class="php-var">$items</span>;
+</span><span id="328" class="l"><a class="l" href="#328">328: </a>}
+</span><span id="329" class="l"><a class="l" href="#329">329: </a>
+</span><span id="330" class="l"><a class="l" href="#330">330: </a><span class="php-keyword1">function</span> <a id="_groupgrade_edit_assignment_section_submit" href="#_groupgrade_edit_assignment_section_submit">groupgrade_edit_assignment_section_submit</a>(<span class="php-var">$form</span>, &amp;<span class="php-var">$form_state</span>)
+</span><span id="331" class="l"><a class="l" href="#331">331: </a>{
+</span><span id="332" class="l"><a class="l" href="#332">332: </a>  <span class="php-var">$section</span> = (int) <span class="php-var">$form</span>[<span class="php-quote">'asec_id'</span>][<span class="php-quote">'#value'</span>];
+</span><span id="333" class="l"><a class="l" href="#333">333: </a>  <span class="php-var">$start</span> = <span class="php-var">$form</span>[<span class="php-quote">'start-date'</span>][<span class="php-quote">'#value'</span>];
+</span><span id="334" class="l"><a class="l" href="#334">334: </a>
+</span><span id="335" class="l"><a class="l" href="#335">335: </a>  <span class="php-var">$section</span> = AssignmentSection::find(<span class="php-var">$section</span>);
+</span><span id="336" class="l"><a class="l" href="#336">336: </a>  <span class="php-keyword1">if</span> (<span class="php-var">$section</span> == <span class="php-keyword1">NULL</span>) <span class="php-keyword1">return</span> drupal_not_found();
+</span><span id="337" class="l"><a class="l" href="#337">337: </a>
+</span><span id="338" class="l"><a class="l" href="#338">338: </a>  <span class="php-var">$section</span>-&gt;asec_start = <span class="php-keyword2">sprintf</span>(<span class="php-quote">'%d-%d-%d %d:%d:00'</span>, <span class="php-var">$start</span>[<span class="php-quote">'year'</span>], <span class="php-var">$start</span>[<span class="php-quote">'month'</span>], <span class="php-var">$start</span>[<span class="php-quote">'day'</span>], <span class="php-var">$start</span>[<span class="php-quote">'hour'</span>], <span class="php-var">$start</span>[<span class="php-quote">'minute'</span>]);
+</span><span id="339" class="l"><a class="l" href="#339">339: </a>  <span class="php-var">$section</span>-&gt;save();
+</span><span id="340" class="l"><a class="l" href="#340">340: </a>
+</span><span id="341" class="l"><a class="l" href="#341">341: </a>  <span class="php-keyword1">return</span> drupal_set_message(<span class="php-keyword2">sprintf</span>(<span class="php-quote">'Updated assignment section %d on section %d'</span>, <span class="php-var">$section</span>-&gt;asec_id, <span class="php-var">$section</span>-&gt;section_id));
+</span><span id="342" class="l"><a class="l" href="#342">342: </a>}
+</span><span id="343" class="l"><a class="l" href="#343">343: </a>
+</span><span id="344" class="l"><a class="l" href="#344">344: </a><span class="php-comment">/**
+</span></span><span id="345" class="l"><a class="l" href="#345">345: </a><span class="php-comment"> * Remove a section from an assignment
+</span></span><span id="346" class="l"><a class="l" href="#346">346: </a><span class="php-comment"> */</span>
+</span><span id="347" class="l"><a class="l" href="#347">347: </a><span class="php-keyword1">function</span> <a id="_groupgrade_remove_assignment_section" href="#_groupgrade_remove_assignment_section">groupgrade_remove_assignment_section</a>(<span class="php-var">$form</span>, &amp;<span class="php-var">$form_state</span>, <span class="php-var">$assignment</span>, <span class="php-var">$section</span>)
+</span><span id="348" class="l"><a class="l" href="#348">348: </a>{
+</span><span id="349" class="l"><a class="l" href="#349">349: </a>  <span class="php-keyword1">global</span> <span class="php-var">$user</span>;
+</span><span id="350" class="l"><a class="l" href="#350">350: </a>  <span class="php-var">$section</span> = AssignmentSection::find(<span class="php-var">$section</span>);
+</span><span id="351" class="l"><a class="l" href="#351">351: </a>  <span class="php-keyword1">if</span> (<span class="php-var">$section</span> == <span class="php-keyword1">NULL</span>) <span class="php-keyword1">return</span> drupal_not_found();
+</span><span id="352" class="l"><a class="l" href="#352">352: </a>
+</span><span id="353" class="l"><a class="l" href="#353">353: </a>  <span class="php-var">$items</span> = <span class="php-keyword1">array</span>();
+</span><span id="354" class="l"><a class="l" href="#354">354: </a>  <span class="php-var">$items</span>[<span class="php-quote">'m'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="355" class="l"><a class="l" href="#355">355: </a>    <span class="php-quote">'#markup'</span> =&gt; <span class="php-quote">'&lt;p&gt;&lt;a href=&quot;'</span>.url(<span class="php-quote">'class/instructor/assignments/'</span>.<span class="php-var">$assignment</span>).<span class="php-quote">'&quot;&gt;Back to Assignment&lt;/a&gt;&lt;/p&gt;'</span>,
+</span><span id="356" class="l"><a class="l" href="#356">356: </a>  );
+</span><span id="357" class="l"><a class="l" href="#357">357: </a>
+</span><span id="358" class="l"><a class="l" href="#358">358: </a>  <span class="php-var">$items</span>[] = [
+</span><span id="359" class="l"><a class="l" href="#359">359: </a>    <span class="php-quote">'#markup'</span> =&gt; <span class="php-quote">'&lt;p&gt;Are you &lt;strong&gt;sure&lt;/strong&gt; you want to remove this assignment from the section? It is irreversible!&lt;/p&gt;'</span>
+</span><span id="360" class="l"><a class="l" href="#360">360: </a>  ];
+</span><span id="361" class="l"><a class="l" href="#361">361: </a>
+</span><span id="362" class="l"><a class="l" href="#362">362: </a>  <span class="php-var">$items</span>[<span class="php-quote">'assignment_id'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="363" class="l"><a class="l" href="#363">363: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
+</span><span id="364" class="l"><a class="l" href="#364">364: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$assignment</span>
+</span><span id="365" class="l"><a class="l" href="#365">365: </a>  );
+</span><span id="366" class="l"><a class="l" href="#366">366: </a>
+</span><span id="367" class="l"><a class="l" href="#367">367: </a>  <span class="php-var">$items</span>[<span class="php-quote">'asec_id'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="368" class="l"><a class="l" href="#368">368: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'hidden'</span>,
+</span><span id="369" class="l"><a class="l" href="#369">369: </a>    <span class="php-quote">'#value'</span> =&gt; <span class="php-var">$section</span>-&gt;asec_id
+</span><span id="370" class="l"><a class="l" href="#370">370: </a>  );
+</span><span id="371" class="l"><a class="l" href="#371">371: </a>
+</span><span id="372" class="l"><a class="l" href="#372">372: </a>  <span class="php-var">$items</span>[<span class="php-quote">'submit'</span>] = <span class="php-keyword1">array</span>(
+</span><span id="373" class="l"><a class="l" href="#373">373: </a>    <span class="php-quote">'#type'</span> =&gt; <span class="php-quote">'submit'</span>,
+</span><span id="374" class="l"><a class="l" href="#374">374: </a>    <span class="php-quote">'#value'</span> =&gt; t(<span class="php-quote">'Remove Assignment from Section'</span>),
+</span><span id="375" class="l"><a class="l" href="#375">375: </a>  );
+</span><span id="376" class="l"><a class="l" href="#376">376: </a>  <span class="php-keyword1">return</span> <span class="php-var">$items</span>;
+</span><span id="377" class="l"><a class="l" href="#377">377: </a>}
+</span><span id="378" class="l"><a class="l" href="#378">378: </a>
+</span><span id="379" class="l"><a class="l" href="#379">379: </a><span class="php-keyword1">function</span> <a id="_groupgrade_remove_assignment_section_submit" href="#_groupgrade_remove_assignment_section_submit">groupgrade_remove_assignment_section_submit</a>(<span class="php-var">$form</span>, &amp;<span class="php-var">$form_state</span>)
+</span><span id="380" class="l"><a class="l" href="#380">380: </a>{
+</span><span id="381" class="l"><a class="l" href="#381">381: </a>  <span class="php-comment">// Remove everything</span>
+</span><span id="382" class="l"><a class="l" href="#382">382: </a>  <span class="php-var">$asec_id</span> = <span class="php-var">$form</span>[<span class="php-quote">'asec_id'</span>][<span class="php-quote">'#value'</span>];
+</span><span id="383" class="l"><a class="l" href="#383">383: </a>  <span class="php-var">$assignment_id</span> = <span class="php-var">$form</span>[<span class="php-quote">'assignment_id'</span>][<span class="php-quote">'#value'</span>];
+</span><span id="384" class="l"><a class="l" href="#384">384: </a>
+</span><span id="385" class="l"><a class="l" href="#385">385: </a>  <span class="php-var">$workflows</span> = Drupal\ClassLearning\Models\Workflow::where(<span class="php-quote">'assignment_id'</span>, <span class="php-quote">'='</span>, <span class="php-var">$asec_id</span>)
+</span><span id="386" class="l"><a class="l" href="#386">386: </a>    -&gt;get();
+</span><span id="387" class="l"><a class="l" href="#387">387: </a>
+</span><span id="388" class="l"><a class="l" href="#388">388: </a>  <span class="php-var">$asec</span> = Drupal\ClassLearning\Models\AssignmentSection::find(<span class="php-var">$asec_id</span>);
+</span><span id="389" class="l"><a class="l" href="#389">389: </a>  <span class="php-keyword1">if</span> (<span class="php-var">$asec</span> == <span class="php-keyword1">NULL</span>)
+</span><span id="390" class="l"><a class="l" href="#390">390: </a>    <span class="php-keyword1">return</span> drupal_not_found();
+</span><span id="391" class="l"><a class="l" href="#391">391: </a>
+</span><span id="392" class="l"><a class="l" href="#392">392: </a>  <span class="php-keyword1">if</span> (<span class="php-keyword2">count</span>(<span class="php-var">$workflows</span>) &gt; <span class="php-num">0</span>) : <span class="php-keyword1">foreach</span> (<span class="php-var">$workflows</span> <span class="php-keyword1">as</span> <span class="php-var">$workflow</span>) :
+</span><span id="393" class="l"><a class="l" href="#393">393: </a>    <span class="php-var">$workflow</span>-&gt;tasks()-&gt;<span class="php-keyword2">delete</span>();
+</span><span id="394" class="l"><a class="l" href="#394">394: </a>
+</span><span id="395" class="l"><a class="l" href="#395">395: </a>    <span class="php-var">$workflow</span>-&gt;<span class="php-keyword2">delete</span>();
+</span><span id="396" class="l"><a class="l" href="#396">396: </a>  <span class="php-keyword1">endforeach</span>; <span class="php-keyword1">endif</span>;
 </span><span id="397" class="l"><a class="l" href="#397">397: </a>
-</span><span id="398" class="l"><a class="l" href="#398">398: </a>  drupal_set_message(t(<span class="php-quote">'Assignment Section and all related tasks/workflows deleted.'</span>));
-</span><span id="399" class="l"><a class="l" href="#399">399: </a>  <span class="php-keyword1">return</span> drupal_goto(url(<span class="php-quote">'class/instructor/assignments/'</span>.<span class="php-var">$assignment_id</span>));
-</span><span id="400" class="l"><a class="l" href="#400">400: </a>}
-</span><span id="401" class="l"><a class="l" href="#401">401: </a></span></code></pre>
+</span><span id="398" class="l"><a class="l" href="#398">398: </a>  <span class="php-var">$asec</span>-&gt;<span class="php-keyword2">delete</span>();
+</span><span id="399" class="l"><a class="l" href="#399">399: </a>
+</span><span id="400" class="l"><a class="l" href="#400">400: </a>  drupal_set_message(t(<span class="php-quote">'Assignment Section and all related tasks/workflows deleted.'</span>));
+</span><span id="401" class="l"><a class="l" href="#401">401: </a>  <span class="php-keyword1">return</span> drupal_goto(url(<span class="php-quote">'class/instructor/assignments/'</span>.<span class="php-var">$assignment_id</span>));
+</span><span id="402" class="l"><a class="l" href="#402">402: </a>}
+</span><span id="403" class="l"><a class="l" href="#403">403: </a></span></code></pre>
 
 	<div id="footer">
 		groupgrade API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
