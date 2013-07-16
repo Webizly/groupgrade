@@ -175,7 +175,6 @@ class Allocator {
           // Start from the beginning of the queue
           foreach($this->roles_queue[$role_id] as $queue_id => $user) :
             // They're not a match -- skip to the next user in queue
-            var_dump($this->canEnterWorkflow($user, $this->workflows[$workflow_id], $role_id));
             if ($this->canEnterWorkflow($user, $this->workflows[$workflow_id], $role_id))
             {
               $this->workflows[$workflow_id][$role_id] = $user;
@@ -223,25 +222,6 @@ class Allocator {
       }
     }
     return TRUE;
-  }
-
-  /**
-   * Does a workflow contain a duplicate error?
-   *
-   * @param array $workflow Workflow storage array
-   * @return bool
-   */
-  public function contains_error($workflow)
-  {
-    if ($workflow !== array_unique($workflow, SORT_NUMERIC))
-      return TRUE;
-    
-    // Check if it contains unassigned users
-    foreach ($workflow as $role => $user) :
-      if ($user === NULL) return TRUE;
-    endforeach;
-
-    return FALSE;
   }
 
   /**
@@ -323,6 +303,27 @@ class Allocator {
     return $workflow[$aliasRoleId];
   }
   
+  /**
+   * Does a workflow contain a duplicate error?
+   *
+   * @param array $workflow Workflow storage array
+   * @return bool
+   */
+  public function contains_error($workflow)
+  {
+    // Taking out of service
+    return true;
+
+    if ($workflow !== array_unique($workflow, SORT_NUMERIC))
+      return TRUE;
+    
+    // Check if it contains unassigned users
+    foreach ($workflow as $role => $user) :
+      if ($user === NULL) return TRUE;
+    endforeach;
+
+    return FALSE;
+  }
 
   /**
    * See if an array of workflows contains any errors
@@ -600,7 +601,7 @@ class Allocator {
   </thead>
   <tbody>
     <?php foreach($this->workflows as $user_id => $workflow) : ?>
-      <tr <?php if ($this->contains_error($workflow)) echo 'bgcolor="orange"'; ?>>
+      <tr <?php /* if ($this->contains_error($workflow)) echo 'bgcolor="orange"'; */ ?>>
         <?php foreach($workflow as $role => $assigne) :
           if ($assigne === NULL) :
             ?><td bgcolor="red">NONE</td><?php
