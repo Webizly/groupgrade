@@ -4,6 +4,7 @@
  * Allocator Class
  *
  * @package groupgrade
+ * @subpackage allocation
  */
 namespace Drupal\ClassLearning\Workflow;
 
@@ -555,9 +556,12 @@ class Allocator {
    * We run it for however much $maxRuns is set to to ensure we get the
    * least amount of errors.
    *
+   * You need to take the return of this method and use that and not the
+   * object that was used to call it.
+   * 
    * @todo If cannot find one w/o errors, return one with least
    * @param integer Max runs
-   * @return object Object of Allocator class
+   * @return object Allocator Object
    */
   public function assignmentRun($maxRuns = 20)
   {
