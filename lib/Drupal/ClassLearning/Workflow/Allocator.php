@@ -301,7 +301,7 @@ class Allocator {
       AND
         isset ($role['rules']['count'])
       AND
-        $role['rules']['count'] > 1
+        (int) $role['rules']['count'] > 1
       ) :
         // They have double alias protection on
         // Now we have to find the other instance of this role.
@@ -309,10 +309,29 @@ class Allocator {
 
         // Go up and down the workflow in the amount of instances they
         // have minus 1.
-        /*for ($i = $sub_role_id; $i > $sub_role_id-$count; $i--)
+        
+        // Search DOWN
+        for ($i = $role_id-1; $i > $role_id-1-$count; $i--)
         {
+          // Gone too far!
+          if ($i < 0) break;
+          
+          // This instance isn't assigned
+          if ($workflow[$i] !== NULL AND $this->roles[$i]['name'] == $role['name'])
+            return FALSE;
+        }
 
-        }*/
+        // Search UP
+        for ($i = $role_id+1; $i < $role_id+1+$count; $i++)
+        {
+          // No longer found.
+          if (! isset($workflow[$i]))
+            break;
+
+          // This instance isn't assigned
+          if ($workflow[$i] !== NULL AND $this->roles[$i]['name'] == $role['name'])
+            return FALSE;
+        }
       endif;
 
       // We've got a match!
