@@ -10,13 +10,14 @@ function groupgrade_tasks_view_specific($specific = '') {
   global $user;
   $tasks = Task::queryByStatus($user->uid, $specific)->get();
   $rows = [];
+  $return = '';
 
   switch($specific)
   {
     case 'pending' :
       $headers = array('Due Date', 'Type', 'Course', 'Assignment');
       
-
+      $return .= sprintf('<p>%s</p>', t('These are the pending tasks you need to do. Click on a due date to open the task.'));
       if (count($tasks) > 0) : foreach($tasks as $task) :
         $row_t = [];
         $row_t[] = sprintf(
@@ -25,7 +26,6 @@ function groupgrade_tasks_view_specific($specific = '') {
         );
 
         $row_t[] = $task->type;
-        //$row_t[] = $task->status;
 
         $section = $task->section()->first();
         $course = $section->course()->first();
@@ -56,12 +56,14 @@ function groupgrade_tasks_view_specific($specific = '') {
       break;
   }
 
-  return theme('table', array(
+  $return .= theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
     'attributes' => ['width' => '100%'],
     'empty' => 'No tasks found.',
   ));
+
+  return $return;
 }
 
 /**
