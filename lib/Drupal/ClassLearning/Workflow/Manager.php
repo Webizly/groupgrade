@@ -173,9 +173,11 @@ class Manager {
   public static function checkAssignments()
   {
     // Remove all workflows
-    $c = Capsule::connection();
-    $c->statement('delete from `pla_task` WHERE `workflow_id` IN ( SELECT `workflow_id` FROM `pla_workflow` WHERE `assignment_id` = 6 );');
-    $c->statement('delete  FROM `pla_workflow` WHERE `assignment_id` = 6;');
+    // For debugging the allocator
+    // 
+    // $c = Capsule::connection();
+    // $c->statement('delete from `pla_task` WHERE `workflow_id` IN ( SELECT `workflow_id` FROM `pla_workflow` WHERE `assignment_id` = 6 );');
+    // $c->statement('delete  FROM `pla_workflow` WHERE `assignment_id` = 6;');
 
     $assignments = AssignmentSection::whereNull('asec_end')
       ->get();
@@ -288,8 +290,7 @@ class Manager {
       $allocator->addWorkflow($workflow->workflow_id);
 
     $run = $allocator->assignmentRun();
-    $run->dump();
-    exit;
+
     // Now we have to intepert the response of the allocator
     $taskInstances = $run->getTaskInstanceStorage();
     $workflows = $run->getWorkflows();
@@ -305,7 +306,7 @@ class Manager {
           throw new ManagerException(
             sprintf('Task instance %d cannot be found for workflow %d', $taskInstanceId, $workflow_id));
 
-        $taskInstance->user_id = $assigned_user;
+        $taskInstance->user_id = $assigned_user->user_id;
         $taskInstance->save();
       }
     }
