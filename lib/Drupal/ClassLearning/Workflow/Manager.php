@@ -291,8 +291,8 @@ class Manager {
     $run->dump();
     exit;
     // Now we have to intepert the response of the allocator
-    $taskInstances = $allocator->getTaskInstanceStorage();
-    $workflows = $allocator->getWorkflows();
+    $taskInstances = $run->getTaskInstanceStorage();
+    $workflows = $run->getWorkflows();
 
     foreach ($workflows as $workflow_id => $workflow)
     {
@@ -403,7 +403,7 @@ class Manager {
         // make sure that only one get's an alias. Setting it to false will make it
         // it an alias for all the roles.
         'user alias all types' => true,
-        
+
         'trigger' => [
           [
             'type' => 'reference task status',

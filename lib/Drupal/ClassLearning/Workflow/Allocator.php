@@ -216,7 +216,7 @@ class Allocator {
       if ((int) $assigne->user_id == (int) $user->user_id)
       {
         // They've got a match! Now let's see if it's not an alias
-        $workflowRole = $this->role[$workflow_role_id];
+        $workflowRole = $this->roles[$workflow_role_id];
 
         // The role they're trying to enter is an alias to a role that was already taken by
         // the user. A false positive.
@@ -315,7 +315,7 @@ class Allocator {
         {
           // Gone too far!
           if ($i < 0) break;
-          
+
           // This instance isn't assigned
           if ($workflow[$i] !== NULL AND $this->roles[$i]['name'] == $role['name'])
             return FALSE;
@@ -358,12 +358,10 @@ class Allocator {
    */
   public function contains_error($workflow)
   {
-    // Taking out of service
-    return true;
-
+    /*
     if ($workflow !== array_unique($workflow, SORT_NUMERIC))
       return TRUE;
-    
+    */
     // Check if it contains unassigned users
     foreach ($workflow as $role => $user) :
       if ($user === NULL) return TRUE;
@@ -586,7 +584,7 @@ class Allocator {
 
       $this->runAssignment();
 
-      $hasErrors = false; //$this->contains_errors($this->getWorkflows());
+      $hasErrors = $this->contains_errors($this->getWorkflows());
 
       if (! $hasErrors)
         return $this;
@@ -705,7 +703,6 @@ class Allocator {
 <p><strong>Total Students:</strong> <?php echo count($this->pools['student']); ?></p>
 <p><strong>Total Runs:</strong> <?php echo $this->runCount; ?></p>
 <pre>
-<?php var_dump($this->workflows); ?>
 </pre>
 <?php
   }
