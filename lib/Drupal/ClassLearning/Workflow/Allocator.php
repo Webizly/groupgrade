@@ -241,29 +241,11 @@ class Allocator {
    * @param array $role The data pertaining to the role
    * @param array $workflow The workflow data
    */
-  public function workflowTaskHasAlias($role_id, $role, $workflow)
+  public function workflowTaskHasAlias($role_id, $role, &$workflow)
   {
-    if (! isset($role['rules']['user alias']))
-      return false;
+    $findAlias = $this->findWorkflowTaskAlias($role_id, $workflow);
 
-    // It has one -- let's find the other task instance
-    $aliasRole = $role['rules']['user alias'];
-
-    foreach ($this->roles as $sub_role_id => $sub_role_data)
-    {
-      if ($sub_role_data['name'] !== $aliasRole)
-        continue;
-
-      // We've got a match!
-      $aliasRoleData = $sub_role_data;
-      $aliasRoleId = $sub_role_id;
-      break;
-    }
-
-    if ($aliasRoleId == $role_id)
-      throw new AllocatorException(sprintf('Alias role ID is the same as parent role ID: %d %d', $aliasRoleId, $role_id));
-    
-    if ($workflow[$aliasRoleId] !== NULL)
+    if (is_array($findAlias) AND $workflow[$findAlias['role id']] !== NULL)
       return TRUE;
     else
       return FALSE;
@@ -282,8 +264,25 @@ class Allocator {
    */
   public function assignTaskAlias($role_id, $role, &$workflow)
   {
-    if (! isset($role['rules']['user alias']))
-      return false;
+    $findAlias = $this->findWorkflowTaskAlias($role_id, $workflow);
+
+    if (! $findAlias  OR $workflow[$findAlias['role id']] == NULL)
+      throw new AllocatorException('Alias is actually not assigned. Please run Allocator::workflowTaskHasAlias() first.');
+
+    return $workflow[$findAlias['role id']];
+  }
+
+  /**
+   * Helper function to determine the workflow task alias
+   *
+   * @access protected
+   * @return array|bool
+   */
+  protected function findWorkflowTaskAlias($role_id, &$workflow)
+  {
+    $role = $this->roles[$role_id];
+
+    if (! isset($role['rules']['user alias'])) return false;
 
     // It has one -- let's find the other task instance
     $aliasRole = $role['rules']['user alias'];
@@ -293,19 +292,43 @@ class Allocator {
       if ($sub_role_data['name'] !== $aliasRole)
         continue;
 
+      // Check for a double alias!
+      // This is set on the instance that has a count > 1
+      if (
+        isset( $role['rules']['user alias all types'] )
+      AND
+        $role['rules']['user alias all types']
+      AND
+        isset ($role['rules']['count'])
+      AND
+        $role['rules']['count'] > 1
+      ) :
+        // They have double alias protection on
+        // Now we have to find the other instance of this role.
+        $count = $role['rules']['count']-1;
+
+        // Go up and down the workflow in the amount of instances they
+        // have minus 1.
+        /*for ($i = $sub_role_id; $i > $sub_role_id-$count; $i--)
+        {
+
+        }*/
+      endif;
+
       // We've got a match!
-      $aliasRoleData = $sub_role_data;
-      $aliasRoleId = $sub_role_id;
+      // Check to make sure we're not gonna 500
+      if ($sub_role_id == $role_id)
+        throw new AllocatorException(sprintf('Alias role ID is the same as parent role ID: %d %d', $aliasRoleId, $role_id));
+
+      return [
+        'role id' => $sub_role_id,
+        'role data' => $sub_role_data,
+      ];
       break;
     }
 
-    if ($aliasRoleId == $role_id)
-      throw new AllocatorException(sprintf('Alias role ID is the same as parent role ID: %d %d', $aliasRoleId, $role_id));
-    
-    if ($workflow[$aliasRoleId] == NULL)
-      throw new AllocatorException('Alias is actually not assigned. Please run Allocator::workflowTaskHasAlias() first.');
-
-    return $workflow[$aliasRoleId];
+    // No match found.
+    return FALSE;
   }
   
   /**
