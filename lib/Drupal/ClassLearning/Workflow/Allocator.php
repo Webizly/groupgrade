@@ -26,18 +26,6 @@ use Drupal\ClassLearning\Exception as AllocatorException,
  */
 class Allocator {
   /**
-   * Storage of the users
-   * 
-   * @var array
-   */
-  protected $user = [];
-
-  /**
-   * @ignore
-   */
-  protected $instructor;
-  
-  /**
    * Workflow Storage
    *
    * @see Allocator::getWorkflows()
@@ -153,12 +141,12 @@ class Allocator {
       $rolePool = $this->getPool($role_data['rules']['pool']['name'])->all();
 
       // Let's keep this very random
-      shuffle_assoc($rolePool);
+      $rolePool = shuffle_assoc($rolePool);
 
       // Add it to a queue
       $this->roles_queue[$role_id] = $rolePool;
     endforeach;
-
+    
     // Go though the workflows
     foreach($this->workflows as $workflow_id => $workflow) :
       // Loop though each role inside of the workflow
@@ -173,11 +161,10 @@ class Allocator {
           throw new AllocatorException(sprintf('Workflow role %d is already assigned to %d', $role_id, $ignore));
         
         $currentRole = $this->roles[$role_id];
+
         // If they aren't pulling from a list, they're going to be taking random items from a list
         if (! $currentRole['rules']['pool']['pull after'])
-        {
-          shuffle_assoc($this->roles_queue[$role_id]);
-        }
+          $this->roles_queue[$role_id] = shuffle_assoc($this->roles_queue[$role_id]);
 
         // See if the task instance has a workflow alias
         if ($this->workflowTaskHasAlias($role_id, $currentRole, $this->workflows[$workflow_id]))
@@ -188,7 +175,7 @@ class Allocator {
           // Start from the beginning of the queue
           foreach($this->roles_queue[$role_id] as $queue_id => $user) :
             // They're not a match -- skip to the next user in queue
-            if ($this->canEnterWorkflow($user, $workflow, $role_id))
+            if ($this->canEnterWorkflow($user, $this->workflows[$workflow_id], $role_id))
             {
               $this->workflows[$workflow_id][$role_id] = $user;
 
@@ -197,10 +184,6 @@ class Allocator {
                 unset($this->roles_queue[$role_id][$queue_id]);
 
               break;
-            }
-            else
-            {
-              echo "CANNOT ENTER <BR />";
             }
           endforeach;
         }
@@ -222,13 +205,21 @@ class Allocator {
   protected function canEnterWorkflow($user, $workflow, $role_id)
   {
     $role = $this->roles[$role_id];
-    var_dump($user, $workflow, $role);
-    exit;
-    
-    foreach($workflow as $role => $assigne)
+
+    foreach($workflow as $workflow_role_id => $assigne)
     {
       if ($assigne !== NULL AND (int) $assigne === (int) $user->user_id)
-        return FALSE;
+      {
+        // They've got a match! Now let's see if it's not an alias
+        $workflowRole = $this->role[$workflow_role_id];
+
+        // The role they're trying to enter is an alias to a role that was already taken by
+        // the user. A false positive.
+        if ( isset($workflowRole['rules']['user alias']) AND $workflowRole['rules']['user alias'] == $role['name'])
+          continue;
+        else
+          return FALSE;
+      }
     }
     return TRUE;
   }

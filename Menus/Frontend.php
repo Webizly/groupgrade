@@ -140,7 +140,7 @@ return array(
   'class/test' => array(
     'type' => MENU_CALLBACK,
     'title' => 'Testing PLA',
-    'page callback' => 'groupgrade_test_form',
+    'page callback' => 'groupgrade_cron',
     'access callback' => TRUE
   ),
 

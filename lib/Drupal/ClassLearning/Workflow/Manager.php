@@ -286,7 +286,7 @@ class Manager {
     // Add the workflows from the database
     foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
-
+    
     $allocator->assignmentRun();
     $allocator->dump();
     exit;
