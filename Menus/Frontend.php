@@ -342,7 +342,7 @@ return array(
   'class/instructor/%' => array(
     //'type' => MENU_NORMAL_ITEM,
     'title' => 'Section View',
-    'page callback' => 'groupgrade_view_section',
+    'page callback' => 'groupgrade_adminview_section',
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 

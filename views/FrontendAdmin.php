@@ -39,7 +39,7 @@ function groupgrade_instructor_dash() {
 }
 
 
-function groupgrade_view_section($id) {
+function groupgrade_adminview_section($id) {
   $section = Section::find((int) $id);
   if ($section == NULL) return drupal_not_found();
 
