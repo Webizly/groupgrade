@@ -550,20 +550,6 @@ class Allocator {
   }
 
   /**
-   * Convert a Eloquent Collection to a Array of objects
-   *
-   * @param object
-   */
-  public function collection_to_array($collection)
-  {
-    $index = [];
-    foreach ($collection as $c)
-      $index[] = $c;
-
-    return $c;
-  }
-
-  /**
    * Inteligently run the sorting algorithm
    *
    * We run it for however much $maxRuns is set to to ensure we get the
