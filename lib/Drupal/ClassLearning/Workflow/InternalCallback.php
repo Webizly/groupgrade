@@ -73,14 +73,15 @@ class InternalCallback {
     foreach ($tasks as $it)
       $index[] = (int) $it->data['grade'];
 
-    $average = array_sum($index)/count($index);
+    $finalGrade = max($index);
+    //array_sum($index)/count($index);
 
-    $task->setData('value', $average);
+    $task->setData('value', $finalGrade);
 
     // Update the workflow
     $workflow = $task->workflow()->first();
     var_dump($workflow);
-    $workflow->setData('grade', $average);
+    $workflow->setData('grade', $finalGrade);
     $workflow->save();
     var_dump($workflow);
 
