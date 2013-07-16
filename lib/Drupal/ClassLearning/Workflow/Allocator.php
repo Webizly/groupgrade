@@ -163,8 +163,9 @@ class Allocator {
         $currentRole = $this->roles[$role_id];
 
         // If they aren't pulling from a list, they're going to be taking random items from a list
-        if (! $currentRole['rules']['pool']['pull after'])
+        if (! $currentRole['rules']['pool']['pull after']) :
           $this->roles_queue[$role_id] = shuffle_assoc($this->roles_queue[$role_id]);
+        endif;
 
         // See if the task instance has a workflow alias
         if ($this->workflowTaskHasAlias($role_id, $currentRole, $this->workflows[$workflow_id]))
@@ -208,7 +209,11 @@ class Allocator {
 
     foreach($workflow as $workflow_role_id => $assigne)
     {
-      if ($assigne !== NULL AND (int) $assigne === (int) $user->user_id)
+      // Workflow Instance not assigned
+      if ($assigne == NULL)
+        continue;
+
+      if ((int) $assigne->user_id == (int) $user->user_id)
       {
         // They've got a match! Now let's see if it's not an alias
         $workflowRole = $this->role[$workflow_role_id];
@@ -616,13 +621,15 @@ class Allocator {
 </table>
 <!-- Now Show a user's membership table -->
 <p>&nbsp;</p>
-<?php exit; ?>
+
 <table width="100%" border="1">
   <thead>
     <tr>
       <th>Student</th>
 
-      <?php foreach($this->roles as $role_id => $role_data) : ?>
+      <?php foreach($this->roles as $role_id => $role_data) :
+        if ($role_data['rules']['pool']['name'] !== 'student') continue;
+        ?>
         <th>is <?php echo $role_data['name']; ?>?</th>
       <?php endforeach; ?>
     </tr>
@@ -633,10 +640,14 @@ class Allocator {
     <tr>
       <td><?php echo user_load($user->user_id)->name; ?></td>
 
-    <?php foreach($this->roles as $role_id => $role_data) : $found = false; ?>
+    <?php foreach($this->roles as $role_id => $role_data) :
+
+    if ($role_data['rules']['pool']['name'] !== 'student') continue;
+
+    $found = false; ?>
       <?php
       foreach($this->workflows as $workflow) :
-        if ($workflow[$role_id] !== NULL AND $workflow[$role_id] == $user_id) :
+        if ($workflow[$role_id] !== NULL AND $workflow[$role_id]->user_id == $user->user_id) :
           ?><td bgcolor="blue">YES</td><?php
         $found = true;
         endif;
@@ -649,7 +660,7 @@ class Allocator {
   </tbody>
 </table>
 
-<p><strong>Total Students:</strong> <?php echo count($this->users); ?></p>
+<p><strong>Total Students:</strong> <?php echo count($this->pools['student']); ?></p>
 <p><strong>Total Runs:</strong> <?php echo $this->runCount; ?></p>
 <pre>
 <?php var_dump($this->workflows); ?>
