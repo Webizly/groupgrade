@@ -279,12 +279,14 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
   $items['body'] = [
     '#type' => 'textarea',
     '#required' => true,
+    '#title' => 'Edited Problem',
     '#default_value' => $problem,
   ];
 
   $items['comment'] = [
     '#type' => 'textarea',
     '#required' => true,
+    '#title' => 'Edding Comments',
     '#default_value' => $comment,
   ];
 
