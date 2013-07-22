@@ -325,7 +325,9 @@ class WorkflowTask extends ModelBase {
   /**
    * Get the timeout time for this task
    *
-   * This would be when the task would be timed out fully
+   * This would be when the task would be timed out fully. This is
+   * calculated relative to NOW, not to when the task was created.
+   * To calculate when the task should end, see {@link WorkflowTask::forceEndTime()}
    * 
    * @return object Carbon datetime
    */
@@ -335,6 +337,15 @@ class WorkflowTask extends ModelBase {
     return Carbon::now()->addDays($duration);
   }
 
+  /**
+   * Retrieve the Carbon object for the force end
+   *
+   * @return Carbon\Carbon
+   */
+  public function forceEndTime()
+  {
+    return Carbon::createFromFormat(MYSQL_DATETIME, $this->force_end);
+  }
 
   /**
    * Retrieve Upcoming Tasks for a User

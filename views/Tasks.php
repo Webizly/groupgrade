@@ -23,7 +23,7 @@ function groupgrade_tasks_view_specific($specific = '') {
         $row_t = [];
         $row_t[] = sprintf(
           '<a href="%s">%s</a>',
-          url('class/task/'.$task->task_id), groupgrade_carbon_span($task->timeoutTime())
+          url('class/task/'.$task->task_id), groupgrade_carbon_span($task->forceEndTime())
         );
 
         $row_t[] = t(ucwords($task->type));
