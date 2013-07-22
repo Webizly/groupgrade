@@ -159,7 +159,7 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
 
   if (! $params['edit']) :
     $items['edited problem lb'] = [
-      '#markup' => '<strong>'.t('Submitted Problem').':</strong>',
+      '#markup' => '<strong>'.t('Problem').':</strong>',
     ];
     $items['edited problem'] = [
       '#type' => 'item',
@@ -239,7 +239,7 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
 
   if (! $params['edit']) :
     $items['edited problem lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Submitted Edited Problem')),
+      '#markup' => sprintf('<strong>%s:</strong>', t('Edited Problem')),
     ];
     $items['edited problem'] = [
       '#type' => 'item',
@@ -247,11 +247,11 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     ];
 
     $items['comment lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Edited Problem Comment')),
+      '#markup' => sprintf('<strong>%s:</strong>', t('Edited Comments')),
     ];
     $items['comment'] = [
       '#type' => 'item',
-      '#markup' => nl2br($comment),
+      '#markup' => (empty($comment)) ? sprintf('<em>%s</em>', t('none')) : nl2br($comment),
     ];
 
     return $items;
@@ -325,7 +325,7 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 
   if (! $params['edit']) :
     $items['problem lb'] = [
-      '#markup' => '<strong>'.t('Submitted Solution').':</strong>',
+      '#markup' => '<strong>'.t('Solution').':</strong>',
     ];
     $items['problem'] = [
       '#type' => 'item',
@@ -671,8 +671,7 @@ function gg_view_workflow($workflow_id)
   $assignment = $workflow->assignmentSection()->first()
     ->assignment()->first();
 
-  $return .= '<p class="summary">'.t('Assignment: ').$assignment->assignment_title.'</p>';
-  $return .= '<p>'.nl2br($assignment->assignment_description).'</p><hr />';
+  $return .= '<p class="summary">'.nl2br($assignment->assignment_description).'</p><hr />';
 
   if (count($tasks) > 0) : foreach ($tasks as $task) :
     if ($task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
@@ -683,7 +682,7 @@ function gg_view_workflow($workflow_id)
     $return .= '<hr />';
   endforeach; endif;
 
-  drupal_set_title('View Workflow: '.$workflow_id);
+  drupal_set_title(sprintf('%s: %s', t('Assignment'), $assignment->assignment_title));
 
   return $return;
 }
