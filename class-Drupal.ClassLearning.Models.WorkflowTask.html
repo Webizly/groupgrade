@@ -7,7 +7,7 @@
 	<title>Class Drupal\ClassLearning\Models\WorkflowTask | groupgrade</title>
 
 	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
-	<script type="text/javascript" src="elementlist.js?1354954917"></script>
+	<script type="text/javascript" src="elementlist.js?3003204921"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
 
 </head>
@@ -138,7 +138,7 @@ Illuminate\Database\Eloquent\Model
 		<b>Namespace:</b> <a href="namespace-Drupal.html">Drupal</a>\<a href="namespace-Drupal.ClassLearning.html">ClassLearning</a>\<a href="namespace-Drupal.ClassLearning.Models.html">Models</a><br />
 		
 
-		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#10-443" title="Go to source code">lib/Drupal/ClassLearning/Models/WorkflowTask.php</a><br />
+		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#10-454" title="Go to source code">lib/Drupal/ClassLearning/Models/WorkflowTask.php</a><br />
 	</div>
 
 
@@ -572,7 +572,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_timeoutTime">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#325-336" title="Go to source code">timeoutTime</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#325-338" title="Go to source code">timeoutTime</a>( )</code>
 
 		<div class="description short">
 			
@@ -584,7 +584,9 @@ conditions and then handling them dynamically.</p>
 			
 <p>Get the timeout time for this task</p>
 
-<p>This would be when the task would be timed out fully</p>
+<p>This would be when the task would be timed out fully. This is calculated
+relative to NOW, not to when the task was created. To calculate when the task
+should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.html#_forceEndTime">Drupal\ClassLearning\Models\WorkflowTask::forceEndTime()</a></code></p>
 
 
 
@@ -592,6 +594,43 @@ conditions and then handling them dynamically.</p>
 				<h4>Returns</h4>
 				<div class="list">
 					<code>object</code><br>Carbon datetime<br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="forceEndTime" id="_forceEndTime">
+
+		<td class="attributes"><code>
+			 public 
+			Carbon\Carbon\Carbon
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_forceEndTime">#</a>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#340-348" title="Go to source code">forceEndTime</a>( )</code>
+
+		<div class="description short">
+			
+<p>Retrieve the Carbon object for the force end</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Retrieve the Carbon object for the force end</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>Carbon\Carbon\Carbon</code><br />
 				</div>
 
 
@@ -611,7 +650,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_queryByStatus">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#339-368" title="Go to source code">queryByStatus</a>( <span>integer <var>$user</var></span>, <span>string <var>$status</var> = <span class="php-quote">'pending'</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#350-379" title="Go to source code">queryByStatus</a>( <span>integer <var>$user</var></span>, <span>string <var>$status</var> = <span class="php-quote">'pending'</span></span> )</code>
 
 		<div class="description short">
 			
@@ -651,7 +690,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getSettingsAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#373-377" title="Go to source code">getSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#384-388" title="Go to source code">getSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -680,7 +719,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setSettingsAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#379-382" title="Go to source code">setSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#390-393" title="Go to source code">setSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -709,7 +748,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getDataAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#384-388" title="Go to source code">getDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#395-399" title="Go to source code">getDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -738,7 +777,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setDataAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#390-393" title="Go to source code">setDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#401-404" title="Go to source code">setDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -767,7 +806,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setData">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#395-406" title="Go to source code">setData</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#406-417" title="Go to source code">setData</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
 
 		<div class="description short">
 			
@@ -807,7 +846,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setSetting">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#408-419" title="Go to source code">setSetting</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#419-430" title="Go to source code">setSetting</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
 
 		<div class="description short">
 			
@@ -847,7 +886,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_workflow">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#424-427" title="Go to source code">workflow</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#435-438" title="Go to source code">workflow</a>( )</code>
 
 		<div class="description short">
 			
@@ -876,7 +915,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_assignmentSection">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#429-432" title="Go to source code">assignmentSection</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#440-443" title="Go to source code">assignmentSection</a>( )</code>
 
 		<div class="description short">
 			
@@ -905,7 +944,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_section">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#434-437" title="Go to source code">section</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#445-448" title="Go to source code">section</a>( )</code>
 
 		<div class="description short">
 			
@@ -934,7 +973,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_assignment">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#439-442" title="Go to source code">assignment</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#450-453" title="Go to source code">assignment</a>( )</code>
 
 		<div class="description short">
 			
