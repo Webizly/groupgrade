@@ -78,6 +78,12 @@ function groupgrade_admin_menu_output_alter(&$content) {
 
 function groupgrade_test_form()
 {
+  $return = '';
+  $a = new Drupal\ClassLearning\Common\Accordion('test-accord');
+  $a->addGroup('The Awesome Title', 'the-internal-id', 'THIS IS THE BEST STUFF');
+  $a->addGroup('Another Awesome Title', 'the-internal-id-2', 'THIS IS THE BETTER STUFF');
+  $return .= $a;
+  return $return;
   var_dump(WorkflowManager::checkAssignments());
   var_dump(WorkflowManager::checkTaskInstances());
   exit;

@@ -144,6 +144,13 @@ return array(
     'access callback' => TRUE
   ),
 
+  'class/mockup' => array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Testing PLA',
+    'page callback' => 'groupgrade_test_form',
+    'access callback' => TRUE
+  ),
+
   // ==========================
   // Section View
   // ==========================
