@@ -21,9 +21,8 @@ function groupgrade_assignments_dashboard() {
     ];
   endforeach; endif;
 
-  $return .= sprintf('<p>%s <em>%s</em><p>',
-    t('Select a question to see the work on that question so far.'),
-    t('Note that you might not be allowed to see some work in progress.')
+  $return .= sprintf('<p>%s<p>',
+    t('Select an assignment title to see the problems created for that assignment. Note that you might not be allowed to see some work in progress.')
   );
 
   $return .= theme('table', array(
@@ -73,6 +72,14 @@ function gg_view_assignment_listing($section_id, $asec_id)
 
   $return = '';
   $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, t('Back to Assignment List'));
+
+  $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
+  $return .= '<hr />';
+  
+  $return .= sprintf('<p>%s <em>%s</em><p>',
+    t('Select a question to see the work on that question so far.'),
+    t('Note that you will not be allowed to see some work in progress.')
+  );
 
   $return .= theme('table', array(
     'header' => $headers, 
