@@ -30,8 +30,14 @@ function groupgrade_tasks_view_specific($specific = '') {
         $section = $task->section()->first();
         $course = $section->course()->first();
         $assignment = $task->assignment()->first();
+        $semester = $section->semester()->first();
 
-        $row_t[] = sprintf('%s &mdash; %s', $course->course_name, $section->section_name);
+        $row_t[] = sprintf('%s &mdash; %s &mdash; %s', 
+          $course->course_name, 
+          $section->section_name,
+          $semester->semester_name
+        );
+
         $row_t[] = $assignment->assignment_title;
 
         $rows[] = $row_t;
@@ -102,8 +108,15 @@ function groupgrade_view_task($task_id, $action = 'display')
     // Course information
     $section = $task->section()->first();
     $course = $section->course()->first();
+    $semester = $section->semester()->first();
 
-    $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s', t('Course'), $course->course_name, $section->section_name);
+    $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
+      t('Course'),
+      $course->course_name,
+      $section->section_name,
+      $semester->semester_name
+    );
+
     $return .= '<hr />';
     
     $return .= sprintf('<h4>%s</h4>', t('Assignment Description'));
