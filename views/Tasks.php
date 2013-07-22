@@ -1,6 +1,7 @@
 <?php
 use Drupal\ClassLearning\Models\WorkflowTask as Task,
-  Drupal\ClassLearning\Models\Workflow;
+  Drupal\ClassLearning\Models\Workflow,
+  Drupal\ClassLearning\Common\Accordion;
 
 function groupgrade_tasks_dashboard() {
   return groupgrade_tasks_view_specific('pending');
@@ -686,14 +687,17 @@ function gg_view_workflow($workflow_id)
 
   $return .= '<p class="summary">'.nl2br($assignment->assignment_description).'</p><hr />';
 
+  // Wrap it all inside an accordion
+  $a = new Accordion('workflow-'.$workflow->workflow_id);
+
   if (count($tasks) > 0) : foreach ($tasks as $task) :
     if ($task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
       continue;
 
-
-    $return .= groupgrade_view_task($task, 'overview');
-    $return .= '<hr />';
+    $a->addGroup(t(ucwords($task->type)), $workflow->workflow_id.'-'.$task->task_id, groupgrade_view_task($task, 'overview'));
   endforeach; endif;
+
+  $return .= $a;
 
   drupal_set_title(sprintf('%s: %s', t('Assignment'), $assignment->assignment_title));
 
