@@ -36,7 +36,7 @@ class Manager {
       ->get();
 
     if (count($tasks) > 0) : foreach ($tasks as $task)
-      $this->checkTimeoutTask($task);
+      self::checkTimeoutTask($task);
     endif;
   }
 
