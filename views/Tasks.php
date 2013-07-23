@@ -1038,3 +1038,20 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   if (! $save)
     return drupal_goto('class');
 }
+
+/**
+ * Used only to display to instructors wheater grades were automatically resolved 
+ */
+function gg_task_resolve_grades_form($form, &$form_state, $params)
+{
+  $task = $params['task'];
+
+  $items = [];
+  $items[] = [
+    '#markup' => sprintf('<p>Workflow grades <strong>%s</strong> automatically resolved.</p>',
+      ($task->data['value']) ? 'were' : 'were not'
+    )
+  ];
+
+  return $items;
+}
