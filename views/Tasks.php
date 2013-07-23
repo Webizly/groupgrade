@@ -500,19 +500,39 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
 function gg_task_dispute_form($form, &$form_state, $params)
 {
   $items = [];
+  $task = $params['task'];
 
   if (! $params['edit']) :
     $items[] = [
       '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
         t('The solution grade was'),
-        (($params['task']->data['value']) ? 'disputed' : 'not disputed')
+        (($task->data['value']) ? 'disputed' : 'not disputed')
       )
     ];
+
+    // It was disputed, show the propsed grade and justification
+    if ($task->data['value']) :
+      $items['grade lb'] = [
+        '#markup' => '<strong>'.t('Proposed Grade').':</strong>',
+      ];
+      $items['grade'] = [
+        '#type' => 'item',
+        '#markup' => $task->data['proposed-grade'].'%',
+      ];
+
+      $items['justice lb'] = [
+        '#markup' => '<strong>'.t('Grade Justification').':</strong>',
+      ];
+      $items['justice'] = [
+        '#type' => 'item',
+        '#markup' => nl2br($task->data['justification']),
+      ];
+    endif;
     return $items;
   endif;
 
   $items[] = [
-    '#markup' => '<h3>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%',
+    '#markup' => '<h4>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%</h4>',
   ];
   $items[] = [
     '#markup' => sprintf('<h4>%s:</h4><p>%s</p>',
@@ -533,15 +553,38 @@ function gg_task_dispute_form($form, &$form_state, $params)
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
 
-  $items[] = [
-    '#markup' => sprintf('<p>%s</p>', t('Would you like to dispute this grade?')),
+  $items['no-dispute'] = [
+    '#type' => 'submit',
+    '#value' => 'Do Not Dispute',
   ];
 
-  $items['dispute'] = [
-    '#type' => 'submit',
-    '#value' => 'Dispute',
+  $items[] = [
+    '#markup' => sprintf('<hr /><p>%s</p>', t('Complete the following only if you are going to dispute.'))
   ];
-  $items['no-dispute'] = [
+  //$items['']
+  $items['proposed-grade'] = [
+    '#type' => 'textfield',
+    '#title' => 'Proposed Grade (0-100)',
+    '#default_value' => (isset($task->data['proposed-grade'])) ? $task->data['proposed-grade'] : '',
+  ];
+
+  $items['justification'] = [
+    '#type' => 'textarea',
+    '#title' => 'Grade Justification',
+    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
+  ];
+
+  $items['dispute-save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Dispute',
+  ];
+
+  $items['dispute-submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Submit Dispute',
+  ];
+
+  $items['no-dispute-two'] = [
     '#type' => 'submit',
     '#value' => 'Do Not Dispute',
   ];
@@ -556,12 +599,45 @@ function gg_task_dispute_form_submit($form, &$form_state)
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
 
-  $dispute = ($form_state['clicked_button']['#id'] == 'edit-dispute') ? true : false;
-  $task->setData('value', $dispute);
-  $task->complete();
+  if (in_array($form_state['clicked_button']['#id'], ['edit-dispute-save', 'edit-dispute-submit']))
+    $dispute = true;
+  else
+    $dispute = false;
 
-  drupal_set_message(t('Your selection has been submitted.'));
-  return drupal_goto('class');
+  $task->setData('value', $dispute);
+
+  if ($dispute) :
+    // Verify the passed in the justification and grade
+    if (empty($form['proposed-grade']['#value']) OR empty($form['justification']['#value']))
+      return drupal_set_message(t('You didn\'t submit the justification or the propsed grade.'), 'error');
+
+    // Save the fields
+    $grade = (int) $form['proposed-grade']['#value'];
+    if ($grade !== abs($grade) OR $grade < 0 OR $grade > 100)
+      return drupal_set_message(t('Invalid grade: '.$grade));
+    
+    $task->setData('proposed-grade', $grade);
+    $task->setData('justification', trim($form['justification']['#value']));
+
+    // Are they saving or doing it now
+    $submit = ($form_state['clicked_button']['#id'] == 'edit-dispute-submit') ? TRUE : FALSE;
+
+    $task->status = 'started';
+    $task->save();
+
+    if ($submit) :
+      $task->complete();
+
+      drupal_set_message(t('Your dispute has been submitted.'));
+      return drupal_goto('class');
+    else :
+      drupal_set_message(t('Your dispute has been saved.'));
+    endif;
+  else :
+    $task->save();
+    $task->complete();
+    drupal_set_message(t('Your decision to not dispute has been submitted.'));
+  endif;
 }
 
 
