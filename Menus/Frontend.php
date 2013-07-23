@@ -392,4 +392,40 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ),
+
+  // View Section Assignments
+  'class/instructor/%/assignment/%' => array(
+    'title' => 'View Assignment',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_assignment',
+    'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
+  ),
+
+  'class/instructor/%/assignment/%/first' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'View Assignment',
+    'weight' => 1,
+  ),
+
+  'class/instructor/%/assignment/%/timed-out' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Timed Out',
+
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_assignment',
+    'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
 );

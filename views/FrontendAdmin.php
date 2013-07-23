@@ -2,7 +2,10 @@
 use Drupal\ClassLearning\Models\User,
   Drupal\ClassLearning\Models\Section,
   Drupal\ClassLearning\Models\SectionUsers,
-  Drupal\ClassLearning\Models\Semester;
+  Drupal\ClassLearning\Models\Semester,
+  Drupal\ClassLearning\Models\AssignmentSection,
+  Drupal\ClassLearning\Models\WorkflowTask,
+  Drupal\ClassLearning\Models\Workflow;
 
 /**
  * @file
@@ -105,10 +108,15 @@ function groupgrade_view_assignments($id) {
   $rows = array();
 
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
-    $rows[] = array($assignment->assignment_title, gg_time_human($assignment->asec_start), 
-       '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$assignment->asec_id).'">Edit</a>'
-        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$assignment->asec_id).'">Remove Section</a>'
-    );
+    $rows[] = [
+      sprintf('<a href="%s">%s</a>',
+        url('class/instructor/'.$assignment->section_id.'/assignment/'.$assignment->assignment_id),
+        $assignment->assignment_title
+      ),
+      gg_time_human($assignment->asec_start), 
+       '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$assignment->asec_id).'">'.t('Edit').'</a>'
+        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$assignment->asec_id).'">'.t('Remove Section').'</a>'
+    ];
   endforeach; endif;
 
   $return .= theme('table', array(
@@ -121,3 +129,87 @@ function groupgrade_view_assignments($id) {
   return $return;
 }
 
+
+/**
+ * View an Assignment
+ *
+ * @param int Section ID
+ * @param int AssignmentSection ID
+ */
+function groupgrade_view_assignment($section_id, $asec_id)
+{
+  $assignmentSection = AssignmentSection::find($asec_id);
+  if ($assignmentSection == NULL) return drupal_not_found();
+
+  $section = $assignmentSection->section()->first();
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+  $assignment = $assignmentSection->assignment()->first();
+
+  // Specify the title
+  drupal_set_title($assignment->assignment_title);
+
+  $return = '';
+  $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+    t('Course'),
+    $course->course_name, 
+    $section->section_name,
+    $semester->semester_name
+  );
+
+  // Data for the table (the workflows)
+  $workflows = WorkflowTask::whereIn('workflow_id', function($query) use ($asec_id)
+  {
+    $query->select('workflow_id')
+      ->from('workflow')
+      ->where('assignment_id', '=', $asec_id);
+  })
+    ->whereType('create problem')
+    ->get();
+
+  $headers = ['Workflows'];
+  $rows = [];
+
+  if (count($workflows) > 0) : foreach ($workflows as $t) :
+    $rows[] = [sprintf(
+      '<a href="%s">%s</a>',
+      url('class/workflow/'.$t->workflow_id),
+      (isset($t->data['problem'])) ? word_limiter($t->data['problem'], 20) : 'Workflow #'.$t->workflow_id
+    )];
+  endforeach; endif;
+
+  $return = '';
+
+  // Back Link
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, t('Back to Assignment List'));
+
+  // Course/section/semester
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+
+  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
+    t('Course'),
+    $course->course_name,
+    $section->section_name,
+    $semester->semester_name
+  );
+
+  // Assignment Description
+  $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
+  $return .= '<hr />';
+    
+  // Instructions
+  $return .= sprintf('<p>%s<p>',
+    t('Select a question to see the work on that question so far.')
+  );
+
+  // Render the workflow
+  $return .= theme('table', array(
+    'header' => $headers, 
+    'rows' => $rows,
+    'empty' => 'No workflows found.',
+    'attributes' => array('width' => '100%')
+  ));
+
+  return $return;
+}
