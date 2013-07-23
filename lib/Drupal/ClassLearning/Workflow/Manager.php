@@ -120,8 +120,17 @@ class Manager {
     // Determine if they're a real user or a test dummy user
     $email = $user->mail;
     if (empty($mail) OR $mail == NULL OR ! filter_var($mail, FILTER_VALIDATE_EMAIL))) return;
-    // list($base, $domain) = explode('@', $mail, 2);
-    // if ($domain == 'njit-class.seanfisher.co')
+    list($base, $domain) = explode('@', $mail, 2);
+
+    $noSendDomains = [
+      'njit-class.seanfisher.co',
+      'groupgrade.dev',
+      'email.com',
+      'fakeemail.com',
+    ];
+
+    if (in_array($domain, $noSendDomains))
+      return;
 
     // Determine what they're doing in a human format
     switch ($task->type)
