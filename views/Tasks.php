@@ -415,12 +415,20 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
       '#markup' => $task->data['grade'],
     ];
 
-    $items['justice lb'] = [
-      '#markup' => '<strong>'.t('Grade Justification').':</strong>',
+    $items['correctness lb'] = [
+      '#markup' => '<strong>'.t('Grade Correctness').':</strong>',
     ];
-    $items['justice'] = [
+    $items['correctness'] = [
       '#type' => 'item',
-      '#markup' => nl2br($task->data['justification']),
+      '#markup' => (! isset($task->data['correctness'])) ? '' : nl2br($task->data['correctness']),
+    ];
+
+    $items['completeness lb'] = [
+      '#markup' => '<strong>'.t('Grade Completeness').':</strong>',
+    ];
+    $items['completeness'] = [
+      '#type' => 'item',
+      '#markup' => (! isset($task->data['completeness'])) ? '' : nl2br($task->data['completeness']),
     ];
 
     return $items;
