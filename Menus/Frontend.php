@@ -245,7 +245,6 @@ return array(
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
 
-    'menu_name' => 'assignment mgmt',
     'weight' => 5,
   ),
 
@@ -348,7 +347,7 @@ return array(
   // ===============================
   'class/instructor/%' => array(
     //'type' => MENU_NORMAL_ITEM,
-    'title' => 'Section View',
+    'title' => 'View Section',
     'page callback' => 'groupgrade_adminview_section',
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',

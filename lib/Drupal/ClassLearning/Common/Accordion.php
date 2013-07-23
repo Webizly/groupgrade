@@ -67,7 +67,7 @@ class Accordion {
     <div class="accordion-heading">';
 
       $return .= sprintf('<a class="accordion-toggle" data-toggle="collapse" data-parent="#%s" href="#%s">%s</a>',
-        $this->id, $group['id'], $group['title']
+        $group['id']/*$this->id*/, $group['id'], $group['title']
       );
     
       $return .= '</div>';
