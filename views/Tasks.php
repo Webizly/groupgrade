@@ -870,17 +870,33 @@ function gg_view_workflow($workflow_id, $admin = false)
     if (! $admin AND $task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
       continue;
 
+    $panelContents = '';
+
+    // Add user information if they're an admin
+    if ($admin) :
+      if ($task->user_id !== NULL) :
+        $user = user_load($task->user_id);
+
+        $panelContents .= sprintf('<p><strong>%s:</strong> <a href="%s">%s</a></p>',
+          t('Assigned User'),
+          url('user/'.$task->user_id),
+          ggPrettyName($user)
+        );
+      endif;
+
+      $panelContents .= sprintf('<p><strong>%s:</strong> %s</p>', t('Status'), t(ucwords($task->status)));
+      $panelContents .= '<hr />';
+    endif;
+
     // Determine the panel contents
     if (in_array($task->status, ['triggered', 'complete', 'started']))
-      $panelContents = groupgrade_view_task($task, 'overview', $admin);
+      $panelContents .= groupgrade_view_task($task, 'overview', $admin);
     elseif ($task->status == 'not triggered')
-      $panelContents = sprintf('<div class="alert">%s</div>', t('Task not triggered.'));
+      $panelContents .= sprintf('<div class="alert">%s</div>', t('Task not triggered.'));
     elseif ($task->status == 'expired')
-      $panelContents = sprintf('<div class="alert">%s</div>', t('Task expired (skipped).'));
+      $panelContents .= sprintf('<div class="alert">%s</div>', t('Task expired (skipped).'));
     elseif ($task->status == 'timed out')
-      $panelContents = sprintf('<div class="alert">%s</div>', t('Task timed out (failed to submit).'));
-    else
-      $panelContents = '';
+      $panelContents .= sprintf('<div class="alert">%s</div>', t('Task timed out (failed to submit).'));
 
     $a->addGroup(t(ucwords($task->type)), $workflow->workflow_id.'-'.$task->task_id, $panelContents);
   endforeach; endif;
