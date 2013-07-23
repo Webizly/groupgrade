@@ -47,9 +47,9 @@ class Accordion {
    * @param string $id Internal ID
    * @param string $contents Contents of the group
    */
-  public function addGroup($title, $id, $contents)
+  public function addGroup($title, $id, $contents, $open = false)
   {
-    $this->groups[] = compact('title', 'id', 'contents');
+    $this->groups[] = compact('title', 'id', 'contents', 'open');
   }
 
   /**
@@ -72,7 +72,7 @@ class Accordion {
     
       $return .= '</div>';
       
-      $return .= sprintf('<div id="%s" class="accordion-body collapse %s">', $group['id'], ($i == 0) ? 'in' : '');
+      $return .= sprintf('<div id="%s" class="accordion-body collapse %s">', $group['id'], ($group['open']) ? 'in' : '');
       $return .= '<div class="accordion-inner">';
 
       $return .= $group['contents'];
