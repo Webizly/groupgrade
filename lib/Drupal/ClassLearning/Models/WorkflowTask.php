@@ -297,6 +297,10 @@ class WorkflowTask extends ModelBase {
     // Update the status
     $this->status = 'timed out';
     $this->end = Carbon::now()->toDateTimeString();
+
+    // Notify user
+    WorkflowManager::notifyUser('expired', $this);
+
     $this->save();
   }
 

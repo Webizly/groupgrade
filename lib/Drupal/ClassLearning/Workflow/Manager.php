@@ -23,6 +23,41 @@ use Drupal\ClassLearning\Models\SectionUsers,
  */
 class Manager {
   /**
+   * Check to see if a task should timeout
+   *
+   * Tasks have a certain time length to them and will timeout
+   * if not completed within a certain time frame.
+   *
+   * @access public
+   */
+  public static function checkTimeoutTasks()
+  {
+    $tasks = WorkflowTask::whereIn('status', ['triggered', 'started'])
+      ->get();
+
+    if (count($tasks) > 0) : foreach ($tasks as $task)
+      $this->checkTimeoutTask($task);
+    endif;
+  }
+
+  /**
+   * Check the timeout of an individual task instance
+   *
+   * @access public
+   * @param WorkflowTask
+   */
+  public static function checkTimeoutTask(WorkflowTask $task)
+  {
+    $forceEnd = $task->forceEndTime();
+
+    if ($forceEnd->isPast())
+    {
+      // It's timed out
+      $task->timeout();
+    }
+  }
+
+  /**
    * Check on Task Instances
    * 
    * Checks on the non-trigger tasks to see if they should be
