@@ -488,7 +488,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf(t('Grade').' %s.', ($save) ? 'saved (You must submit this still to complete the task.)' : 'submitted'));
+  drupal_set_message(sprintf(t('Grade').' %s.', ($save) ? 'saved (You must submit this still to complete the task)' : 'submitted'));
 
   if (! $save)
     return drupal_goto('class');
