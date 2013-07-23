@@ -123,7 +123,6 @@ function groupgrade_view_task($task_id, $action = 'display')
     $return .= sprintf('<h4>%s</h4>', t('Assignment Description'));
     $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
     $return .= '<hr />';
-    $return .= '<p><strong>'.t(ucwords($task->type)).'</strong></p>';
   endif;
 
   $params = [];
