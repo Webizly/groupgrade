@@ -171,11 +171,21 @@ function groupgrade_view_assignment($section_id, $asec_id)
   $rows = [];
 
   if (count($workflows) > 0) : foreach ($workflows as $t) :
-    $rows[] = [sprintf(
-      '<a href="%s">%s</a>',
-      url('class/workflow/'.$t->workflow_id),
-      (isset($t->data['problem'])) ? word_limiter($t->data['problem'], 20) : 'Workflow #'.$t->workflow_id
-    )];
+    $url = url(
+      sprintf('class/instructor/%d/assignment/%d/%d',
+        $section_id,
+        $asec_id,
+        $t->workflow_id
+      )
+    );
+
+    $rows[] = [
+      sprintf(
+        '<a href="%s">%s</a>',
+        $url,
+        (isset($t->data['problem'])) ? word_limiter($t->data['problem'], 20) : 'Workflow #'.$t->workflow_id
+      )
+    ];
   endforeach; endif;
 
   $return = '';
@@ -211,5 +221,47 @@ function groupgrade_view_assignment($section_id, $asec_id)
     'attributes' => array('width' => '100%')
   ));
 
+  return $return;
+}
+
+
+/**
+ * View an Assignment Workflow
+ *
+ * @param int Section ID
+ * @param int AssignmentSection ID
+ */
+function groupgrade_view_assignmentworkflow($section_id, $asec_id, $workflow_id)
+{
+  $assignmentSection = AssignmentSection::find($asec_id);
+  if ($assignmentSection == NULL) return drupal_not_found();
+
+  $workflow = Workflow::find($workflow_id);
+  if ($workflow == NULL OR $workflow->assignment_id != $asec_id)
+    return drupal_not_found();
+
+  $section = $assignmentSection->section()->first();
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+  $assignment = $assignmentSection->assignment()->first();
+  $tasks = $workflow->tasks()->get();
+
+  // Set the Page title
+  drupal_set_title($assignment->assignment_title.': '.t('Workflow').' #'.$workflow_id);
+
+  $return = '';
+
+  // Information about the course
+  $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+    t('Course'),
+    $course->course_name, 
+    $section->section_name,
+    $semester->semester_name
+  );
+
+  // Call on a common function so we don't duplicate things
+  require_once (__DIR__.'/Tasks.php');
+  $return .= gg_view_workflow($workflow, true);
+  
   return $return;
 }

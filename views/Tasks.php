@@ -78,21 +78,24 @@ function groupgrade_tasks_view_specific($specific = '') {
  *
  * @param int Task ID
  * @param string How to display it (default = everything, overview = Just submitted data, no other info)
+ * @param bool View the task with admin permissions
  */
-function groupgrade_view_task($task_id, $action = 'display')
+function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
 {
   global $user;
 
-  if (is_object($task_id))
+  if (is_object($task_id)) :
     $task = $task_id;
-  else
+    $task_id = $task->task_id;
+  else :
     $task = Task::find($task_id);
+  endif;
 
   // Permissions
-  if ($task == NULL OR ! in_array($task->status, ['triggered', 'started', 'complete']))
+  if ($task == NULL OR (! $admin AND ! in_array($task->status, ['triggered', 'started', 'complete']) ))
     return drupal_not_found();
 
-  if ($task->status !== 'complete' AND (int) $task->user_id !== (int) $user->uid)
+  if ($task->status !== 'complete' AND (int) $task->user_id !== (int) $user->uid AND ! $admin)
     return drupal_not_found();
 
   $anon = ((int) $task->user_id !== (int) $user->uid AND ! user_access('administer')) ? TRUE : FALSE;
@@ -157,7 +160,11 @@ function groupgrade_view_task($task_id, $action = 'display')
   }
 
   $params['workflow'] = $task->workflow()->first();
-  $params['edit'] = ($task->status == 'triggered' OR $task->status == 'started');
+  
+  if (! $admin)
+    $params['edit'] = ($task->status == 'triggered' OR $task->status == 'started');
+  else
+    $params['edit'] = FALSE;
 
   $form = drupal_get_form('gg_task_'.str_replace(' ', '_', $task->type).'_form', $params);
   $return .= drupal_render($form);
@@ -811,14 +818,22 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
  * View a workflow
  * @param int
  */
-function gg_view_workflow($workflow_id)
+function gg_view_workflow($workflow_id, $admin = false)
 {
-  $workflow = Workflow::find($workflow_id);
-  if ($workflow == NULL) return drupal_not_found();
+  if ($admin AND is_object($workflow_id)) :
+    $workflow = $workflow_id;
+    $workflow_id = $workflow->workflow_id;
+  else :
+    $workflow = Workflow::find($workflow_id);
+    if ($workflow == NULL) return drupal_not_found();
+  endif;
 
-  $tasks = $workflow->tasks()
-    ->whereStatus('complete')
-    ->get();
+  $tasks = $workflow->tasks();
+
+  if (! $admin)
+    $tasks->whereStatus('complete');
+
+  $tasks = $tasks->get();
 
   $return = '';
 
@@ -826,23 +841,25 @@ function gg_view_workflow($workflow_id)
   $assignment = $asec->assignment()->first();
 
   // Back Link
-  $return .= sprintf(
-    '<p><a href="%s">%s %s</a></p>', url('class/assignments/'.$asec->section_id.'/'.$asec->asec_id), 
-    HTML_BACK_ARROW,
-    t('Back to Problem Listing')
-  );
+  if (! $admin)
+    $return .= sprintf(
+      '<p><a href="%s">%s %s</a></p>', url('class/assignments/'.$asec->section_id.'/'.$asec->asec_id), 
+      HTML_BACK_ARROW,
+      t('Back to Problem Listing')
+    );
 
   // Course/section/semester
   $section = $asec->section()->first();
   $course = $section->course()->first();
   $semester = $section->semester()->first();
 
-  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
-    t('Course'),
-    $course->course_name,
-    $section->section_name,
-    $semester->semester_name
-  );
+  if (! $admin)
+    $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
+      t('Course'),
+      $course->course_name,
+      $section->section_name,
+      $semester->semester_name
+    );
 
   $return .= '<p class="summary">'.nl2br($assignment->assignment_description).'</p><hr />';
 
@@ -850,12 +867,25 @@ function gg_view_workflow($workflow_id)
   $a = new Accordion('workflow-'.$workflow->workflow_id);
 
   if (count($tasks) > 0) : foreach ($tasks as $task) :
-    if ($task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
+    if (! $admin AND $task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
       continue;
 
-    $a->addGroup(t(ucwords($task->type)), $workflow->workflow_id.'-'.$task->task_id, groupgrade_view_task($task, 'overview'));
+    // Determine the panel contents
+    if (in_array($task->status, ['triggered', 'complete', 'started']))
+      $panelContents = groupgrade_view_task($task, 'overview', $admin);
+    elseif ($task->status == 'not triggered')
+      $panelContents = sprintf('<div class="alert">%s</div>', t('Task not triggered.'));
+    elseif ($task->status == 'expired')
+      $panelContents = sprintf('<div class="alert">%s</div>', t('Task expired (skipped).'));
+    elseif ($task->status == 'timed out')
+      $panelContents = sprintf('<div class="alert">%s</div>', t('Task timed out (failed to submit).'));
+    else
+      $panelContents = '';
+
+    $a->addGroup(t(ucwords($task->type)), $workflow->workflow_id.'-'.$task->task_id, $panelContents);
   endforeach; endif;
 
+  // Append the accordions
   $return .= $a;
 
   drupal_set_title(sprintf('%s: %s', t('Assignment'), $assignment->assignment_title));
@@ -902,7 +932,7 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     ];
     $items['grade'] = [
       '#type' => 'item',
-      '#markup' => $task->data['grade'],
+      '#markup' => (isset($task->data['grade'])) ? $task->data['grade'] : '',
     ];
 
     $items['justice lb'] = [
@@ -910,7 +940,7 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     ];
     $items['justice'] = [
       '#type' => 'item',
-      '#markup' => nl2br($task->data['justification']),
+      '#markup' => (isset($task->data['justification'])) ? nl2br($task->data['justification']) : '',
     ];
 
     $items['comment lb'] = [

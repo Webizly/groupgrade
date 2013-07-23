@@ -428,4 +428,19 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 2,
   ),
+
+   // View a workflow inside of an assignment
+   'class/instructor/%/assignment/%/%' => array(
+    'title' => 'View Workflow',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_assignmentworkflow',
+    'page arguments' => array(2, 4, 5),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
+  ),
 );
