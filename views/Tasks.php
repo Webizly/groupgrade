@@ -825,7 +825,24 @@ function gg_view_workflow($workflow_id)
   $asec = $workflow->assignmentSection()->first();
   $assignment = $asec->assignment()->first();
 
-  $return .= sprintf('<p><a href="%s">%s %s</a></p>', url('class/assignments/'.$asec->section_id.'/'.$asec->asec_id), HTML_BACK_ARROW, t('Back to Problem Listing'));
+  // Back Link
+  $return .= sprintf(
+    '<p><a href="%s">%s %s</a></p>', url('class/assignments/'.$asec->section_id.'/'.$asec->asec_id), 
+    HTML_BACK_ARROW,
+    t('Back to Problem Listing')
+  );
+
+  // Course/section/semester
+  $section = $asec->section()->first();
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+
+  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
+    t('Course'),
+    $course->course_name,
+    $section->section_name,
+    $semester->semester_name
+  );
 
   $return .= '<p class="summary">'.nl2br($assignment->assignment_description).'</p><hr />';
 

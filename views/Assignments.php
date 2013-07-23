@@ -43,7 +43,8 @@ function gg_view_assignment_listing($section_id, $asec_id)
   $asec = AssignmentSection::find($asec_id);
   $section = $asec->section()->first();
 
-  if ((int) $section->section_id !== (int) $section_id) return drupal_not_found();
+  if ((int) $section->section_id !== (int) $section_id)
+    return drupal_not_found();
 
   $assignment = $asec->assignment()->first();
   
@@ -71,11 +72,26 @@ function gg_view_assignment_listing($section_id, $asec_id)
   endforeach; endif;
 
   $return = '';
+
+  // Back Link
   $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, t('Back to Assignment List'));
 
+  // Course/section/semester
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+
+  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
+    t('Course'),
+    $course->course_name,
+    $section->section_name,
+    $semester->semester_name
+  );
+
+  // Assignment Description
   $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
   $return .= '<hr />';
-  
+    
+  // Instructions
   $return .= sprintf('<p>%s <em>%s</em><p>',
     t('Select a question to see the work on that question so far.'),
     t('Note that you will not be allowed to see some work in progress.')
