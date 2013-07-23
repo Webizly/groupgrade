@@ -445,11 +445,18 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     '#default_value' => (isset($task->data['grade'])) ? $task->data['grade'] : '',
   ];
 
-  $items['justification'] = [
+  $items['completeness'] = [
     '#type' => 'textarea',
-    '#title' => 'Grade Justification',
+    '#title' => 'Grade Completeness',
     '#required' => true,
-    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
+    '#default_value' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
+  ];
+
+  $items['correctness'] = [
+    '#type' => 'textarea',
+    '#title' => 'Grade Correctness',
+    '#required' => true,
+    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
   ];
   $items['save'] = [
     '#type' => 'submit',
@@ -478,8 +485,9 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute([
-    'grade' =>  (int) $grade,
-    'justification' => $form['justification']['#value']
+    'grade' =>  $grade,
+    'completeness' => $form['completeness']['#value'],
+    'correctness' => $form['correctness']['#value']
   ]);
 
   $task->status = ($save) ? 'started' : 'completed';
@@ -696,8 +704,15 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     $c = '';
     $c .= '<h4>'.t('Grade').': '.$task->data['grade'].'%</h4>';
     
-    $c .= '<h4>'.t('Grade Justification').':</h4>';
-    $c .= '<p>'.nl2br($task->data['justification']).'</p>';
+    $c .= '<h4>'.t('Grade Completeness').':</h4>';
+    
+    if (isset($grade->data['completeness']))
+      $c .= '<p>'.nl2br($grade->data['completeness']).'</p>';
+
+    $c .= '<h4>'.t('Grade Correctness').':</h4>';
+    
+    if (isset($grade->data['correctness']))
+      $c .= '<p>'.nl2br($grade->data['correctness']).'</p>';
 
     $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
   endforeach; endif;
