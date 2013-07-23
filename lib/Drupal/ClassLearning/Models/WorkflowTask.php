@@ -330,25 +330,30 @@ class WorkflowTask extends ModelBase {
    * Get the timeout time for this task
    *
    * This would be when the task would be timed out fully. This is
-   * calculated relative to NOW, not to when the task was created.
-   * To calculate when the task should end, see {@link WorkflowTask::forceEndTime()}
+   * calculated relative to the start time of the task. It assumes that `start`
+   * is already set.
    * 
-   * @return object Carbon datetime
+   * @return object Carbon\Carbon
+   * @throws Drupal\ClassLearning\Exception
    */
   public function timeoutTime()
   {
+    if ($this->start == NULL)
+      throw new ModelException('Start time for instance cannot be null.');
+
     $duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 0;
-    return Carbon::now()->addDays($duration);
+    return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays($duration);
   }
 
   /**
    * Retrieve the Carbon object for the force end
    *
+   * @deprecated Use {@link WorkflowTask::forceEndTime()}
    * @return Carbon\Carbon
    */
   public function forceEndTime()
   {
-    return Carbon::createFromFormat(MYSQL_DATETIME, $this->force_end);
+    return $this->timeoutTime();
   }
 
   /**

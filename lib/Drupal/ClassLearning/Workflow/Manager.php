@@ -48,8 +48,8 @@ class Manager {
    */
   public static function checkTimeoutTask(WorkflowTask $task)
   {
-    $forceEnd = $task->forceEndTime();
-
+    $forceEnd = $task->timeoutTime();
+    
     if ($forceEnd->isPast())
     {
       // It's timed out
