@@ -119,7 +119,7 @@ class Manager {
 
     // Determine if they're a real user or a test dummy user
     $email = $user->mail;
-    if (empty($mail) OR $mail == NULL OR ! filter_var($mail, FILTER_VALIDATE_EMAIL))) return;
+    if (empty($mail) OR $mail == NULL OR ! filter_var($mail, FILTER_VALIDATE_EMAIL)) return;
     list($base, $domain) = explode('@', $mail, 2);
 
     $noSendDomains = [
