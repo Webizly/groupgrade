@@ -676,9 +676,6 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     ];
 
   $items[] = [
-    '#markup' => '<h3>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%',
-  ];
-  $items[] = [
     '#markup' => '<h4>'.t('Problem').':</h4>'
     .'<p>'.nl2br($params['problem']->data['problem']).'</p>'
   ];
@@ -687,6 +684,49 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     '#markup' => '<h4>'.t('Solution').':</h4>'
     .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
   ];
+
+  $a = new Drupal\ClassLearning\Common\Accordion('resolve-dispute');
+
+  // Get the grades
+  $grades = Task::whereType('grade solution')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->get();
+
+  if (count($grades) > 0) : foreach ($grades as $grade) :
+    $c = '';
+    $c .= '<h4>'.t('Grade').': '.$task->data['grade'].'%</h4>';
+    
+    $c .= '<h4>'.t('Grade Justification').':</h4>';
+    $c .= '<p>'.nl2br($task->data['justification']).'</p>';
+
+    $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
+  endforeach; endif;
+
+  // Resolved Grade (automatically or via resolution grader)
+  $c = '';
+  $c .= '<h4>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%</h4>';
+  $a->addGroup('Resolved Grade', 'resolved-grade', $c);
+
+  // Dispute Grader
+  $disputeTask = Task::whereType('dispute')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->first();
+
+  if ($disputeTask) :
+    $c = '';
+    $c .= '<h4>'.t('Proposed Grade').': '.$disputeTask->data['proposed-grade'].'%</h4>';
+    
+    $c .= '<h4>'.t('Grade Justification').':</h4>';
+    $c .= '<p>'.nl2br($disputeTask->data['justification']).'</p>';
+
+    $a->addGroup('Dispute Grader #'.$disputeTask->task_id, 'grade-'.$disputeTask->task_id, $c);
+  endif;
+
+  // Accordion
+  $items[] = [
+    '#markup' => $a.'<hr />',
+  ];
+
 
   $items['grade'] = [
     '#type' => 'textfield',
