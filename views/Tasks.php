@@ -863,12 +863,22 @@ function gg_view_workflow($workflow_id, $admin = false)
 
   $return .= '<p class="summary">'.nl2br($assignment->assignment_description).'</p><hr />';
 
+  // Special ADMIN instructions
+  if ($admin)
+    $return .= sprintf('<p>%s</p>', t('Below, you will find the various tasks apart of '
+      .'this workflow. Tasks with a yellow background require your attention in that they '
+      .'have timed out, thus impeding the flow of the workflow.'
+    ));
+
   // Wrap it all inside an accordion
   $a = new Accordion('workflow-'.$workflow->workflow_id);
 
   if (count($tasks) > 0) : foreach ($tasks as $task) :
     if (! $admin AND $task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
       continue;
+
+    // Options passed to the accordion
+    $options = [];
 
     $panelContents = '';
 
@@ -886,6 +896,9 @@ function gg_view_workflow($workflow_id, $admin = false)
 
       $panelContents .= sprintf('<p><strong>%s:</strong> %s</p>', t('Status'), t(ucwords($task->status)));
       $panelContents .= '<hr />';
+
+      if ($task->status == 'timed out')
+        $options['style'] = 'background-color: yellow;';
     endif;
 
     // Determine the panel contents
@@ -898,7 +911,7 @@ function gg_view_workflow($workflow_id, $admin = false)
     elseif ($task->status == 'timed out')
       $panelContents .= sprintf('<div class="alert">%s</div>', t('Task timed out (failed to submit).'));
 
-    $a->addGroup(t(ucwords($task->type)), $workflow->workflow_id.'-'.$task->task_id, $panelContents);
+    $a->addGroup(t(ucwords($task->type)), $workflow->workflow_id.'-'.$task->task_id, $panelContents, false, $options);
   endforeach; endif;
 
   // Append the accordions
