@@ -117,6 +117,12 @@ class Manager {
     $subject = $body = '';
     $user = user_load($task->user_id);
 
+    // Determine if they're a real user or a test dummy user
+    $email = $user->mail;
+    if (empty($mail) OR $mail == NULL OR ! filter_var($mail, FILTER_VALIDATE_EMAIL))) return;
+    // list($base, $domain) = explode('@', $mail, 2);
+    // if ($domain == 'njit-class.seanfisher.co')
+
     // Determine what they're doing in a human format
     switch ($task->type)
     {
@@ -192,10 +198,6 @@ class Manager {
 
     $from = variable_get('site_mail', 'noreply@groupgrade.dev');
     $params = compact('body', 'subject', 'event', 'task');
-
-    // Can't send mail if no email
-    if (empty($user->mail))
-      return;
     
     $result = drupal_mail('groupgrade', 'notify '.$event, $user->mail, language_default(), $params, $from, TRUE);
 
