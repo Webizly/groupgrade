@@ -49,7 +49,7 @@ class Manager {
   public static function checkTimeoutTask(WorkflowTask $task)
   {
     $forceEnd = $task->timeoutTime();
-    
+
     if ($forceEnd->isPast())
     {
       // It's timed out
@@ -156,26 +156,33 @@ class Manager {
     switch ($event)
     {
       case 'triggered' :
-        $subject = 'CLASS: New Assignment Action';
-        $body = sprintf('You have been assigned to: %s. You can view the task at <a href="%s">%s</a>', $action_human, url('class'), url('class'));
-        break;
-
-      case 'expiring' :
+        $subject = 'CLASS: New Task Triggered';
         $body = sprintf(
-          'Your task that you have been assigned to (%s) is going to be ending soon.
-          You should complete it to ensure you recieve full credit. You can view the task at <a href="%s">%s</a>',
-          $action_human, 
-          url('class'), 
-          url('class')
+          'You have been assigned to: %s. You can view the task at <a href="%s">%s</a>',
+          $action_human,
+          url('class', ['external' => true]),
+          url('class', ['external' => true])
         );
         break;
 
       case 'expiring' :
+        $subject = 'CLASS: Task Expiring Soon';
+        $body = sprintf(
+          'Your task that you have been assigned to (%s) is going to be ending soon.
+          You should complete it to ensure you recieve full credit. You can view the task at <a href="%s">%s</a>',
+          $action_human, 
+          url('class', ['external' => true]), 
+          url('class', ['external' => true])
+        );
+        break;
+
+      case 'expired' :
+      $subject = 'CLASS: Task Expired';
         $body = sprintf(
           'Your task that you have been assigned to (%s) has expired. You can no longer complete the task. View all of your tasks at <a href="%s">%s</a>',
           $action_human, 
-          url('class'), 
-          url('class')
+          url('class', ['external' => true]), 
+          url('class', ['external' => true])
         );
         break;
 
