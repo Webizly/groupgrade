@@ -296,6 +296,19 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
     '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment Management</a>',
   );
 
+  $theSection = $section->section()->first();
+  $course = $theSection->course()->first();
+  $semester = $theSection->semester()->first();
+
+  // Information about this course
+  $items[] = [
+    '#markup' => sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s</p>',
+      t('Course'),
+      $course->course_name,
+      $theSection->section_name,
+      $semester->semester_name
+    )
+  ];
   $items['start-date'] = array(
     '#type' => 'date_select',
 

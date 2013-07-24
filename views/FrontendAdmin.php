@@ -107,6 +107,17 @@ function groupgrade_view_assignments($id) {
   $assignments = $section->assignments()->get();
   $rows = array();
 
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+
+  // Information about this course
+  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s</p>',
+    t('Course'),
+    $course->course_name,
+    $section->section_name,
+    $semester->semester_name
+  );
+
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
     $rows[] = [
       sprintf('<a href="%s">%s</a>',
@@ -197,7 +208,7 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
   $course = $section->course()->first();
   $semester = $section->semester()->first();
 
-  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
+  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s</p>',
     t('Course'),
     $course->course_name,
     $section->section_name,
