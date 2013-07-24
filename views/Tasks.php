@@ -452,11 +452,11 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
 
-  $items['grade'] = [
+  $items['completeness-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Grade (0-100)',
+    '#title' => 'Completeness Grade (0-100)',
     '#required' => true,
-    '#default_value' => (isset($task->data['grade'])) ? $task->data['grade'] : '',
+    '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
   ];
 
   $items['completeness'] = [
@@ -466,11 +466,25 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     '#default_value' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
   ];
 
+  $items['correctness-grade'] = [
+    '#type' => 'textfield',
+    '#title' => 'Correctness Grade (0-100)',
+    '#required' => true,
+    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
+  ];
+
   $items['correctness'] = [
     '#type' => 'textarea',
     '#title' => 'Grade Correctness',
     '#required' => true,
     '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
+  ];
+
+  $items['justification'] = [
+    '#type' => 'textarea',
+    '#title' => 'Grade Justification',
+    '#required' => true,
+    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
   ];
   $items['save'] = [
     '#type' => 'submit',
@@ -493,16 +507,20 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
     
-  $grade = (int) $form['grade']['#value'];
-  if ($grade !== abs($grade) OR $grade < 0 OR $grade > 100)
-    return drupal_set_message(t('Invalid grade: '.$grade));
-  
+  foreach (['completeness-grade', 'correctness-grade'] as $grade) :
+    $form[$grade]['#value'] = (int) $form[$grade]['#value'];
+
+    if ($form[$grade]['#value'] !== abs($form[$grade]['#value'])
+      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 100)
+      return drupal_set_message(t('Invalid grade: '.$grade));
+  endforeach;
+
+  $dataFields = ['completeness-grade', 'completeness', 'correctness-grade', 'correctness', 'justification'];
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
-  $task->setDataAttribute([
-    'grade' =>  $grade,
-    'completeness' => $form['completeness']['#value'],
-    'correctness' => $form['correctness']['#value']
-  ]);
+
+  // Save the data
+  foreach ($dataFields as $field)
+    $task->setData($field, $form[$field]['#value']);
 
   $task->status = ($save) ? 'started' : 'completed';
   $task->save();
