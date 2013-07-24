@@ -110,6 +110,8 @@ class Manager {
    */
   public static function notifyUser($event, &$task)
   {
+    global $base_url;
+
     // Nobody to notify
     if ($task->user_id == NULL) return;
 
@@ -119,8 +121,9 @@ class Manager {
 
     // Determine if they're a real user or a test dummy user
     $email = $user->mail;
-    if (empty($mail) OR $mail == NULL OR ! filter_var($mail, FILTER_VALIDATE_EMAIL)) return;
-    list($base, $domain) = explode('@', $mail, 2);
+
+    if (empty($email) OR $email == NULL OR ! filter_var($email, FILTER_VALIDATE_EMAIL)) return;
+    list($base, $domain) = explode('@', $email, 2);
 
     $noSendDomains = [
       'njit-class.seanfisher.co',
@@ -129,9 +132,9 @@ class Manager {
       'fakeemail.com',
     ];
 
-    if (in_array($domain, $noSendDomains))
-      return;
-
+    //if (in_array($domain, $noSendDomains))
+    //  return;
+    //  
     // Determine what they're doing in a human format
     switch ($task->type)
     {
@@ -167,37 +170,117 @@ class Manager {
         $action_human = 'Unknown Action';    
     }
 
+    // Run all the queries and get all the information we need!
+    $assignmentSection = $task->assignmentSection()->first();
+    $assignment = $assignmentSection->assignment()->first();
+    $section = $assignmentSection->section()->first();
+    $course = $section->course()->first();
+    $semester = $section->semester()->first();
+
+    $courseSectionSemester = sprintf('%s &mdash; %s &mdash; %s',
+      $course->course_name,
+      $section->section_name,
+      $semester->semester_name
+    );
+
+    $endDate = $task->timeoutTime();
+    $dueDate = $endDate->toDayDateTimeString() . ' ('.$endDate->diffForHumans().')';
+
+    $taskURL = $base_url.url('class/task/'.$task->task_id);
+
     // triggered/expiring/expired
     switch ($event)
     {
       case 'triggered' :
-        $subject = 'CLASS: New Task Triggered';
-        $body = sprintf(
-          'You have been assigned to: %s. You can view the task at <a href="%s">%s</a>',
+        $subject = sprintf('[%s] %s %s %s %s',
+          variable_get('site_name', 'CLASS Development'),
+          t('New'),
           $action_human,
-          url('class', ['external' => true]),
-          url('class', ['external' => true])
+          t('task assigned for'),
+          $courseSectionSemester
+        );
+
+        $body = sprintf('Hello,
+
+This is a notification from %s. You have been assigned to the following task.
+
+Course: %s
+Assignment: %s
+Task: %s
+Due: %s
+<a href="%s">Click here</a> to work on your task.
+
+Please complete this as soon as possible. You are now holding up your peers, who need to work on the task that follows yours.
+
+Thanks!',
+          variable_get('site_name', 'CLASS Development'),
+          $courseSectionSemester,
+          $assignment->assignment_title,
+          $action_human,
+          $dueDate,
+          $taskURL
         );
         break;
 
       case 'expiring' :
-        $subject = 'CLASS: Task Expiring Soon';
-        $body = sprintf(
-          'Your task that you have been assigned to (%s) is going to be ending soon.
-          You should complete it to ensure you recieve full credit. You can view the task at <a href="%s">%s</a>',
-          $action_human, 
-          url('class', ['external' => true]), 
-          url('class', ['external' => true])
+        $subject = sprintf('[%s] %s %s %s %s',
+          variable_get('site_name', 'CLASS Development'),
+          t('Now late for'),
+          $action_human,
+          t('for'),
+          $courseSectionSemester
+        );
+
+        $body = sprintf('Hello,
+
+This is a notification from %s that you are late for the following task:
+
+Course: %s
+Assignment: %s
+Task: %s
+Due: %s
+<a href="%s">Click here</a> to work on your task.
+
+Please complete this as soon as possible. You are now holding up your peers, who need to work on the task that follows yours.
+
+Thanks!',
+          variable_get('site_name', 'CLASS Development'),
+          $courseSectionSemester,
+          $assignment->assignment_title,
+          $action_human,
+          $dueDate,
+          $taskURL
         );
         break;
 
       case 'expired' :
-      $subject = 'CLASS: Task Expired';
-        $body = sprintf(
-          'Your task that you have been assigned to (%s) has expired. You can no longer complete the task. View all of your tasks at <a href="%s">%s</a>',
-          $action_human, 
-          url('class', ['external' => true]), 
-          url('class', ['external' => true])
+        $subject = sprintf('[%s] %s %s %s %s',
+          variable_get('site_name', 'CLASS Development'),
+          t('Removed from'),
+          $action_human,
+          t('task for'),
+          $courseSectionSemester
+        );
+
+        $body = sprintf('Hello,
+
+This is a notification from %s. Due to lateness, you have been removed from the following task, and you will no longer be allowed to work on it.
+
+Course: %s
+Assignment: %s
+Task: %s
+Due: %s
+
+Note: This will not affect other tasks that you have been assigned to, only the one shown above.
+
+If you have any questions, please contact your instructor.
+
+Thanks!',
+          variable_get('site_name', 'CLASS Development'),
+          $courseSectionSemester,
+          $assignment->assignment_title,
+          $action_human,
+          $dueDate
         );
         break;
 
@@ -206,10 +289,13 @@ class Manager {
     }
 
     $from = variable_get('site_mail', 'noreply@groupgrade.dev');
-    $params = compact('body', 'subject', 'event', 'task');
-    
-    $result = drupal_mail('groupgrade', 'notify '.$event, $user->mail, language_default(), $params, $from, TRUE);
 
+    // Pass the body though nl2br to make new lines to cut back on HTML above.
+    $body = nl2br($body);
+    $params = compact('body', 'subject', 'event', 'task');
+
+    $result = drupal_mail('groupgrade', 'notify '.$event, $user->mail, language_default(), $params, $from, TRUE);
+    
     if (! $result['result'])
       throw new ManagerException(
         sprintf('Error notifing user for task %s %s : %s', $event, $task->task_id, print_r($result))

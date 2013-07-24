@@ -176,12 +176,6 @@ function groupgrade_mail($key, &$message, $params) {
 
   $message['subject'] = t($params['subject']);
   $message['body'] = [];
-  $message['body'][] = t(
-    'Hello, This is a notification sent to you from @site-name',
-    ['@site-name' => variable_get('site_name', 'CLASS Development')],
-    $options
-  );
-
   $message['body'][] = t($params['body']);
 }
 
