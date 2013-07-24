@@ -196,7 +196,8 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 
   $sections = array();
   if (count($sections_q) > 0) : foreach($sections_q as $s) :
-    $sections[$s->section_id] = sprintf('%s-%s', $s->course_name, $s->section_name);
+    $semester = $s->semester()->first();
+    $sections[$s->section_id] = sprintf('%s-%s %s', $s->course_name, $s->section_name, $semester->semester_name);
   endforeach; endif;
 
   $items = array();
