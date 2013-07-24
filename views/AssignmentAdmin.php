@@ -162,6 +162,10 @@ function groupgrade_edit_assignment($form, &$form_state, $id)
     '#value' => t('Update Assignment'),
   );
 
+  $items['revert'] = [
+    '#markup' => ' <input class="form-submit" type="reset" value="'.t("Reset to Last Saved").'" />',
+  ];
+
   return $items;
 }
 
