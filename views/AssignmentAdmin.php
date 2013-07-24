@@ -55,7 +55,7 @@ function groupgrade_create_assignment()
   );
 
   $items['description'] = array(
-    '#title' => 'Assignment Description',
+    '#title' => 'Assignment Instructions to Students',
     '#type' => 'textarea',
     '#required' => true, 
   );
@@ -146,7 +146,7 @@ function groupgrade_edit_assignment($form, &$form_state, $id)
   );
 
   $items['description'] = array(
-    '#title' => 'Assignment Description',
+    '#title' => 'Assignment Instructions to Students',
     '#type' => 'textarea',
     '#required' => true, 
     '#default_value' => $assignment->assignment_description,
