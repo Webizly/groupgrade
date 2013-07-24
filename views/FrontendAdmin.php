@@ -22,9 +22,15 @@ function groupgrade_instructor_dash() {
   $rows = array();
   if (count($sections) > 0) : foreach($sections as $section) :
     $semester = $section->semester()->first();
+    $course = $section->course()->first();
+    $semester = $section->semester()->first();
 
     $rows[] = array(
-      '<a href="'.url('class/instructor/'.$section->section_id).'">'.$section->section_name.'</a>',
+      '<a href="'.url('class/instructor/'.$section->section_id).'">'
+        .$course->course_name.' '
+        .$section->section_name
+        .' &mdash; '.$semester->semester_name
+        .'</a>',
       $section->section_description,
       number_format($section->students()->count()),
       $semester->semester_name
