@@ -32,12 +32,11 @@ function groupgrade_instructor_dash() {
         .' &mdash; '.$semester->semester_name
         .'</a>',
       $section->section_description,
-      number_format($section->students()->count()),
-      $semester->semester_name
+      number_format($section->students()->count())
     );
   endforeach; endif;
   $return .= theme('table', array(
-    'header' => array('Section Name', 'Description', 'Students', 'Semester'),
+    'header' => array('Section Name', 'Description', 'Students'),
     'rows' => $rows,
     'attributes' => array('width' => '100%'),
     'empty' => 'No sections found.'
