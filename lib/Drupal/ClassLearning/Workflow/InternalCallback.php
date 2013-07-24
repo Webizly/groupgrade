@@ -40,9 +40,10 @@ class InternalCallback {
 
     foreach ($tasks as $it) :
       if ($num === -1) :
-        $num = (int) $it->data['grade'];
+        $num = intval($it->data['correctness-grade'] + $it->data['completeness-grade']);
       else :
-        if (abs($num-(int) $it->data['grade']) > $range)
+        $addGrade = intval($it->data['correctness-grade'] + $it->data['completeness-grade']);
+        if (abs($num-$addGrade) > $range)
         {
           // Not in range
           $task->setData('value', false);
@@ -71,7 +72,7 @@ class InternalCallback {
     $index = [];
 
     foreach ($tasks as $it)
-      $index[] = (int) $it->data['grade'];
+      $index[] = intval($it->data['correctness-grade'] + $it->data['completeness-grade']);
 
     $finalGrade = max($index);
     //array_sum($index)/count($index);
