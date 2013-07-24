@@ -174,9 +174,16 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
     $query->select('workflow_id')
       ->from('workflow')
       ->where('assignment_id', '=', $asec_id);
-  })
-    ->whereType('create problem')
-    ->get();
+  });
+
+  if ($type == 'timed out') :
+    $workflows->whereStatus('timed out')
+      ->groupBy('workflow_id');
+  else :
+    $workflows->whereType('create problem');
+  endif;
+
+  $workflows = $workflows->get();
 
   $headers = ['Workflows'];
   $rows = [];
@@ -233,6 +240,11 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
   ));
 
   return $return;
+}
+
+function groupgrade_view_timedout($section_id, $asec_id)
+{
+  return groupgrade_view_assignment($section_id, $asec_id, 'timed out');
 }
 
 

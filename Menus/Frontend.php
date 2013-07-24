@@ -403,10 +403,10 @@ return array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Timed Out',
 
-    'file' => 'Tasks.php',
+    'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_view_assignment',
+    'page callback' => 'groupgrade_view_timedout',
     'page arguments' => array(2, 4),
 
     'access arguments' => array('instructor', 2),
