@@ -68,7 +68,7 @@ function groupgrade_view_user($section_id) {
 
   foreach(['instructor', 'student'] as $role):
     $return .= '<h4>'.ucfirst($role).'s</h4>';
-    $students = $section->students()
+    $students = $section->users($role)
       ->where('su_role', '=', $role)
       ->get();
 
