@@ -454,7 +454,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items['completeness-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Completeness Grade (0-100)',
+    '#title' => 'Completeness Grade (0-50)',
     '#required' => true,
     '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
   ];
@@ -468,7 +468,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items['correctness-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Correctness Grade (0-100)',
+    '#title' => 'Correctness Grade (0-50)',
     '#required' => true,
     '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
   ];
@@ -511,7 +511,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
     $form[$grade]['#value'] = (int) $form[$grade]['#value'];
 
     if ($form[$grade]['#value'] !== abs($form[$grade]['#value'])
-      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 100)
+      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 50)
       return drupal_set_message(t('Invalid grade: '.$grade));
   endforeach;
 
@@ -604,7 +604,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
   //$items['']
   $items['proposed-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Proposed Grade (0-100)',
+    '#title' => 'Proposed Grade (0-50)',
     '#default_value' => (isset($task->data['proposed-grade'])) ? $task->data['proposed-grade'] : '',
   ];
 
@@ -796,7 +796,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   $items['completeness-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Completeness Grade (0-100)',
+    '#title' => 'Completeness Grade (0-50)',
     '#required' => true,
     '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
   ];
@@ -809,7 +809,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   $items['correctness-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Correctness Grade (0-100)',
+    '#title' => 'Correctness Grade (0-50)',
     '#required' => true,
     '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
   ];
@@ -851,7 +851,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
     $form[$grade]['#value'] = (int) $form[$grade]['#value'];
 
     if ($form[$grade]['#value'] !== abs($form[$grade]['#value'])
-      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 100)
+      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 50)
       return drupal_set_message(t('Invalid grade: '.$grade));
 
   endforeach;
@@ -1064,7 +1064,7 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
 
   $items['grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Grade (0-100)',
+    '#title' => 'Grade (0-50)',
     '#required' => true,
     '#default_value' => (isset($task->data['grade'])) ? $task->data['grade'] : '',
   ];
