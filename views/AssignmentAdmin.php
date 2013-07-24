@@ -97,10 +97,10 @@ function groupgrade_view_assignment($id) {
 
   $sections = $assignment->sections()->get();
 
-  $return = '<p><a href="'.url('class/instructor/assignments').'">Back to Assignment Management</a></p>';
+  $return = '<p><a href="'.url('class/instructor/assignments').'">'.t('Back to Assignment Management').'</a></p>';
   $return .= '<div class="well">';
     $return .= '<h3>'.$assignment->assignment_title.'</h3>';
-    $return .= '<p>'.$assignment->assignment_description.'</p>';
+    $return .= '<p>'.nl2br($assignment->assignment_description).'</p>';
   $return .= '</div>';
 
 

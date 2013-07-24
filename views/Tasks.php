@@ -47,15 +47,27 @@ function groupgrade_tasks_view_specific($specific = '') {
 
     // All/completed tasks
     default :
-      $headers = array('Assignment', 'Task', /*'Problem',*/ 'Date Completed');
+      $headers = array('Assignment', 'Course', 'Task', /*'Problem',*/ 'Date Completed');
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
         $rowt = [];
         $rowt[] = sprintf(
-        '<a href="%s">%s</a>',
+          '<a href="%s">%s</a>',
           url('class/task/'.$task->task_id), $task->assignment()->first()->assignment_title
         );
-        $rowt[] = $task->type;
+
+        // Course information
+        $section = $task->section()->first();
+        $course = $section->course()->select('course_name')->first();
+        $semester = $section->semester()->select('semester_name')->first();
+
+        $rowt[] = sprintf('%s &mdash; %s &mdash; %s',
+          $course->course_name,
+          $section->section_name,
+          $semester->semester_name
+        );
+
+        $rowt[] = t(ucwords($task->type));
         $rowt[] = ($task->end == NULL) ? 'n/a' : gg_time_human($task->end);
 
         $rows[] = $rowt;
@@ -114,7 +126,7 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
     $course = $section->course()->first();
     $semester = $section->semester()->first();
 
-    $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
+    $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s</p>',
       t('Course'),
       $course->course_name,
       $section->section_name,
