@@ -378,6 +378,36 @@ return array(
     'weight' => 2,
   ),
 
+  'class/instructor/%/swap-status/%' => array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Users',
+    
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_frontend_swap_status',
+    'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
+
+  'class/instructor/%/remove-from-section/%' => array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Users',
+    
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_frontend_remove_user_section',
+    'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
+
   // View Section Assignments
   'class/instructor/%/assignment/%' => array(
     'title' => 'View Assignment',
