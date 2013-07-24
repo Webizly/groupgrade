@@ -47,14 +47,16 @@ function groupgrade_tasks_view_specific($specific = '') {
 
     // All/completed tasks
     default :
-      $headers = array('Assignment', 'Course', 'Task', /*'Problem',*/ 'Date Completed');
+      $headers = array('Assignment', 'Task', 'Course', /*'Problem',*/ 'Date Completed');
 
       if (count($tasks) > 0) : foreach($tasks as $task) :
         $rowt = [];
         $rowt[] = sprintf(
           '<a href="%s">%s</a>',
           url('class/task/'.$task->task_id), $task->assignment()->first()->assignment_title
-        );
+        ); 
+
+        $rowt[] = t(ucwords($task->type));
 
         // Course information
         $section = $task->section()->first();
@@ -67,7 +69,6 @@ function groupgrade_tasks_view_specific($specific = '') {
           $semester->semester_name
         );
 
-        $rowt[] = t(ucwords($task->type));
         $rowt[] = ($task->end == NULL) ? 'n/a' : gg_time_human($task->end);
 
         $rows[] = $rowt;
