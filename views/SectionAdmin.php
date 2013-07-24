@@ -106,21 +106,19 @@ function groupgrade_view_sectionadmin($section_id)
 
   foreach(array('instructor', 'student') as $role):
     $return .= '<h3>'.ucfirst($role).'s</h3>';
-    $students = $section->students()
-      ->where('su_role', '=', $role)
+    $users = $section->users($role)
       ->get();
 
     $rows = array();
-    if (count($students) > 0) : foreach($students as $student) :
-      $user = $student->user();
+    if (count($users) > 0) : foreach($users as $sectionUser) :
+      $user = $sectionUser->user();
       $rows[] = array(
         ggPrettyName($user),
-        $student->su_status,
-        '<a href="'.url('admin/class/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">'.t('remove').'</a> &mdash;
-        <a href="'.url('admin/class/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change to '.(($student->su_status !== 'active') ? 'active' : 'inactive').'</a>',
+        $sectionUser->su_status,
+        '<a href="'.url('admin/class/section/remove-user/'.$user->uid.'/'.$section->section_id).'">'.t('remove').'</a> &mdash;
+        <a href="'.url('admin/class/section/change-status/'.$user->uid.'/'.$section->section_id).'">change to '.(($sectionUser->su_status !== 'active') ? 'active' : 'inactive').'</a>',
       );
     endforeach; endif;
-
     $return .= theme('table', array(
       'rows' => $rows,
       'header' => ['User', 'Status', 'Operations'],

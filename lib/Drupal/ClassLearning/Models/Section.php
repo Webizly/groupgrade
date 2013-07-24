@@ -25,7 +25,7 @@ class Section extends ModelBase {
   public function users($role)
   {
     return $this->hasMany('Drupal\ClassLearning\Models\SectionUsers')
-      ->where('su_role', '=', 'student');
+      ->where('su_role', '=', $role);
   }
 
   /**
