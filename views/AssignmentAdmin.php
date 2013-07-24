@@ -109,15 +109,15 @@ function groupgrade_view_assignment($id) {
   if (count($sections) > 0) : foreach($sections as $section) :
 
     $rows[] = array($section->section_name, gg_time_human($section->asec_start),
-        '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$section->asec_id).'">Edit</a>'
-        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$section->asec_id).'">Remove Section</a>'
+        '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$section->asec_id).'">'.t('Edit Start Date').'</a>'
+        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$section->asec_id).'">'.t('Remove Assignment from Section').'</a>'
       );
   endforeach; endif;
 
   $return .= theme('table', array(
     'rows' => $rows,
     'header' => array('Section', 'Start Date', 'Operations'),
-    'empty' => 'No sections found for assignment.',
+    'empty' => t('This assignment has not been assigned to a section yet. Click on the "Assign to Section" tab above to do so.'),
     'attributes' => array('width' => '100%'),
   ));
 
