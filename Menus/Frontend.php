@@ -348,7 +348,7 @@ return array(
   'class/instructor/%' => array(
     //'type' => MENU_NORMAL_ITEM,
     'title' => 'View Section',
-    'page callback' => 'groupgrade_adminview_section',
+    'page callback' => 'groupgrade_view_assignments',
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
@@ -360,7 +360,7 @@ return array(
   'class/instructor/%/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 1,
-    'title' => 'Dashboard',
+    'title' => 'Assignments',
   ),
 
   'class/instructor/%/users' => array(
@@ -376,21 +376,6 @@ return array(
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
     'weight' => 2,
-  ),
-
-  'class/instructor/%/assignments' => array(
-    'type' => MENU_LOCAL_TASK,
-    'title' => 'Assignments',
-    
-    'file' => 'FrontendAdmin.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-    'page callback' => 'groupgrade_view_assignments',
-    'page arguments' => array(2),
-
-    'access arguments' => array('instructor', 2),
-    'access callback' => 'gg_has_role_in_section',
-    'weight' => 3,
   ),
 
   // View Section Assignments

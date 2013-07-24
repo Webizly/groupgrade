@@ -136,7 +136,7 @@ function groupgrade_view_assignments($id) {
  * @param int Section ID
  * @param int AssignmentSection ID
  */
-function groupgrade_view_assignment($section_id, $asec_id)
+function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
 {
   $assignmentSection = AssignmentSection::find($asec_id);
   if ($assignmentSection == NULL) return drupal_not_found();
@@ -262,6 +262,6 @@ function groupgrade_view_assignmentworkflow($section_id, $asec_id, $workflow_id)
   // Call on a common function so we don't duplicate things
   require_once (__DIR__.'/Tasks.php');
   $return .= gg_view_workflow($workflow, true);
-  
+
   return $return;
 }
