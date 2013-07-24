@@ -105,8 +105,19 @@ return array(
 
   'admin/class/section/remove-user/%/%' => array(
     'type' => MENU_CALLBACK,
-    'title' => 'Create Course',
+    'title' => 'Remove User',
     'page callback' => 'groupgrade_remove_user_section',
+    'file' => 'SectionAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page arguments' => array(4, 5),
+    'access arguments' => array('access administration pages'), 
+  ),
+
+  'admin/class/section/change-status/%/%' => array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Swap User Status in Section',
+    'page callback' => 'groupgrade_swap_status',
     'file' => 'SectionAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 

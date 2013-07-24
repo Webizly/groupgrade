@@ -116,8 +116,8 @@ function groupgrade_view_sectionadmin($section_id)
       $rows[] = array(
         ggPrettyName($user),
         $student->su_status,
-        '<a href="'.url('admin/class/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">remove</a> &mdash;
-        <a href="'.url('admin/class/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change status</a>',
+        '<a href="'.url('admin/class/section/remove-user/'.$student->user_id.'/'.$section->section_id).'">'.t('remove').'</a> &mdash;
+        <a href="'.url('admin/class/section/change-status/'.$student->user_id.'/'.$section->section_id).'">change to '.(($student->su_status !== 'active') ? 'active' : 'inactive').'</a>',
       );
     endforeach; endif;
 
@@ -217,5 +217,29 @@ function groupgrade_remove_user_section($user, $section)
     gg_acl_remove_user('section-'.$role, $user, $section);
 
   drupal_set_message(sprintf('User %d removed from section %d', $user, $section));
+  return drupal_goto('admin/class/section/'.$section);
+}
+
+/**
+ * Swap a user's status in a section between active and inactive
+ */
+function groupgrade_swap_status($user, $section)
+{
+  $userInSection = SectionUsers::where('section_id', '=', $section)
+    ->where('user_id', '=', $user)
+  ->first();
+
+  if (! $userInSection) return drupal_not_found();
+
+  $userInSection->su_status = ($userInSection->su_status == 'active') ? 'inactive' : 'active';
+  $userInSection->save();
+
+  drupal_set_message(sprintf('%s %d %s %s.',
+    t('User'),
+    $user,
+    t('status set to'),
+    $userInSection->su_status
+  ));
+
   return drupal_goto('admin/class/section/'.$section);
 }
