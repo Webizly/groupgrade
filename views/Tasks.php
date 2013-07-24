@@ -414,11 +414,11 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   if (! $params['edit']) :
     $items['grade lb'] = [
-      '#markup' => '<strong>'.t('Grade').':</strong>',
+      '#markup' => '<strong>'.t('Correctness Grade').':</strong>',
     ];
     $items['grade'] = [
       '#type' => 'item',
-      '#markup' => $task->data['grade'],
+      '#markup' => $task->data['correctness-grade'].'%',
     ];
 
     $items['correctness lb'] = [
@@ -427,6 +427,14 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     $items['correctness'] = [
       '#type' => 'item',
       '#markup' => (! isset($task->data['correctness'])) ? '' : nl2br($task->data['correctness']),
+    ];
+
+    $items['completeness grade lb'] = [
+      '#markup' => '<strong>'.t('Completeness Grade').':</strong>',
+    ];
+    $items['completeness grade'] = [
+      '#type' => 'item',
+      '#markup' => $task->data['completeness-grade'].'%',
     ];
 
     $items['completeness lb'] = [
