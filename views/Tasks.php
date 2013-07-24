@@ -183,7 +183,7 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     ];
     $items['edited problem'] = [
       '#type' => 'item',
-      '#markup' => nl2br($params['task']->data['problem']),
+      '#markup' => (isset($params['task']->data['problem'])) ? nl2br($params['task']->data['problem']) : '',
     ];
 
     return $items;
@@ -923,6 +923,7 @@ function gg_view_workflow($workflow_id, $admin = false)
   $section = $asec->section()->first();
   $course = $section->course()->first();
   $semester = $section->semester()->first();
+  $students = $section->students()->get();
 
   if (! $admin)
     $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s',
@@ -963,6 +964,9 @@ function gg_view_workflow($workflow_id, $admin = false)
           url('user/'.$task->user_id),
           ggPrettyName($user)
         );
+
+        $form = drupal_get_form('gg_reassign_task', $task, $section, $students);
+        $panelContents .= drupal_render($form);
       endif;
 
       $panelContents .= sprintf('<p><strong>%s:</strong> %s</p>', t('Status'), t(ucwords($task->status)));
@@ -1154,4 +1158,61 @@ function gg_task_resolve_grades_form($form, &$form_state, $params)
   ];
 
   return $items;
+}
+
+/**
+ * Form to handle reassigning a task
+ */
+function gg_reassign_task($form, &$form_state, $task, $section, $students)
+{
+  $items = $index = [];
+
+  if (count($students) > 0) : foreach($students as $student) :
+    $user = user_load($student->user_id);
+    if (! $user) continue;
+
+    $index[$student->user_id] = ggPrettyName($user);
+  endforeach; endif;
+
+  $items['user'] = array(
+     '#type' => 'select',
+     '#title' => t('Reassign Task to User'),
+     '#options' => $index,
+     '#default_value' => $task->user_id,
+ );
+
+  $items['section'] = array(
+    '#value' => $section->section_id,
+    '#type' => 'hidden'
+  );
+
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Reassign Task (Will re-start the task)',
+  ];
+
+  $items[] = [
+    '#markup' => '<hr />'
+  ];
+
+  return $items;
+}
+
+/**
+ * Form Submit to handle reassigning a task
+ */
+function gg_reassign_task_submit($form, &$form_state)
+{
+  $task = $form_state['build_info']['args'][0];
+  $section = $form_state['build_info']['args'][1];
+
+  $user = (int) $form['user']['#value'];
+
+  if ($user == $task->user_id)
+    return drupal_set_message(t('You cannot reassign the same user to the task.'), 'error');
+
+  $task->user_id = $user;
+  $task->trigger(true);
+
+  return drupal_set_message('User reassigned and task re-triggered.');
 }

@@ -16,9 +16,24 @@ class Section extends ModelBase {
     return $this->belongsTo('Drupal\ClassLearning\Models\Course');
   }
 
+  /**
+   * Get Users in the section with a role
+   * 
+   * @param string
+   * @return Query Builder
+   */
+  public function users($role)
+  {
+    return $this->hasMany('Drupal\ClassLearning\Models\SectionUsers')
+      ->where('su_role', '=', 'student');
+  }
+
+  /**
+   * Get the students in a section
+   */
   public function students()
   {
-    return $this->hasMany('Drupal\ClassLearning\Models\SectionUsers');
+    return $this->users('student');
   }
 
   public function assignments()

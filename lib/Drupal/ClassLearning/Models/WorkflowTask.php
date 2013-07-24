@@ -262,7 +262,7 @@ class WorkflowTask extends ModelBase {
    *
    * Be careful with the function!
    *
-   * @param bool
+   * @param bool Force it to be triggered
    */
   public function trigger($force = false)
   {
