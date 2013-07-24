@@ -74,7 +74,7 @@ function gg_view_assignment_listing($section_id, $asec_id)
   $return = '';
 
   // Back Link
-  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, t('Back to Assignment List'));
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, t('Back to Assignment List in Everyone\'s Work'));
 
   // Course/section/semester
   $course = $section->course()->first();
