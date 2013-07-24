@@ -174,7 +174,7 @@ function groupgrade_mail($key, &$message, $params) {
     'langcode' => $message['language']->language,
   );
 
-  $message['subject'] = t($params['subject']);
+  $message['subject'] = str_replace('&mdash;', '--', $params['subject']);
   $message['body'] = [];
   $message['body'][] = t($params['body']);
 }
