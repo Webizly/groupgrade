@@ -365,7 +365,7 @@ class WorkflowTask extends ModelBase {
   public static function queryByStatus($user, $status = 'pending')
   {
     $query = self::where('user_id', '=', $user)
-      ->orderBy('end', 'desc');
+      ->orderBy('force_end', 'desc');
 
     switch ($status)
     {
