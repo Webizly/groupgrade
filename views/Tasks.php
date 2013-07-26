@@ -241,7 +241,7 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf('%s %s.', t('Problem'), ($save) ? 'saved (You must submit this still to complete the task.)' : 'created'));
+  drupal_set_message(sprintf('%s %s', t('Problem'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'created.'));
 
   if (! $save)
     return drupal_goto('class');
@@ -340,7 +340,7 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf('Edited problem %s.', ($save) ? 'saved (You must submit this still to complete the task.)' : 'completed'));
+  drupal_set_message(sprintf('Edited problem %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'completed.'));
 
   if (! $save)
     return drupal_goto('class');
@@ -409,7 +409,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf(t('Solution').' %s.', ($save) ? 'saved (You must submit this still to complete the task.)' : 'completed'));
+  drupal_set_message(sprintf(t('Solution').' %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'completed.'));
 
   if (! $save)
     return drupal_goto('class');
@@ -549,7 +549,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   if (! $save)
     $task->complete();
   
-  drupal_set_message(sprintf(t('Grade').' %s.', ($save) ? 'saved (You must submit this still to complete the task)' : 'submitted'));
+  drupal_set_message(sprintf(t('Grade').' %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
 
   if (! $save)
     return drupal_goto('class');
@@ -886,7 +886,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
-  drupal_set_message(sprintf('%s %s.', t('Grade'), ($save) ? 'saved (You must submit this still to complete the task.)' : 'submitted'));
+  drupal_set_message(sprintf('%s %s', t('Grade'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
 
   if (! $save) :
     $task->complete();
@@ -1150,7 +1150,7 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
     $workflow->save();
   endif;
   
-  drupal_set_message(sprintf('%s %s.', t('Grade'), ($save) ? 'saved (You must submit this still to complete the task.)' : 'submitted'));
+  drupal_set_message(sprintf('%s %s', t('Grade'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
 
   if (! $save)
     return drupal_goto('class');
