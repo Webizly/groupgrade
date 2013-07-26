@@ -904,6 +904,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
  */
 function gg_view_workflow($workflow_id, $admin = false)
 {
+  global $user;
+
   if ($admin AND is_object($workflow_id)) :
     $workflow = $workflow_id;
     $workflow_id = $workflow->workflow_id;
@@ -989,6 +991,8 @@ function gg_view_workflow($workflow_id, $admin = false)
         $options['style'] = 'background-color: yellow;';
     endif;
 
+    if ($task->user_id == $user->uid)
+      $panelContents .= sprintf('<p><em>%s</p>', t('You performed this task!'));
     // Determine the panel contents
     if (in_array($task->status, ['triggered', 'complete', 'started']))
       $panelContents .= groupgrade_view_task($task, 'overview', $admin);
