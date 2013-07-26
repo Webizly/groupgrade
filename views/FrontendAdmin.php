@@ -76,7 +76,7 @@ function groupgrade_view_user($section_id) {
     if (count($students) > 0) : foreach($students as $student) :
       $user = $student->user();
       $rows[] = array(
-        ggPrettyName($user),
+        sprintf('%s (<a href="%s">%s</a>)', ggPrettyName($user), $user->mail, $user->mail),
         $student->su_status,
         '<a href="'.url('class/instructor/'.$section->section_id.'/remove-from-section/'.$student->user_id).'">'.t('remove').'</a> &mdash;
         <a href="'.url('class/instructor/'.$section->section_id.'/swap-status/'.$student->user_id).'">change to '.(($student->su_status !== 'active') ? 'active' : 'inactive').'</a>',

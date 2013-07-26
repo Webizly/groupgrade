@@ -221,14 +221,19 @@ function groupgrade_baseaccess() {
  * Handle a user object and retrieve the first/last name or fallback to their username
  * 
  * @param object
+ * @param integer
  * @return string
  */
-function ggPrettyName($user) {
-  return $user->name;
+function ggPrettyName($user, $limit = 30) {
   if (count($user->field_first_name) == 0 OR count($user->field_last_name) == 0)
-    return $user->name;
-
-  return sprintf('%s %s', $user->field_first_name['und'][0]['value'], $user->field_last_name['und'][0]['value']);
+    $name = $user->name;
+  else
+    $name = sprintf('%s %s', $user->field_first_name['und'][0]['value'], $user->field_last_name['und'][0]['value']);
+  
+  if (strlen($name) < $limit)
+    return $name;
+  else
+    return substr($name, 0, $limit).'...';
 }
 
 function ddebug($var) {
@@ -452,6 +457,49 @@ if ( ! function_exists('word_limiter'))
     }
 
     return rtrim($matches[0]).$end_char;
+  }
+}
+
+
+if ( ! function_exists('character_limiter'))
+{
+  /**
+   * Character Limiter
+   *
+   * Limits the string based on the character count.  Preserves complete words
+   * so the character count may not be exactly as specified.
+   *
+   * @param string
+   * @param int
+   * @param string  the end character. Usually an ellipsis
+   * @return  string
+   */
+  function character_limiter($str, $n = 500, $end_char = '&#8230;')
+  {
+    if (strlen($str) < $n)
+    {
+      return $str;
+    }
+
+    // a bit complicated, but faster than preg_replace with \s+
+    $str = preg_replace('/ {2,}/', ' ', str_replace(array("\r", "\n", "\t", "\x0B", "\x0C"), ' ', $str));
+
+    if (strlen($str) <= $n)
+    {
+      return $str;
+    }
+
+    $out = '';
+    foreach (explode(' ', trim($str)) as $val)
+    {
+      $out .= $val.' ';
+
+      if (strlen($out) >= $n)
+      {
+        $out = trim($out);
+        return (strlen($out) === strlen($str)) ? $out : $out.$end_char;
+      }
+    }
   }
 }
 
