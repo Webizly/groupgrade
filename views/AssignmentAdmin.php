@@ -282,7 +282,10 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   else
     $s->save();
 
-  return drupal_set_message(sprintf('Added assignment section %d to section %d', $s->asec_id, $section));
+  $sectionObject = Section::find($section);
+  $assignment = Assignment::find((int) $form['assignment_id']['#value']);
+
+  return drupal_set_message(sprintf('Added assignment "%s" to section "%s"', $assignment->assignment_title, $sectionObject->section_name));
 }
 
 /**
