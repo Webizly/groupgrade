@@ -190,6 +190,7 @@ function groupgrade_add_student_form_submit($form, &$form_state) {
   $users = (array) $form['user']['#value'];
   $role = $form['role']['#value'];
   $section = $form['section']['#value'];
+  $sectionObject = Section::find($section);
 
   if (count($users) > 0) : foreach($users as $user):
     $su = new SectionUsers;
@@ -202,7 +203,7 @@ function groupgrade_add_student_form_submit($form, &$form_state) {
     gg_acl_add_user('section-'.$role, $user, $section);
   endforeach; endif;
 
-  drupal_set_message( sprintf('%d user(s) added to section %d', count($users), $section) );
+  drupal_set_message( sprintf('%d user(s) added to section "%s"', count($users), $sectionObject->section_name) );
 }
 
 function groupgrade_remove_user_section($user, $section)
