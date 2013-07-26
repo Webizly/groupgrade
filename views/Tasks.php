@@ -696,7 +696,7 @@ function gg_task_dispute_form_submit($form, &$form_state)
       drupal_set_message(t('Your dispute has been submitted.'));
       return drupal_goto('class');
     else :
-      drupal_set_message(t('Your dispute has been saved.'));
+      drupal_set_message(t('Your dispute has been saved. (You must submit this still to complete the task.)'));
     endif;
   else :
     $task->save();
