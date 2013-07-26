@@ -532,8 +532,12 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
     $form[$grade]['#value'] = (int) $form[$grade]['#value'];
 
     if ($form[$grade]['#value'] !== abs($form[$grade]['#value'])
-      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 50)
-      return drupal_set_message(t('Invalid grade: '.$grade));
+      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 50) :
+
+      // Force to save, not submit
+      $save = true;
+      drupal_set_message(t('Invalid grade: '.$grade), 'error');
+    endif;
   endforeach;
 
   $dataFields = ['completeness-grade', 'completeness', 'correctness-grade', 'correctness', 'justification'];
