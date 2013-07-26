@@ -190,7 +190,7 @@ function groupgrade_edit_assignment_submit($form, &$form_state)
  */
 function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 {
-  drupal_set_title(t('Add Section to Assignment'));
+  drupal_set_title(t('Add "@assignment-title" to Section', ['@assignment-title' => Assignment::find($assignment)->assignment_title]));
 
   global $user;
   $sections_q = User::sectionsWithRole('instructor')
