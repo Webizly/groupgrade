@@ -166,6 +166,9 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
   drupal_set_title($assignment->assignment_title);
 
   $return = '';
+  // Back Link
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$section_id), HTML_BACK_ARROW, t('Back to View Section'));
+
   $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
     t('Course'),
     $course->course_name, 
@@ -210,22 +213,6 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
       )
     ];
   endforeach; endif;
-
-  $return = '';
-
-  // Back Link
-  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/assignments'), HTML_BACK_ARROW, t('Back to Assignment List'));
-
-  // Course/section/semester
-  $course = $section->course()->first();
-  $semester = $section->semester()->first();
-
-  $return .= sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s</p>',
-    t('Course'),
-    $course->course_name,
-    $section->section_name,
-    $semester->semester_name
-  );
 
   // Assignment Description
   $return .= sprintf('<p class="summary">%s</p>', nl2br($assignment->assignment_description));
