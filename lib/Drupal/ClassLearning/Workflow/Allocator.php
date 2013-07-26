@@ -359,10 +359,6 @@ class Allocator {
    */
   public function contains_error($workflow)
   {
-    /*
-    if ($workflow !== array_unique($workflow, SORT_NUMERIC))
-      return TRUE;
-    */
     // Check if it contains unassigned users
     foreach ($workflow as $role => $user) :
       if ($user === NULL) return TRUE;
