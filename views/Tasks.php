@@ -1003,7 +1003,7 @@ function gg_view_workflow($workflow_id, $admin = false)
     elseif ($task->status == 'not triggered')
       $panelContents .= sprintf('<div class="alert">%s</div>', t('Task not triggered.'));
     elseif ($task->status == 'expired')
-      $panelContents .= sprintf('<div class="alert">%s</div>', t('Task expired (skipped).'));
+      $panelContents .= sprintf('<div class="alert">%s</div>', t('Task bypassed.'));
     elseif ($task->status == 'timed out')
       $panelContents .= sprintf('<div class="alert">%s</div>', t('Task timed out (failed to submit).'));
 
