@@ -345,7 +345,7 @@ class WorkflowTask extends ModelBase {
     if ($this->start == NULL)
       throw new ModelException('Start time for instance cannot be null.');
 
-    $duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 0;
+    $duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 2;
     return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays($duration);
   }
 

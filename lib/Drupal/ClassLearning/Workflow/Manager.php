@@ -495,7 +495,7 @@ Thanks!',
           'pull after' => false,
         ],
 
-        'duration' => 1,
+        'duration' => 2,
 
         'trigger' => [
           [
@@ -605,6 +605,7 @@ Thanks!',
 
       // Grades are out of a range and we need a second grader
       'resolution grader' => [
+        'duration' => 3,
         'trigger' => [
           [
             'type' => 'compare value of task',
