@@ -18,6 +18,7 @@ function groupgrade_instructor_dash() {
   //$return .= '<h2>Course <small>'.$course->course_name.' &mdash; '.$course->course_title.'</small></h2>';
   $return .= '<div class=" clearfix">';
   $return .= '<h3>Sections</h3>';
+  $return .= sprintf('<p>%s</p>', t('Select the section to view and manage that section\'s assignments.'));
 
   $rows = array();
   if (count($sections) > 0) : foreach($sections as $section) :

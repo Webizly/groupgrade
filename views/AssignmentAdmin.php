@@ -24,7 +24,8 @@ function groupgrade_assignment_dash() {
   $return = '';
   $return .= '<h3>Your Assignments</h3>';
   $return .= sprintf('<p><a href="%s">%s</a></p>', url('class/instructor/assignments/new'), t('Create Assignment'));
-
+  $return .= sprintf('<p>%s</p>', t('Select "View" to manage an existing assignment: edit it, assign it to or remove it from a section, change its start date, etc.'));
+  
   $rows = array();
 
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
