@@ -124,6 +124,11 @@ function groupgrade_view_assignments($id) {
     $semester->semester_name
   );
 
+  $return .= sprintf('<p><a href="%s">%s</a></p>',
+    url('class/instructor/assignments/new'),
+    t('Create new Assignment')
+  );
+
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
     $rows[] = [
       sprintf('<a href="%s">%s</a>',
