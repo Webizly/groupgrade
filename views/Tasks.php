@@ -955,11 +955,28 @@ function gg_view_workflow($workflow_id, $admin = false)
   $return .= '<p class="summary">'.nl2br($assignment->assignment_description).'</p><hr />';
 
   // Special ADMIN instructions
-  if ($admin)
-    $return .= sprintf('<p>%s</p>', t('Below, you will find the various tasks apart of '
-      .'this workflow. Tasks with a yellow background require your attention in that they '
-      .'have timed out, thus impeding the flow of the workflow.'
-    ));
+  if ($admin AND 1 == 2)
+  {
+    $return .= sprintf('<p>%s</p>',
+      t('Below you see the tasks that are part of this single '
+        .'problem from this assignment. Some tasks may not have been completed or even '
+        .'started or assigned yet. Notes:'
+      ));
+
+    $return .= '<ol>';
+    $strings = [
+      'Any tasks with a yellow background require your attention in that they have timed out, thus halting the flow of the problem.',
+'The status "triggered" means the task has been assigned but not completed yet. It is not necessarily late.',
+'The status "not triggered" means the task has been allocated but is not ready to be started yet, because a prior task first needs to complete.',
+'The status "task expired (skipped)" means that this task was not needed and was skipped over.',
+'You have permission reallocate participants to do a task, but be very careful since this could cause confusion and unintended complications.',
+    ];
+
+    foreach ($strings as $s)
+      $return .= sprintf('<li>%s</li>', $s);
+
+    $return .= '</ol>';
+  }
 
   // Wrap it all inside an accordion
   $a = new Accordion('workflow-'.$workflow->workflow_id);
