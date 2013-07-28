@@ -126,7 +126,7 @@ function groupgrade_view_assignments($id) {
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
     $rows[] = [
       sprintf('<a href="%s">%s</a>',
-        url('class/instructor/'.$assignment->section_id.'/assignment/'.$assignment->assignment_id),
+        url('class/instructor/'.$assignment->section_id.'/assignment/'.$assignment->asec_id),
         $assignment->assignment_title
       ),
       gg_time_human($assignment->asec_start), 
@@ -154,10 +154,15 @@ function groupgrade_view_assignments($id) {
  */
 function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
 {
+  $section_id = (int) $section_id;
   $assignmentSection = AssignmentSection::find($asec_id);
   if ($assignmentSection == NULL) return drupal_not_found();
 
   $section = $assignmentSection->section()->first();
+
+  // Logic Check
+  if ($section->section_id !== $section_id) return drupal_not_found();
+
   $course = $section->course()->first();
   $semester = $section->semester()->first();
   $assignment = $assignmentSection->assignment()->first();
