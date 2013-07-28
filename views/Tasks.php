@@ -955,7 +955,7 @@ function gg_view_workflow($workflow_id, $admin = false)
   $return .= '<p class="summary">'.nl2br($assignment->assignment_description).'</p><hr />';
 
   // Special ADMIN instructions
-  if ($admin AND 1 == 2)
+  if ($admin)
   {
     $return .= sprintf('<p>%s</p>',
       t('Below you see the tasks that are part of this single '
@@ -993,12 +993,12 @@ function gg_view_workflow($workflow_id, $admin = false)
     // Add user information if they're an admin
     if ($admin) :
       if ($task->user_id !== NULL) :
-        $user = user_load($task->user_id);
+        $taskUser = user_load($task->user_id);
 
         $panelContents .= sprintf('<p><strong>%s:</strong> <a href="%s">%s</a></p>',
           t('Assigned User'),
           url('user/'.$task->user_id),
-          ggPrettyName($user)
+          ggPrettyName($taskUser)
         );
 
         $form = drupal_get_form('gg_reassign_task', $task, $section, $students);
@@ -1013,7 +1013,7 @@ function gg_view_workflow($workflow_id, $admin = false)
     endif;
 
     if ($task->user_id == $user->uid)
-      $panelContents .= sprintf('<p><em>%s</p>', t('You performed this task!'));
+      $panelContents .= sprintf('<p><em>%s</em></p>', t('You performed this task!'));
     // Determine the panel contents
     if (in_array($task->status, ['triggered', 'complete', 'started']))
       $panelContents .= groupgrade_view_task($task, 'overview', $admin);
