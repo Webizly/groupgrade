@@ -510,7 +510,7 @@ Thanks!',
           .'appropriate to the assignment and clear to the person solving '
           .'it. The solver and graders will only see your edited version, not '
           .'the original version. (Others not involved in solving or grading '
-          .'will see both the original and edited versions.) You can also'
+          .'will see both the original and edited versions.) You can also '
           .'leave a comment to explain any rephrasing.',
       ],
 
