@@ -580,20 +580,25 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
     // It was disputed, show the propsed grade and justification
     if ($task->data['value']) :
-      $items['grade lb'] = [
-        '#markup' => '<strong>'.t('Proposed Grade').':</strong>',
-      ];
-      $items['grade'] = [
-        '#type' => 'item',
-        '#markup' => $task->data['proposed-grade'].'%',
-      ];
+      foreach (['completeness', 'correctness'] as $aspect) :
+        $grade = (isset($task->data['proposed-'.$aspect.'-grade'])) ? $task->data['proposed-'.$aspect.'-grade'] : '';
 
+        $items['proposed-'.$aspect.'-grade'] = [
+          '#markup' => '<h5>Proposed '.ucfirst($aspect).' Grade: '.$grade.'</h5>'
+        ];
+
+        $items['proposed-'.$aspect] = [
+          '#markup' => '<h5>Proposed '.ucfirst($aspect).' Justification:</h5> <p>'
+          .((isset($task->data['proposed-'.$aspect])) ? nl2br($task->data['proposed-'.$aspect]) : '').'</p>',
+        ];
+
+      endforeach;
       $items['justice lb'] = [
-        '#markup' => '<strong>'.t('Grade Justification').':</strong>',
+        '#markup' => '<p><strong>'.t('Grade Justification').':</strong></p>',
       ];
       $items['justice'] = [
         '#type' => 'item',
-        '#markup' => nl2br($task->data['justification']),
+        '#markup' => '<p>'.nl2br($task->data['justification']).'</p>',
       ];
     endif;
     return $items;
