@@ -655,8 +655,9 @@ function gg_task_dispute_form($form, &$form_state, $params)
   $c .= sprintf('<h4>%s: %d%%</h4>', t('Grade Recieved'), $workflow->data['grade']);
   $a->addGroup('Resolved Grade', $task->task_id.'-resolved-grade', $c, true);
 
+  // Add accordion to form
   $items[] = ['#markup' => $a];
-
+  $items[] = ['#markup' => sprintf('<h5>%s</h5>', t('Current Task: Decide Whether to Dispute'))];
 
   if (isset($params['task']->settings['instructions']))
     $items[] = [
@@ -671,16 +672,24 @@ function gg_task_dispute_form($form, &$form_state, $params)
   $items[] = [
     '#markup' => sprintf('<hr /><p>%s</p>', t('Complete the following only if you are going to dispute.'))
   ];
-  //$items['']
-  $items['proposed-grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Proposed Grade (0-50)',
-    '#default_value' => (isset($task->data['proposed-grade'])) ? $task->data['proposed-grade'] : '',
-  ];
+  
+  foreach (['completeness', 'correctness'] as $aspect) :
+    $items['proposed-'.$aspect.'-grade'] = [
+      '#type' => 'textfield',
+      '#title' => 'Proposed '.ucfirst($aspect).' Grade (0-50)',
+      '#default_value' => (isset($task->data['proposed-'.$aspect.'-grade'])) ? $task->data['proposed-'.$aspect.'-grade'] : '',
+    ];
 
-  $items['justification'] = [
+    $items['proposed-'.$aspect] = [
+      '#type' => 'textarea',
+      '#title' => 'Proposed '.ucfirst($aspect).' Justification',
+      '#default_value' => (isset($task->data[$aspect.'-justification'])) ? $task->data[$aspect.'-justification'] : '',
+    ];
+  endforeach;
+
+  $items['proposed-'.$aspect] = [
     '#type' => 'textarea',
-    '#title' => 'Grade Justification',
+    '#title' => 'Explain fully why all prior graders were wrong, and your regrading is correct.',
     '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
   ];
 
