@@ -376,7 +376,7 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     ];
 
   $items[] = ['#markup' => sprintf('<p><strong>%s</strong></p>', t('Create Solution'))];
-  
+
   $items['body'] = [
     '#type' => 'textarea',
     '#required' => true,
@@ -433,7 +433,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     ];
     $items['grade'] = [
       '#type' => 'item',
-      '#markup' => (((isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '')).'%',
+      '#markup' => (((isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '')),
     ];
 
     $items['correctness lb'] = [
@@ -449,7 +449,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     ];
     $items['completeness grade'] = [
       '#type' => 'item',
-      '#markup' => (((isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '')).'%',
+      '#markup' => (((isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '')),
     ];
 
     $items['completeness lb'] = [

@@ -486,7 +486,8 @@ Thanks!',
 
         'instructions' => 'Read the assignment instructions and enter '
           .'a problem in the box below. Make your problem as clear as '
-          .'possible so the person solving it will understand what you mean.',
+          .'possible so the person solving it will understand what you mean. '
+          .'This solution is graded out of 100 points.',
       ],
 
       'edit problem' => [
