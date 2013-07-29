@@ -124,10 +124,15 @@ function groupgrade_view_assignments($id) {
     $semester->semester_name
   );
 
-  $return .= sprintf('<p><a href="%s">%s</a></p>',
+  $return .= sprintf('<p><a href="%s">%s %s</a> &mdash; <a href="%s">%s</a></p>',
+    url('class/instructor'),
+    HTML_BACK_ARROW,
+    t('Back to Section Management'),
     url('class/instructor/assignments/new'),
     t('Create new Assignment')
   );
+
+  $return .= sprintf('<p>%s</p>', t('Select an assignment title to see all student entries. Select an operation to manage the assignment.'));
 
   if (count($assignments) > 0) : foreach($assignments as $assignment) :
     $rows[] = [
@@ -136,8 +141,8 @@ function groupgrade_view_assignments($id) {
         $assignment->assignment_title
       ),
       gg_time_human($assignment->asec_start), 
-       '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$assignment->asec_id).'">'.t('Edit').'</a>'
-        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$assignment->asec_id).'">'.t('Remove Section').'</a>'
+       '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$assignment->asec_id).'">'.t('Edit Start Date').'</a>'
+        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$assignment->asec_id).'">'.t('Remove Assignment from Section').'</a>'
     ];
   endforeach; endif;
 
