@@ -601,6 +601,18 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
   $a = new Accordion('dispute-'.$task->task_id);
 
+  // Problem for the Workflow
+  $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s</p>',
+    t('Problem'),
+    nl2br($params['problem']->data['problem'])
+  ), true);
+
+  // Solution for the Workflow
+  $a->addGroup('Solution', 'solution-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s</p><hr />',
+    t('Solution'),
+    nl2br($params['solution']->data['solution'])
+  ), true);
+
   // Grades for the workflow
   $grades = Task::whereType('grade solution')
     ->where('workflow_id', '=', $task->workflow_id)
@@ -645,19 +657,6 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
   $items[] = ['#markup' => $a];
 
-  $items[] = [
-    '#markup' => sprintf('<h4>%s:</h4><p>%s</p>',
-      t('Problem'),
-      nl2br($params['problem']->data['problem'])
-    )
-  ];
-
-  $items[] = [
-    '#markup' => sprintf('<h4>%s:</h4><p>%s</p><hr />',
-      t('Solution'),
-      nl2br($params['solution']->data['solution'])
-    )
-  ];
 
   if (isset($params['task']->settings['instructions']))
     $items[] = [
