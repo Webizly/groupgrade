@@ -687,7 +687,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
     ];
   endforeach;
 
-  $items['proposed-'.$aspect] = [
+  $items['justification'] = [
     '#type' => 'textarea',
     '#title' => 'Explain fully why all prior graders were wrong, and your regrading is correct.',
     '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
