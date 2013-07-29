@@ -8,7 +8,7 @@
 	<title>File lib/Drupal/ClassLearning/Models/User.php | groupgrade</title>
 
 	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
-	<script type="text/javascript" src="elementlist.js?3003204921"></script>
+	<script type="text/javascript" src="elementlist.js?2232353790"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
 
 </head>
@@ -231,37 +231,33 @@
 </span><span id="121" class="l"><a class="l" href="#121">121: </a>      -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'section_user'</span>, <span class="php-quote">'section.section_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'section_user.section_id'</span>)
 </span><span id="122" class="l"><a class="l" href="#122">122: </a>      -&gt;where(<span class="php-quote">'section_user.user_id'</span>, <span class="php-quote">'='</span>, self::<span class="php-keyword2">key</span>())
 </span><span id="123" class="l"><a class="l" href="#123">123: </a>      -&gt;where(<span class="php-quote">'section_user.su_role'</span>, <span class="php-quote">'='</span>, <span class="php-var">$role</span>);
-</span><span id="124" class="l"><a class="l" href="#124">124: </a>    <span class="php-keyword1">return</span> SectionUsers::where(<span class="php-quote">'user_id'</span>, <span class="php-quote">'='</span>, self::<span class="php-keyword2">key</span>())
-</span><span id="125" class="l"><a class="l" href="#125">125: </a>      -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'section'</span>, <span class="php-quote">'section.section_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'section_user.section_id'</span>)
-</span><span id="126" class="l"><a class="l" href="#126">126: </a>      -&gt;where(<span class="php-quote">'su_role'</span>, <span class="php-quote">'='</span>, <span class="php-var">$role</span>)
-</span><span id="127" class="l"><a class="l" href="#127">127: </a>      -&gt;select(<span class="php-keyword1">array</span>(<span class="php-quote">'section_user.su_role'</span>, <span class="php-quote">'section_user.su_status'</span>, <span class="php-quote">'section.*'</span>));
-</span><span id="128" class="l"><a class="l" href="#128">128: </a>  }
-</span><span id="129" class="l"><a class="l" href="#129">129: </a>
-</span><span id="130" class="l"><a class="l" href="#130">130: </a>  <span class="php-comment">/**
-</span></span><span id="131" class="l"><a class="l" href="#131">131: </a><span class="php-comment">   * Get a user's assignments they're apart of
-</span></span><span id="132" class="l"><a class="l" href="#132">132: </a><span class="php-comment">   *
-</span></span><span id="133" class="l"><a class="l" href="#133">133: </a><span class="php-comment">   * 
-</span></span><span id="134" class="l"><a class="l" href="#134">134: </a><span class="php-comment">   */</span>
-</span><span id="135" class="l"><a class="l" href="#135">135: </a>  <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> <a id="_assignedAssignments" href="#_assignedAssignments">assignedAssignments</a>()
-</span><span id="136" class="l"><a class="l" href="#136">136: </a>  {
-</span><span id="137" class="l"><a class="l" href="#137">137: </a>    <span class="php-keyword1">return</span> AssignmentSection::whereIn(<span class="php-quote">'assignment_section.section_id'</span>, <span class="php-keyword1">function</span>(<span class="php-var">$query</span>)
-</span><span id="138" class="l"><a class="l" href="#138">138: </a>    {
-</span><span id="139" class="l"><a class="l" href="#139">139: </a>      <span class="php-keyword1">global</span> <span class="php-var">$user</span>;
-</span><span id="140" class="l"><a class="l" href="#140">140: </a>
-</span><span id="141" class="l"><a class="l" href="#141">141: </a>      <span class="php-var">$query</span>-&gt;select(<span class="php-quote">'section_id'</span>)
-</span><span id="142" class="l"><a class="l" href="#142">142: </a>        -&gt;from(<span class="php-quote">'section_user'</span>)
-</span><span id="143" class="l"><a class="l" href="#143">143: </a>        -&gt;where(<span class="php-quote">'user_id'</span>, <span class="php-quote">'='</span>, <span class="php-var">$user</span>-&gt;uid);
-</span><span id="144" class="l"><a class="l" href="#144">144: </a>    })
-</span><span id="145" class="l"><a class="l" href="#145">145: </a>    -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'assignment'</span>, <span class="php-quote">'assignment.assignment_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'assignment_section.assignment_id'</span>)
-</span><span id="146" class="l"><a class="l" href="#146">146: </a>    -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'section'</span>, <span class="php-quote">'assignment_section.section_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'section.section_id'</span>)
-</span><span id="147" class="l"><a class="l" href="#147">147: </a>    -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'course'</span>, <span class="php-quote">'course.course_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'section.course_id'</span>)
-</span><span id="148" class="l"><a class="l" href="#148">148: </a>    -&gt;select(<span class="php-quote">'assignment.*'</span>, <span class="php-quote">'assignment_section.asec_id'</span>, <span class="php-quote">'assignment_section.section_id'</span>, <span class="php-quote">'assignment_section.asec_start'</span>)
-</span><span id="149" class="l"><a class="l" href="#149">149: </a>    -&gt;addSelect(<span class="php-quote">'section.course_id'</span>, <span class="php-quote">'section.section_name'</span>)
-</span><span id="150" class="l"><a class="l" href="#150">150: </a>    -&gt;addSelect(<span class="php-quote">'course.*'</span>)
-</span><span id="151" class="l"><a class="l" href="#151">151: </a>    -&gt;orderBy(<span class="php-quote">'assignment_section.asec_start'</span>, <span class="php-quote">'desc'</span>);
-</span><span id="152" class="l"><a class="l" href="#152">152: </a>  }
-</span><span id="153" class="l"><a class="l" href="#153">153: </a>}
-</span><span id="154" class="l"><a class="l" href="#154">154: </a></span></code></pre>
+</span><span id="124" class="l"><a class="l" href="#124">124: </a>  }
+</span><span id="125" class="l"><a class="l" href="#125">125: </a>
+</span><span id="126" class="l"><a class="l" href="#126">126: </a>  <span class="php-comment">/**
+</span></span><span id="127" class="l"><a class="l" href="#127">127: </a><span class="php-comment">   * Get a user's assignments they're apart of
+</span></span><span id="128" class="l"><a class="l" href="#128">128: </a><span class="php-comment">   *
+</span></span><span id="129" class="l"><a class="l" href="#129">129: </a><span class="php-comment">   * 
+</span></span><span id="130" class="l"><a class="l" href="#130">130: </a><span class="php-comment">   */</span>
+</span><span id="131" class="l"><a class="l" href="#131">131: </a>  <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> <a id="_assignedAssignments" href="#_assignedAssignments">assignedAssignments</a>()
+</span><span id="132" class="l"><a class="l" href="#132">132: </a>  {
+</span><span id="133" class="l"><a class="l" href="#133">133: </a>    <span class="php-keyword1">return</span> AssignmentSection::whereIn(<span class="php-quote">'assignment_section.section_id'</span>, <span class="php-keyword1">function</span>(<span class="php-var">$query</span>)
+</span><span id="134" class="l"><a class="l" href="#134">134: </a>    {
+</span><span id="135" class="l"><a class="l" href="#135">135: </a>      <span class="php-keyword1">global</span> <span class="php-var">$user</span>;
+</span><span id="136" class="l"><a class="l" href="#136">136: </a>
+</span><span id="137" class="l"><a class="l" href="#137">137: </a>      <span class="php-var">$query</span>-&gt;select(<span class="php-quote">'section_id'</span>)
+</span><span id="138" class="l"><a class="l" href="#138">138: </a>        -&gt;from(<span class="php-quote">'section_user'</span>)
+</span><span id="139" class="l"><a class="l" href="#139">139: </a>        -&gt;where(<span class="php-quote">'user_id'</span>, <span class="php-quote">'='</span>, <span class="php-var">$user</span>-&gt;uid);
+</span><span id="140" class="l"><a class="l" href="#140">140: </a>    })
+</span><span id="141" class="l"><a class="l" href="#141">141: </a>    -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'assignment'</span>, <span class="php-quote">'assignment.assignment_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'assignment_section.assignment_id'</span>)
+</span><span id="142" class="l"><a class="l" href="#142">142: </a>    -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'section'</span>, <span class="php-quote">'assignment_section.section_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'section.section_id'</span>)
+</span><span id="143" class="l"><a class="l" href="#143">143: </a>    -&gt;<span class="php-keyword2">join</span>(<span class="php-quote">'course'</span>, <span class="php-quote">'course.course_id'</span>, <span class="php-quote">'='</span>, <span class="php-quote">'section.course_id'</span>)
+</span><span id="144" class="l"><a class="l" href="#144">144: </a>    -&gt;select(<span class="php-quote">'assignment.*'</span>, <span class="php-quote">'assignment_section.asec_id'</span>, <span class="php-quote">'assignment_section.section_id'</span>, <span class="php-quote">'assignment_section.asec_start'</span>)
+</span><span id="145" class="l"><a class="l" href="#145">145: </a>    -&gt;addSelect(<span class="php-quote">'section.course_id'</span>, <span class="php-quote">'section.section_name'</span>)
+</span><span id="146" class="l"><a class="l" href="#146">146: </a>    -&gt;addSelect(<span class="php-quote">'course.*'</span>)
+</span><span id="147" class="l"><a class="l" href="#147">147: </a>    -&gt;orderBy(<span class="php-quote">'assignment_section.asec_start'</span>, <span class="php-quote">'desc'</span>);
+</span><span id="148" class="l"><a class="l" href="#148">148: </a>  }
+</span><span id="149" class="l"><a class="l" href="#149">149: </a>}
+</span><span id="150" class="l"><a class="l" href="#150">150: </a></span></code></pre>
 
 	<div id="footer">
 		groupgrade API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>

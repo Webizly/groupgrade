@@ -7,7 +7,7 @@
 	<title>Class Drupal\ClassLearning\Models\WorkflowTask | groupgrade</title>
 
 	<script type="text/javascript" src="resources/combined.js?2750444839"></script>
-	<script type="text/javascript" src="elementlist.js?3003204921"></script>
+	<script type="text/javascript" src="elementlist.js?2232353790"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
 
 </head>
@@ -138,7 +138,7 @@ Illuminate\Database\Eloquent\Model
 		<b>Namespace:</b> <a href="namespace-Drupal.html">Drupal</a>\<a href="namespace-Drupal.ClassLearning.html">ClassLearning</a>\<a href="namespace-Drupal.ClassLearning.Models.html">Models</a><br />
 		
 
-		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#10-454" title="Go to source code">lib/Drupal/ClassLearning/Models/WorkflowTask.php</a><br />
+		<b>Located at</b> <a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#10-467" title="Go to source code">lib/Drupal/ClassLearning/Models/WorkflowTask.php</a><br />
 	</div>
 
 
@@ -433,7 +433,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_trigger">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#260-290" title="Go to source code">trigger</a>( <span>boolean <var>$force</var> = <span class="php-keyword1">false</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#260-294" title="Go to source code">trigger</a>( <span>boolean <var>$force</var> = <span class="php-keyword1">false</span></span> )</code>
 
 		<div class="description short">
 			
@@ -452,7 +452,7 @@ conditions and then handling them dynamically.</p>
 				<h4>Parameters</h4>
 				<div class="list"><dl>
 					<dt><var>$force</var></dt>
-					<dd><code>boolean</code></dd>
+					<dd><code>boolean</code><br>Force it to be triggered</dd>
 				</dl></div>
 
 
@@ -473,7 +473,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_timeout">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#292-301" title="Go to source code">timeout</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#296-309" title="Go to source code">timeout</a>( )</code>
 
 		<div class="description short">
 			
@@ -506,7 +506,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_expire">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#303-312" title="Go to source code">expire</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#311-320" title="Go to source code">expire</a>( )</code>
 
 		<div class="description short">
 			
@@ -539,7 +539,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_complete">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#314-323" title="Go to source code">complete</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#322-331" title="Go to source code">complete</a>( )</code>
 
 		<div class="description short">
 			
@@ -572,7 +572,7 @@ conditions and then handling them dynamically.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_timeoutTime">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#325-338" title="Go to source code">timeoutTime</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#333-350" title="Go to source code">timeoutTime</a>( )</code>
 
 		<div class="description short">
 			
@@ -585,17 +585,21 @@ conditions and then handling them dynamically.</p>
 <p>Get the timeout time for this task</p>
 
 <p>This would be when the task would be timed out fully. This is calculated
-relative to NOW, not to when the task was created. To calculate when the task
-should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.html#_forceEndTime">Drupal\ClassLearning\Models\WorkflowTask::forceEndTime()</a></code></p>
+relative to the start time of the task. It assumes that <code>start</code> is
+already set.</p>
 
 
 
 
 				<h4>Returns</h4>
 				<div class="list">
-					<code>object</code><br>Carbon datetime<br />
+					<code>object</code><br>Carbon\Carbon<br />
 				</div>
 
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Drupal.ClassLearning.Exception.html">Drupal\ClassLearning\Exception</a></code></code><br />
+				</div>
 
 
 
@@ -613,7 +617,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_forceEndTime">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#340-348" title="Go to source code">forceEndTime</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#352-361" title="Go to source code">forceEndTime</a>( )</code>
 
 		<div class="description short">
 			
@@ -626,6 +630,10 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 <p>Retrieve the Carbon object for the force end</p>
 
 
+				<h4>Deprecated</h4>
+				<div class="list">
+						Use <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.html#_forceEndTime" class="deprecated">Drupal\ClassLearning\Models\WorkflowTask::forceEndTime()</a></code><br />
+				</div>
 
 
 				<h4>Returns</h4>
@@ -650,7 +658,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_queryByStatus">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#350-379" title="Go to source code">queryByStatus</a>( <span>integer <var>$user</var></span>, <span>string <var>$status</var> = <span class="php-quote">'pending'</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#363-392" title="Go to source code">queryByStatus</a>( <span>integer <var>$user</var></span>, <span>string <var>$status</var> = <span class="php-quote">'pending'</span></span> )</code>
 
 		<div class="description short">
 			
@@ -690,7 +698,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getSettingsAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#384-388" title="Go to source code">getSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#397-401" title="Go to source code">getSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -719,7 +727,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setSettingsAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#390-393" title="Go to source code">setSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#403-406" title="Go to source code">setSettingsAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -748,7 +756,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getDataAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#395-399" title="Go to source code">getDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#408-412" title="Go to source code">getDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -777,7 +785,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setDataAttribute">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#401-404" title="Go to source code">setDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#414-417" title="Go to source code">setDataAttribute</a>( <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			
@@ -806,7 +814,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setData">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#406-417" title="Go to source code">setData</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#419-430" title="Go to source code">setData</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
 
 		<div class="description short">
 			
@@ -846,7 +854,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setSetting">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#419-430" title="Go to source code">setSetting</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#432-443" title="Go to source code">setSetting</a>( <span>string <var>$key</var></span>, <span>mixed <var>$value</var> = <span class="php-keyword1">NULL</span></span> )</code>
 
 		<div class="description short">
 			
@@ -886,7 +894,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_workflow">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#435-438" title="Go to source code">workflow</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#448-451" title="Go to source code">workflow</a>( )</code>
 
 		<div class="description short">
 			
@@ -915,7 +923,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_assignmentSection">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#440-443" title="Go to source code">assignmentSection</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#453-456" title="Go to source code">assignmentSection</a>( )</code>
 
 		<div class="description short">
 			
@@ -944,7 +952,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_section">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#445-448" title="Go to source code">section</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#458-461" title="Go to source code">section</a>( )</code>
 
 		<div class="description short">
 			
@@ -973,7 +981,7 @@ should end, see <code><a href="class-Drupal.ClassLearning.Models.WorkflowTask.ht
 
 		<td class="name"><div>
 		<a class="anchor" href="#_assignment">#</a>
-		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#450-453" title="Go to source code">assignment</a>( )</code>
+		<code><a href="source-class-Drupal.ClassLearning.Models.WorkflowTask.html#463-466" title="Go to source code">assignment</a>( )</code>
 
 		<div class="description short">
 			
