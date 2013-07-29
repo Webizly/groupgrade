@@ -26,7 +26,7 @@ function groupgrade_tasks_view_specific($specific = '') {
           url('class/task/'.$task->task_id), groupgrade_carbon_span($task->forceEndTime())
         );
 
-        $row_t[] = t(ucwords($task->type));
+        $row_t[] = $task->humanTask();
 
         $section = $task->section()->first();
         $course = $section->course()->first();
@@ -599,7 +599,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
   endif;
 
   $items[] = [
-    '#markup' => '<h4>'.t('Grade Recieved').': '.$params['workflow']->data['grade'].'%</h4>',
+    '#markup' => '<h4>'.t('Grade Received').': '.$params['workflow']->data['grade'].'%</h4>',
   ];
   $items[] = [
     '#markup' => sprintf('<h4>%s:</h4><p>%s</p>',

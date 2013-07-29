@@ -135,40 +135,7 @@ class Manager {
     //if (in_array($domain, $noSendDomains))
     //  return;
     //  
-    // Determine what they're doing in a human format
-    switch ($task->type)
-    {
-      case 'create problem' :
-        $action_human = 'Create a Problem';
-        break;
-
-      case 'edit problem' :
-        $action_human = 'Edit a Problem';
-        break;
-      
-      case 'grade solution' :
-        $action_human = 'Grade a Solution';
-        break;
-      
-      case 'create solution' :
-        $action_human = 'Create a Solution';
-        break;
-      
-      case 'resolution grader' :
-        $action_human = 'Resolve Grades';
-        break;
-
-      case 'dispute' :
-        $action_human = 'Dispute Grade';
-        break;
-
-      case 'resolve dispute' :
-        $action_human = 'Resolve Dispute';
-        break;  
-
-      default :
-        $action_human = 'Unknown Action';    
-    }
+    $action_human = self::humanTaskName($this->type);
 
     // Run all the queries and get all the information we need!
     $assignmentSection = $task->assignmentSection()->first();
@@ -678,6 +645,51 @@ Thanks!',
           .'an explanation.',
       ],
     ];
+  }
+
+  /**
+   * Resolve a Human Task Name
+   *
+   * @return string The Human Version of the Type
+   * @param string The type
+   */
+  public static function humanTaskName($type)
+  {
+    switch ($type)
+    {
+      case 'create problem' :
+        $action_human = 'Create a Problem';
+        break;
+
+      case 'edit problem' :
+        $action_human = 'Edit a Problem';
+        break;
+      
+      case 'grade solution' :
+        $action_human = 'Grade a Solution';
+        break;
+      
+      case 'create solution' :
+        $action_human = 'Create a Solution';
+        break;
+      
+      case 'resolution grader' :
+        $action_human = 'Resolve Grades';
+        break;
+
+      case 'dispute' :
+        $action_human = 'Decide Whether to Dispute';
+        break;
+
+      case 'resolve dispute' :
+        $action_human = 'Resolve Dispute';
+        break;  
+
+      default :
+        $action_human = 'Unknown Action';    
+    }
+
+    return t($action_human);
   }
 
   /**

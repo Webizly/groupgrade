@@ -442,6 +442,16 @@ class WorkflowTask extends ModelBase {
     $this->settings = $settings;
   }
 
+  /**
+   * Get the Human Task Type
+   *
+   * @return string
+   */
+  public function humanTask()
+  {
+    return WorkflowManager::humanTaskName($this->type);
+  }
+
   // =============================
   // Relations
   // =============================
