@@ -209,7 +209,7 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
 
   $workflows = $workflows->get();
 
-  $headers = ['Workflows'];
+  $headers = ['Problems'];
   $rows = [];
 
   if (count($workflows) > 0) : foreach ($workflows as $t) :
@@ -243,7 +243,7 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
   $return .= theme('table', array(
     'header' => $headers, 
     'rows' => $rows,
-    'empty' => 'No workflows found.',
+    'empty' => 'No problems found.',
     'attributes' => array('width' => '100%')
   ));
 
