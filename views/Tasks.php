@@ -799,12 +799,12 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
     $items['correctness-grade'] = [
       '#type' => 'item',
-      '#markup' => sprintf('<p><strong>%s:</strong> %d%%', t('Correctness Grade'), $data['completeness-grade'])
+      '#markup' => sprintf('<p><strong>%s:</strong> %d%%', t('Correctness Grade'), $data['correctness-grade'])
     ];
 
     $items['correctness'] = [
       '#type' => 'item',
-      '#markup' => sprintf('<p><strong>%s:</strong><br /> %s', t('Correctness'), nl2br($data['completeness']))
+      '#markup' => sprintf('<p><strong>%s:</strong><br /> %s', t('Correctness'), nl2br($data['correctness']))
     ];
 
     $items['completeness-grade'] = [
@@ -908,7 +908,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     '#type' => 'textfield',
     '#title' => 'Correctness Grade (0-50)',
     '#required' => true,
-    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
+    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
   ];
   $items['correctness'] = [
     '#type' => 'textarea',
@@ -944,13 +944,16 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
   
+  $gradeSum = 0;
+
   foreach (['completeness-grade', 'correctness-grade'] as $grade) :
     $form[$grade]['#value'] = (int) $form[$grade]['#value'];
 
     if ($form[$grade]['#value'] !== abs($form[$grade]['#value'])
       OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 50)
       return drupal_set_message(t('Invalid grade: '.$grade));
-
+    else
+      $gradeSum += $form[$grade]['#value'];
   endforeach;
 
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
@@ -968,7 +971,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
     $task->complete();
 
     // Save to the workflow
-    $params['workflow']->setData('grade', $grade);
+    $params['workflow']->setData('grade', $gradeSum);
+    $params['workflow']->save();
 
     return drupal_goto('class');
   endif;
