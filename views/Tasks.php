@@ -568,6 +568,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
 {
   $items = [];
   $task = $params['task'];
+  $workflow = $params['workflow'];
 
   if (! $params['edit']) :
     $items[] = [
@@ -598,9 +599,52 @@ function gg_task_dispute_form($form, &$form_state, $params)
     return $items;
   endif;
 
-  $items[] = [
-    '#markup' => '<h4>'.t('Grade Received').': '.$params['workflow']->data['grade'].'%</h4>',
-  ];
+  $a = new Accordion('dispute-'.$task->task_id);
+
+  // Grades for the workflow
+  $grades = Task::whereType('grade solution')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->get();
+
+  if (count($grades) > 0) : foreach ($grades as $grade) :
+    $c = '';
+    
+    foreach (['completeness', 'correctness'] as $aspect) :
+      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($grade->data[$aspect.'-grade'])) ? $grade->data[$aspect.'-grade'] : '').'</h4>';
+
+      if (isset($grade->data[$aspect]))
+        $c .= '<p>'.nl2br($grade->data[$aspect]).'</p>';
+    endforeach;
+
+    $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
+  endforeach; endif;
+
+  // Dispute Grader
+  $resolutionGrader = Task::whereType('resolution grader')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->whereStatus('complete')
+    ->first();
+
+  if ($resolutionGrader) :
+    $c = '';
+    
+    foreach (['completeness', 'correctness'] as $aspect) :
+      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($resolutionGrader->data[$aspect.'-grade'])) ? $resolutionGrader->data[$aspect.'-grade'] : '').'</h4>';
+
+      if (isset($resolutionGrader->data[$aspect]))
+        $c .= '<p>'.nl2br($resolutionGrader->data[$aspect]).'</p>';
+    endforeach;
+
+    $a->addGroup('Resolution Grader #'.$resolutionGrader->task_id, 'grade-'.$resolutionGrader->task_id, $c);
+  endif;
+
+  // Resolved Grade
+  $c = '';
+  $c .= sprintf('<h4>%s: %d%%</h4>', t('Grade Recieved'), $workflow->data['grade']);
+  $a->addGroup('Resolved Grade', $task->task_id.'-resolved-grade', $c, true);
+
+  $items[] = ['#markup' => $a];
+
   $items[] = [
     '#markup' => sprintf('<h4>%s:</h4><p>%s</p>',
       t('Problem'),
@@ -780,17 +824,13 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   if (count($grades) > 0) : foreach ($grades as $grade) :
     $c = '';
-    $c .= '<h4>'.t('Grade').': '.$task->data['grade'].'%</h4>';
-    
-    $c .= '<h4>'.t('Grade Completeness').':</h4>';
-    
-    if (isset($grade->data['completeness']))
-      $c .= '<p>'.nl2br($grade->data['completeness']).'</p>';
 
-    $c .= '<h4>'.t('Grade Correctness').':</h4>';
-    
-    if (isset($grade->data['correctness']))
-      $c .= '<p>'.nl2br($grade->data['correctness']).'</p>';
+    foreach (['completeness', 'correctness'] as $aspect) :
+      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($grade->data[$aspect.'-grade'])) ? $grade->data[$aspect.'-grade'] : '').'</h4>';
+
+      if (isset($grade->data[$aspect]))
+        $c .= '<p>'.nl2br($grade->data[$aspect]).'</p>';
+    endforeach;
 
     $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
   endforeach; endif;
