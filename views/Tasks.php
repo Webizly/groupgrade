@@ -683,7 +683,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
     $items['proposed-'.$aspect] = [
       '#type' => 'textarea',
       '#title' => 'Proposed '.ucfirst($aspect).' Justification',
-      '#default_value' => (isset($task->data[$aspect.'-justification'])) ? $task->data[$aspect.'-justification'] : '',
+      '#default_value' => (isset($task->data['proposed-'.$aspect])) ? $task->data['proposed-'.$aspect] : '',
     ];
   endforeach;
 
@@ -726,23 +726,34 @@ function gg_task_dispute_form_submit($form, &$form_state)
   $task->setData('value', $dispute);
 
   if ($dispute) :
-    // Verify the passed in the justification and grade
-    if (empty($form['proposed-grade']['#value']) OR empty($form['justification']['#value']))
-      return drupal_set_message(t('You didn\'t submit the justification or the propsed grade.'), 'error');
+    foreach (['completeness', 'correctness'] as $aspect) :
+      if (empty($form['proposed-'.$aspect.'-grade']['#value']) OR empty($form['proposed-'.$aspect]['#value']))
+        return drupal_set_message(t('You didn\'t submit the '.$aspect.' justification and/or the propsed '.$aspect.' grade.'), 'error');
 
-    // Save the fields
-    $grade = (int) $form['proposed-grade']['#value'];
-    if ($grade !== abs($grade) OR $grade < 0 OR $grade > 100)
-      return drupal_set_message(t('Invalid grade: '.$grade));
-    
-    $task->setData('proposed-grade', $grade);
-    $task->setData('justification', trim($form['justification']['#value']));
+      // Save the fields
+      $form['proposed-'.$aspect.'-grade']['#value'] = (int) $form['proposed-'.$aspect.'-grade']['#value'];
+
+      if (
+        $form['proposed-'.$aspect.'-grade']['#value'] !== abs($form['proposed-'.$aspect.'-grade']['#value'])
+      OR
+        $form['proposed-'.$aspect.'-grade']['#value'] < 0
+      OR
+        $form['proposed-'.$aspect.'-grade']['#value'] > 100
+      )
+        return drupal_set_message(t('Invalid grade: '.$form['proposed-'.$aspect.'-grade']['#value']));
+      
+      $task->setData('proposed-'.$aspect.'-grade', $form['proposed-'.$aspect.'-grade']['#value']);
+      $task->setData('proposed-'.$aspect, trim($form['proposed-'.$aspect]['#value']));
+    endforeach;
+
+    // Overall Justice.
+    if (empty($form['justification']['#value']))
+      return drupal_set_message(t('You didn\'t pass the justification.'), 'error');
+    else
+      $task->setData('justification', trim($form['justification']['#value']));
 
     // Are they saving or doing it now
     $submit = ($form_state['clicked_button']['#id'] == 'edit-dispute-submit') ? TRUE : FALSE;
-
-    $task->status = 'started';
-    $task->save();
 
     if ($submit) :
       $task->complete();
@@ -750,6 +761,9 @@ function gg_task_dispute_form_submit($form, &$form_state)
       drupal_set_message(t('Your dispute has been submitted.'));
       return drupal_goto('class');
     else :
+      $task->status = 'started';
+      $task->save();
+
       drupal_set_message(t('Your dispute has been saved. (You must submit this still to complete the task.)'));
     endif;
   else :
