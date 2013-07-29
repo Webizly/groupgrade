@@ -375,6 +375,8 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
 
+  $items[] = ['#markup' => sprintf('<p><strong>%s</strong></p>', t('Create Solution'))];
+  
   $items['body'] = [
     '#type' => 'textarea',
     '#required' => true,
