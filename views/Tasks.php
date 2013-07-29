@@ -475,40 +475,35 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
 
+  $items[] = ['#markup' => sprintf('<h5>%s: %s</h5>', t('Current Task'), t($params['task']->humanTask()))];
   $items['completeness-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Completeness Grade (0-50)',
+    '#title' => 'Grade how complete the solution is. (0-50)',
     '#required' => true,
     '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
   ];
 
   $items['completeness'] = [
     '#type' => 'textarea',
-    '#title' => 'Grade Completeness',
+    '#title' => 'Justify your grade of the solution\'s completeness',
     '#required' => true,
     '#default_value' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
   ];
 
   $items['correctness-grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Correctness Grade (0-50)',
+    '#title' => 'Grade how correct the solution is. (0-50)',
     '#required' => true,
     '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
   ];
 
   $items['correctness'] = [
     '#type' => 'textarea',
-    '#title' => 'Grade Correctness',
+    '#title' => 'Justify your grade of the solution\'s correctness',
     '#required' => true,
     '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
   ];
 
-  $items['justification'] = [
-    '#type' => 'textarea',
-    '#title' => 'Grade Justification',
-    '#required' => true,
-    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
-  ];
   $items['save'] = [
     '#type' => 'submit',
     '#value' => 'Save Grade For Later',
@@ -542,7 +537,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
     endif;
   endforeach;
 
-  $dataFields = ['completeness-grade', 'completeness', 'correctness-grade', 'correctness', 'justification'];
+  $dataFields = ['completeness-grade', 'completeness', 'correctness-grade', 'correctness'];
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
 
   // Save the data
