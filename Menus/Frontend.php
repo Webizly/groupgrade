@@ -43,7 +43,7 @@ return array(
     'page arguments' => array(),
     'access callback' => TRUE,
 
-    'weight' => 4,
+    'weight' => 2,
   ),
 
   'class/assignments/%/%' => array(
