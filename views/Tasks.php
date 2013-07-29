@@ -117,7 +117,7 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
   $assignment = $task->assignment()->first();
 
   $return = '';
-  drupal_set_title(t(sprintf('%s: %s', ucwords($task->type), $assignment->assignment_title)));
+  drupal_set_title(t(sprintf('%s: %s', $task->humanTask(), $assignment->assignment_title)));
 
   if ($action == 'display') :
     $return .= sprintf('<p><a href="%s">%s %s</a>', url('class'), HTML_BACK_ARROW, t('Back to Tasks'));
