@@ -120,7 +120,7 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
   drupal_set_title(t(sprintf('%s: %s', $task->humanTask(), $assignment->assignment_title)));
 
   if ($action == 'display') :
-    $return .= sprintf('<p><a href="%s">%s %s</a>', url('class'), HTML_BACK_ARROW, t('Back to Tasks'));
+    $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/default/all'), HTML_BACK_ARROW, t('Back to All Tasks'));
 
     // Course information
     $section = $task->section()->first();
