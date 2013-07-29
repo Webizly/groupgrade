@@ -874,9 +874,12 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   if ($disputeTask) :
     $c = '';
-    $c .= '<h4>'.t('Proposed Grade').': '.$disputeTask->data['proposed-grade'].'%</h4>';
+    foreach (['completeness', 'correctness'] as $aspect) :
+      $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Grade').': '.$disputeTask->data['proposed-'.$aspect.'-grade'].'</h4>';
+    $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Justification').': </h4><p>'.nl2br($disputeTask->data['proposed-'.$aspect]).'</p>';
+    endforeach;
     
-    $c .= '<h4>'.t('Grade Justification').':</h4>';
+    $c .= '<h4>'.t('Explain fully why all prior graders were wrong, and your regrading is correct').':</h4>';
     $c .= '<p>'.nl2br($disputeTask->data['justification']).'</p>';
 
     $a->addGroup('Dispute Grader #'.$disputeTask->task_id, 'grade-'.$disputeTask->task_id, $c);
