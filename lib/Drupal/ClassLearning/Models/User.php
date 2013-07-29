@@ -36,11 +36,11 @@ class User {
 
       $query->select('section_id')
         ->from('section_user')
-        ->where('user_id', '=', (int) $user->uid)
-        ->where('su_role', '=', 'student');
+        ->where('user_id', '=', (int) $user->uid);
     });
 
-    //$query->join('section_user', 'section_user.section_id', '=', 'section.section_id')
+    $query->join('section_user', 'section.section_id', '=', 'section_user.section_id');
+    $query->groupBy('section.section_id');
     //  ->select('section.*', 'section_user.su_role', 'section_user.su_status');
     $query->join('course', 'course.course_id', '=', 'section.course_id');
     $query->join('semester', 'semester.semester_id', '=', 'section.semester_id');
@@ -59,7 +59,7 @@ class User {
       $query->where('section.semester_id', '=', $current_semester->semester_id);
     endif;
     
-    $query->orderBy('section.section_id', 'desc');
+    $query->orderBy('semester.semester_end', (($filter == 'current') ? 'desc' : 'asc'));
     
     return $query->get();
   }

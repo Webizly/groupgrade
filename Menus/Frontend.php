@@ -154,6 +154,7 @@ return array(
   // ==========================
   // Section View
   // ==========================
+  /*
   'class/section/%' => array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'View Section',
@@ -173,6 +174,7 @@ return array(
     'title' => 'View Section',
     'weight' => 1,
   ),
+  */
 
   // ==========================
   // Task View
