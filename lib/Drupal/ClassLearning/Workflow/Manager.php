@@ -412,7 +412,10 @@ Thanks!',
           throw new ManagerException(
             sprintf('Task instance %d cannot be found for workflow %d', $taskInstanceId, $workflow_id));
 
-        $taskInstance->user_id = $assigned_user->user_id;
+        if (! is_object($assigned_user))
+          watchdog(WATCHDOG_INFO, 'Assigned user type is not object', [$assigned_user, $taskInstance]);
+        
+        $taskInstance->user_id = (is_object($assigned_user)) ? $assigned_user->user_id : NULL;
         $taskInstance->save();
       }
     }
