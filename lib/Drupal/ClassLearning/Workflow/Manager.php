@@ -437,6 +437,7 @@ Thanks!',
    */
   protected static function triggerTaskCreation(&$workflow, &$assignment, &$users)
   {
+    var_dump($workflow->workflow_id);
     $factory = new TaskFactory($workflow, self::getTasks());
     $factory->createTasks();
   }
