@@ -141,7 +141,7 @@ class Manager {
     $workflow = $task->workflow()->first();
 
     if (! is_object($workflow))
-      watchdog(WATCHDOG_ERROR, 'Workflow not object type: '.print_r($workflow, true));
+      var_dump('workflow not object', $workflow, $task);
 
     $assignmentSection = $workflow->assignmentSection()->first();
     $assignment = $assignmentSection->assignment()->first();
