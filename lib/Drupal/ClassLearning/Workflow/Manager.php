@@ -356,7 +356,7 @@ Thanks!',
 
       $workflows[] = $w;
     endforeach;
-    var_dump($workflows);
+    
     // Allocate the users
     self::allocateUsers($a, $workflows);
   }
@@ -399,7 +399,7 @@ Thanks!',
     // Add the workflows from the database
     foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
-
+    var_dump($allocator->getWorkflows());
     $run = $allocator->assignmentRun();
 
     // Now we have to intepert the response of the allocator
