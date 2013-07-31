@@ -138,7 +138,12 @@ class Manager {
     $action_human = self::humanTaskName($task->type);
 
     // Run all the queries and get all the information we need!
-    $assignmentSection = $task->assignmentSection()->first();
+    $workflow = $task->workflow()->first();
+
+    if (! is_object($workflow))
+      watchdog(WATCHDOG_ERROR, 'Workflow not object type', [$workflow, $task]);
+    
+    $assignmentSection = $workflow->assignmentSection()->first();
     $assignment = $assignmentSection->assignment()->first();
     $section = $assignmentSection->section()->first();
     $course = $section->course()->first();
@@ -414,7 +419,7 @@ Thanks!',
 
         if (! is_object($assigned_user))
           watchdog(WATCHDOG_INFO, 'Assigned user type is not object', [$assigned_user, $taskInstance]);
-        
+
         $taskInstance->user_id = (is_object($assigned_user)) ? $assigned_user->user_id : NULL;
         $taskInstance->save();
       }
