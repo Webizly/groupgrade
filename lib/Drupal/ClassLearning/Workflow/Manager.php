@@ -141,7 +141,7 @@ class Manager {
     $workflow = $task->workflow()->first();
 
     if (! is_object($workflow))
-      var_dump('workflow not object', $workflow, $task);
+      die(var_dump('workflow not object', $workflow, $task));
 
     $assignmentSection = $workflow->assignmentSection()->first();
     $assignment = $assignmentSection->assignment()->first();
