@@ -387,13 +387,14 @@ Thanks!',
     // Add the workflows from the database
     foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
-    var_dump($allocator->getWorkflows());
+
     $run = $allocator->assignmentRun();
 
     // Now we have to intepert the response of the allocator
     $taskInstances = $run->getTaskInstanceStorage();
+    var_dump($taskInstances);
     $allocatorWorkflows = $run->getWorkflows();
-
+    var_dump($allocatorWorkflows);
     foreach ($allocatorWorkflows as $workflow_id => $workflow)
     {
       foreach ($workflow as $role_id => $assigned_user)
