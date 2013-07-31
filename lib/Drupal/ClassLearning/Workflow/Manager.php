@@ -140,8 +140,8 @@ class Manager {
     // Run all the queries and get all the information we need!
     $workflow = $task->workflow()->first();
 
-    //if (! is_object($workflow))
-    //  die(var_dump('workflow not object', $workflow, $task));
+    if (! is_object($workflow))
+      die(var_dump('workflow not object', $workflow, $task));
 
     $assignmentSection = $workflow->assignmentSection()->first();
     $assignment = $assignmentSection->assignment()->first();
