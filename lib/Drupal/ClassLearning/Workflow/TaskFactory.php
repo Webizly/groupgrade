@@ -70,5 +70,6 @@ class TaskFactory {
         var_dump($t->workflow_id);
       endfor;
     endforeach;
+    exit;
   }
 }
