@@ -140,8 +140,8 @@ class Manager {
     // Run all the queries and get all the information we need!
     $workflow = $task->workflow()->first();
 
-    if (! is_object($workflow))
-      die(var_dump('workflow not object', $workflow, $task));
+    //if (! is_object($workflow))
+    //  die(var_dump('workflow not object', $workflow, $task));
 
     $assignmentSection = $workflow->assignmentSection()->first();
     $assignment = $assignmentSection->assignment()->first();
@@ -392,9 +392,8 @@ Thanks!',
 
     // Now we have to intepert the response of the allocator
     $taskInstances = $run->getTaskInstanceStorage();
-    var_dump($taskInstances);
     $allocatorWorkflows = $run->getWorkflows();
-    var_dump($allocatorWorkflows);
+
     foreach ($allocatorWorkflows as $workflow_id => $workflow)
     {
       foreach ($workflow as $role_id => $assigned_user)
