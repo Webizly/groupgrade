@@ -66,6 +66,8 @@ class TaskFactory {
         $t->settings = $this->tasks[$name];
         $t->data = [];
         $t->save();
+
+        var_dump($t->workflow_id);
       endfor;
     endforeach;
   }
