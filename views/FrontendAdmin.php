@@ -124,10 +124,13 @@ function groupgrade_view_assignments($id) {
     $semester->semester_name
   );
 
-  $return .= sprintf('<p><a href="%s">%s %s</a> &mdash; <a href="%s">%s</a></p>',
+  $return .= sprintf('<p><a href="%s">%s %s</a></p>',
     url('class/instructor'),
     HTML_BACK_ARROW,
-    t('Back to Section Management'),
+    t('Back to Section Management')
+  );
+
+  $return .= sprintf('<p><a href="%s">%s</a></p>',
     url('class/instructor/assignments/new'),
     t('Create new Assignment')
   );
