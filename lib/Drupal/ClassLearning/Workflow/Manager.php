@@ -135,7 +135,7 @@ class Manager {
     //if (in_array($domain, $noSendDomains))
     //  return;
     //  
-    $action_human = self::humanTaskName($this->type);
+    $action_human = self::humanTaskName($task->type);
 
     // Run all the queries and get all the information we need!
     $assignmentSection = $task->assignmentSection()->first();
