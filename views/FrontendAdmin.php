@@ -172,7 +172,7 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
   $section = $assignmentSection->section()->first();
 
   // Logic Check
-  if ($section->section_id !== $section_id) return drupal_not_found();
+  if ((int) $section->section_id !== (int) $section_id) return drupal_not_found();
 
   $course = $section->course()->first();
   $semester = $section->semester()->first();
