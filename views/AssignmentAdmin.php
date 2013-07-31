@@ -82,7 +82,7 @@ function groupgrade_create_assignment_submit($form, &$form_state)
   $a->assignment_description = $description;
   $a->save();
 
-  drupal_set_message(sprintf('Assignment "%s" created.', $a->assignment_title));
+  drupal_set_message(sprintf('Assignment "%s" created.  The assignment must be assigned to a section to initiate the workflow.', $a->assignment_title));
   return drupal_goto('class/instructor/assignments/'.$a->assignment_id);
 }
 
