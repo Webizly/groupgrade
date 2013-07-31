@@ -356,20 +356,8 @@ Thanks!',
 
       $workflows[] = $w;
     endforeach;
-    exit;
-    // Allocate the users
-    self::allocateUsers($a, $workflows);
-  }
 
-  /**
-   * Assign the users to tasks
-   *
-   * @param AssignmentSection
-   * @param SectionUsers
-   * @return void
-   */
-  public static function allocateUsers(AssignmentSection $a, $workflows)
-  {
+    // New Allocator
     $allocator = new Allocator();
 
     // Add the roles
