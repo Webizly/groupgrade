@@ -368,7 +368,7 @@ Thanks!',
    * @param SectionUsers
    * @return void
    */
-  public static function allocateUsers(AssignmentSection $a, &$workflows)
+  public static function allocateUsers(AssignmentSection $a, $workflows)
   {
     $allocator = new Allocator();
 
@@ -404,9 +404,9 @@ Thanks!',
 
     // Now we have to intepert the response of the allocator
     $taskInstances = $run->getTaskInstanceStorage();
-    $workflows = $run->getWorkflows();
+    $allocatorWorkflows = $run->getWorkflows();
 
-    foreach ($workflows as $workflow_id => $workflow)
+    foreach ($allocatorWorkflows as $workflow_id => $workflow)
     {
       foreach ($workflow as $role_id => $assigned_user)
       {
