@@ -326,10 +326,11 @@ function groupgrade_frontend_swap_status($section, $user)
 
   $userInSection->su_status = ($userInSection->su_status == 'active') ? 'inactive' : 'active';
   $userInSection->save();
+  $userData = user_load($user);
 
   drupal_set_message(sprintf('%s %d %s %s.',
     t('User'),
-    $user,
+    ggPrettyName($userData),
     t('status set to'),
     $userInSection->su_status
   ));
