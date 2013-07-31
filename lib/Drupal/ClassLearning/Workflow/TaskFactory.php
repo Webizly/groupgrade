@@ -67,7 +67,7 @@ class TaskFactory {
         $t->data = [];
         $t->save();
 
-        var_dump($t->workflow_id);
+        var_dump($t);
       endfor;
     endforeach;
     exit;
