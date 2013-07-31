@@ -177,7 +177,7 @@ Task: %s
 Due: %s
 <a href="%s">Click here</a> to work on your task.
 
-Please complete this as soon as possible. You are now holding up your peers, who need to work on the task that follows yours.
+Please complete this as soon as possible.
 
 Thanks!',
           variable_get('site_name', 'CLASS Development'),
