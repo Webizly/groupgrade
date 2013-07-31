@@ -70,6 +70,5 @@ class TaskFactory {
         var_dump($t);
       endfor;
     endforeach;
-    exit;
   }
 }

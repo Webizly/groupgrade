@@ -356,7 +356,7 @@ Thanks!',
 
       $workflows[] = $w;
     endforeach;
-    
+    exit;
     // Allocate the users
     self::allocateUsers($a, $workflows);
   }
@@ -435,7 +435,7 @@ Thanks!',
    * @param AssignmentSection
    * @param SectionUsers
    */
-  protected static function triggerTaskCreation(&$workflow, &$assignment, &$users)
+  protected static function triggerTaskCreation($workflow, $assignment, $users)
   {
     $factory = new TaskFactory($workflow, self::getTasks());
     $factory->createTasks();
