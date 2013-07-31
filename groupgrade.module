@@ -516,6 +516,9 @@ function groupgrade_user_login(&$edit, $account)
  * Impliments hook_cron()
  */
 function groupgrade_cron() {
+  // Cleanup tasks
+  WorkflowManager::cleanupTasks();
+
   // Check Assignments
   WorkflowManager::checkAssignments();
 

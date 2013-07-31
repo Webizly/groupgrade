@@ -697,4 +697,15 @@ Thanks!',
   {
     return ['student', 'instructor'];
   }
+
+  /**
+   * Cleanup tasks
+   *
+   * @return void
+   * @access public
+   */
+  public static function cleanupTasks()
+  {
+    return \Illuminate\Database\Capsule\Manager::connection()->statement('DELETE FROM `pla_task` WHERE (SELECT count(1) FROM `pla_workflow` WHERE workflow_id = pla_task.workflow_id) < 1;');
+  }
 }
