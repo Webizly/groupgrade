@@ -272,7 +272,7 @@ class WorkflowTask extends ModelBase {
 
     // Check and see if there's an error with triggering
     if (! $this->isInternal() AND $this->user_id == NULL)
-      throw new ModelException(sprintf('No user assigned to task to trigger it. %s', print_r($this, true)));
+      throw new ModelException(sprintf('No user assigned to task to trigger it. %s %s', print_r($this, true), print_r($this->data, true)));
 
     // Update the status
     $this->status = 'triggered';
