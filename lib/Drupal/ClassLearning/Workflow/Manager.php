@@ -389,7 +389,8 @@ Thanks!',
       $allocator->addWorkflow($workflow->workflow_id);
 
     $run = $allocator->assignmentRun();
-    
+    $allocator->dump();
+
     // Now we have to intepert the response of the allocator
     $taskInstances = $run->getTaskInstanceStorage();
     $allocatorWorkflows = $run->getWorkflows();
@@ -409,7 +410,9 @@ Thanks!',
           watchdog(WATCHDOG_INFO, 'Assigned user type is not object', [$assigned_user, $taskInstance]);
 
         $taskInstance->user_id = (is_object($assigned_user)) ? $assigned_user->user_id : NULL;
+        echo "Assigning user ".print_r($assigned_user, true).' to task #'.$taskInstance->task_id;
         $taskInstance->save();
+        var_dump($taskInstance);
       }
     }
   }
