@@ -81,7 +81,6 @@ class WorkflowTask extends ModelBase {
     if ($conditions == NULL) return FALSE;
 
     foreach ($conditions as $condition) {
-      if ($this->task_id == 13203) var_dump($this->conditionMet($condition));
       if (! $this->conditionMet($condition))
         return FALSE;
     }
@@ -278,7 +277,7 @@ class WorkflowTask extends ModelBase {
     // Check and see if there's an error with triggering
     if (! $this->isInternal() AND $this->user_id == NULL)
       throw new ModelException(sprintf('No user assigned to task to trigger it. %s %s', print_r($this, true), print_r($this->settings, true)));
-    var_dump($this);
+
     // Update the status
     $this->status = 'triggered';
     $this->start = Carbon::now()->toDateTimeString();
