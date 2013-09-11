@@ -266,8 +266,6 @@ class WorkflowTask extends ModelBase {
    */
   public function trigger($force = false)
   {
-    var_dump($this);
-    
     // Nothing to trigger
     if ($this->status !== 'not triggered' AND ! $force)
       return true;
@@ -275,7 +273,7 @@ class WorkflowTask extends ModelBase {
     // Check and see if there's an error with triggering
     if (! $this->isInternal() AND $this->user_id == NULL)
       throw new ModelException(sprintf('No user assigned to task to trigger it. %s %s', print_r($this, true), print_r($this->settings, true)));
-
+    var_dump($this);
     // Update the status
     $this->status = 'triggered';
     $this->start = Carbon::now()->toDateTimeString();
