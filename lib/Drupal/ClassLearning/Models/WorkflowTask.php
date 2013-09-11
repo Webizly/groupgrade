@@ -271,7 +271,7 @@ class WorkflowTask extends ModelBase {
       return true;
 
     // Check and see if there's an error with triggering
-    if ((! isset($this->data['internal']) OR ! $this->data['internal']) AND $this->user_id == NULL)
+    if (! $this->isInternal() AND $this->user_id == NULL)
       throw new ModelException(sprintf('No user assigned to task to trigger it. %s', print_r($this, true)));
 
     // Update the status
@@ -450,6 +450,16 @@ class WorkflowTask extends ModelBase {
   public function humanTask()
   {
     return WorkflowManager::humanTaskName($this->type);
+  }
+
+  /**
+   * Determine if this workflow task type is internal
+   * 
+   * @return boolean
+   */
+  public function isInternal()
+  {
+    return (isset($this->data['internal']) AND $this->data['internal']);
   }
 
   // =============================
