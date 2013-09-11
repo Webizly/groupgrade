@@ -72,6 +72,10 @@ class WorkflowTask extends ModelBase {
    */
   public function triggerConditionsAreMet()
   {
+    // TRUE if it's already done
+    if ($task->status == 'triggered' OR $task->status == 'started')
+      return TRUE;
+
     $conditions = $this->getTriggerConditions();
 
     if ($conditions == NULL) return FALSE;
