@@ -266,6 +266,8 @@ class WorkflowTask extends ModelBase {
    */
   public function trigger($force = false)
   {
+    var_dump($this);
+    exit;
     // Nothing to trigger
     if ($this->status !== 'not triggered' AND ! $force)
       return true;
@@ -278,11 +280,10 @@ class WorkflowTask extends ModelBase {
     $this->status = 'triggered';
     $this->start = Carbon::now()->toDateTimeString();
     $this->force_end = $this->timeoutTime()->toDateTimeString();
+    $this->save();
     
     // Notify user
     WorkflowManager::notifyUser('triggered', $this);
-
-    $this->save();
 
     // Lastly, the callback
     $callbackName = str_replace(' ', '_', $this->type);

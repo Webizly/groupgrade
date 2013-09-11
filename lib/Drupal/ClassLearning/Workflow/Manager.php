@@ -79,9 +79,8 @@ class Manager {
       ->get();
 
     if (count($tasksOngoing) > 0) {
-      foreach ($tasksOngoing as $task) :
+      foreach ($tasksOngoing as $task)
         self::checkTaskInstance($task);
-      endforeach;
     }
   }
 
