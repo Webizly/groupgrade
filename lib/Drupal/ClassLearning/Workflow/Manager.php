@@ -389,7 +389,7 @@ Thanks!',
       $allocator->addWorkflow($workflow->workflow_id);
 
     $run = $allocator->assignmentRun();
-
+    $allocator->dump();exit;
     // Now we have to intepert the response of the allocator
     $taskInstances = $run->getTaskInstanceStorage();
     $allocatorWorkflows = $run->getWorkflows();
