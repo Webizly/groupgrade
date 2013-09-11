@@ -412,7 +412,6 @@ Thanks!',
         $taskInstance->user_id = (is_object($assigned_user)) ? $assigned_user->user_id : NULL;
         echo "Assigning user ".print_r($assigned_user, true).' to task #'.$taskInstance->task_id;
         $taskInstance->save();
-        var_dump($taskInstance);
       }
     }
   }
