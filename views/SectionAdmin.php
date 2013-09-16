@@ -103,7 +103,7 @@ function groupgrade_view_sectionadmin($section_id)
 
   $return .= '</div><div class="right clearfix">';
 
-  foreach(array('instructor', 'student') as $role):
+  foreach(\Drupal\ClassLearning\Workflow\Manager::getUserRoles() as $role):
     $return .= '<h3>'.ucfirst($role).'s</h3>';
     $users = $section->users($role)
       ->get();
@@ -111,11 +111,13 @@ function groupgrade_view_sectionadmin($section_id)
     $rows = array();
     if (count($users) > 0) : foreach($users as $sectionUser) :
       $user = $sectionUser->user();
+      $actionText = t('change to '.(($sectionUser->su_status !== 'active') ? 'active' : 'inactive'));
+
       $rows[] = array(
         ggPrettyName($user),
         $sectionUser->su_status,
         '<a href="'.url('admin/class/section/remove-user/'.$user->uid.'/'.$section->section_id).'">'.t('remove').'</a> &mdash;
-        <a href="'.url('admin/class/section/change-status/'.$user->uid.'/'.$section->section_id).'">change to '.(($sectionUser->su_status !== 'active') ? 'active' : 'inactive').'</a>',
+        <a href="'.url('admin/class/section/change-status/'.$user->uid.'/'.$section->section_id).'">'.$actionText.'</a>',
       );
     endforeach; endif;
     $return .= theme('table', array(
@@ -151,8 +153,9 @@ function groupgrade_add_student_form($form, &$form_state, $section_id) {
   $index = array();
   if (count($students) > 0) : foreach($students as $student) :
     $user = \user_load($student->uid);
+    $uid = \Drupal\ClassLearning\Models\User::key();
 
-    $index[$student->uid] = ggPrettyName($user);
+    $index[$student->uid] = ggPrettyName($user) . (($user->uid == $uid) ? ' (you)' : '');
   endforeach; endif;
 
   $items['user'] = array(
