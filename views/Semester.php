@@ -1,5 +1,6 @@
 <?php
-use Drupal\ClassLearning\Models\Semester;
+use Drupal\ClassLearning\Models\Semester,
+  Drupal\ClassLearning\Models\Organization;
 
 function groupgrade_semester_add($organization)
 {
@@ -8,7 +9,7 @@ function groupgrade_semester_add($organization)
 
 function groupgrade_semester_add_form($form, &$form_state, $org_id)
 {
-  $organization = Drupal\ClassLearning\Models\Organization::find($org_id);
+  $organization = Organization::find($org_id);
   if ($organization == NULL) return drupal_not_found();
 
   $items = array();
