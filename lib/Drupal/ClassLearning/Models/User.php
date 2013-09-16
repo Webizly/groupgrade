@@ -89,7 +89,7 @@ class User {
   }
 
   /**
-   * Staticlly Retrieve the user ID
+   * Statically Retrieve the user ID
    *
    * @return int
    */
@@ -126,7 +126,7 @@ class User {
   /**
    * Get a user's assignments they're apart of
    *
-   * 
+   * @return object Query Builder Object 
    */
   public static function assignedAssignments()
   {

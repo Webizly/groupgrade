@@ -1,13 +1,6 @@
-<?php
-namespace Drupal\ClassLearning;
+<?php namespace Drupal\ClassLearning\Exception;
 
-/**
- * General Exception
- *
- * @package groupgrade
- * @subpackge exception
- */
-class Exception extends \Exception {
+abstract class ExceptionBase extends \Exception {
   /**
    * Handle the Exception
    * 
