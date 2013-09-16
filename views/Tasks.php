@@ -34,7 +34,7 @@ function groupgrade_tasks_view_specific($specific = '') {
         $semester = $section->semester()->first();
 
         $row_t[] = sprintf('%s &mdash; %s &mdash; %s', 
-          $course->course_name, 
+          $course->course_name . (($task->status == 'timed out') ? '(late)' : ''), 
           $section->section_name,
           $semester->semester_name
         );
