@@ -231,7 +231,7 @@ return array(
   'class/instructor/first' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 1,
-    'title' => 'Section Management',
+    'title' => 'Sections',
   ),
 
   // ===================
@@ -239,7 +239,7 @@ return array(
   // ===================
   'class/instructor/assignments' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Assignment Management',
+    'title' => 'Assignments',
     'page callback' => 'groupgrade_assignment_dash',
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -343,6 +343,76 @@ return array(
     'access arguments' => array('section-instructor'),
     'weight' => 3,
   ),
+
+  /**
+   * ===============================
+   * Manage the Workflows
+   * ===============================
+   */
+  'class/instructor/workflows' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Workflows',
+    'page callback' => 'groupgrade_workflow_index',
+    'file' => 'Workflows.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'access callback' => 'gg_on_local', //'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+
+    'weight' => 5,
+  ),
+
+  'class/instructor/workflows/new' => array(
+   // 'type' => MENU_LOCAL_ACTION,
+    'title' => 'Create Workflow',
+    
+    'file' => 'Workflows.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_create_workflow'),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+  ),
+
+  'class/instructor/workflows/%' => array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'View Workflow',
+    
+    'file' => 'Workflows.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_workflow', //drupal_get_form',
+    'page arguments' => array(3),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+    'weight' => 1,
+  ),
+
+  'class/instructor/workflows/%/first' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+    'title' => 'View Workflow',
+  ),
+
+
+  'class/instructor/workflows/%/edit' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Edit Workflow',
+    
+    'file' => 'Workflows.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_edit_workflow', 3),
+
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+    'weight' => 2,
+  ),
+  
 
   // ===============================
   // Manage the section
