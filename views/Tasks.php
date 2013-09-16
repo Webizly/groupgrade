@@ -235,7 +235,7 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
   
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
-  $task->status = ($save) ? 'started' : 'completed';
+  if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
   if (! $save)
@@ -334,7 +334,8 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
     'problem' =>  $form['body']['#value'],
     'comment' => $form['comment']['#value'],
   ]);
-  $task->status = ($save) ? 'started' : 'completed';
+
+  if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
   if (! $save)
@@ -405,7 +406,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute(['solution' =>  $form['body']['#value']]);
-  $task->status = ($save) ? 'started' : 'completed';
+  if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
   if (! $save)
@@ -544,7 +545,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   foreach ($dataFields as $field)
     $task->setData($field, $form[$field]['#value']);
 
-  $task->status = ($save) ? 'started' : 'completed';
+  if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
   if (! $save)
@@ -957,7 +958,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   foreach ($dataFields as $field)
     $task->setData($field, $form[$field]['#value']);
 
-  $task->status = ($save) ? 'started' : 'completed';
+  if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
   drupal_set_message(sprintf('%s %s', t('Grade'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
@@ -1235,7 +1236,7 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
     'comment' => $form['comment']['#value']
   ]);
 
-  $task->status = ($save) ? 'started' : 'completed';
+  if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
 
   if (! $save) :
