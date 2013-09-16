@@ -38,7 +38,6 @@ function groupgrade_section_view_form($form, &$form_state, $course)
   $items['description'] = array(
     '#title' => 'Section Description',
     '#type' => 'textarea',
-    '#required' => true,
   );
 
   $items['semester'] = array(
@@ -63,7 +62,7 @@ function groupgrade_section_view_form($form, &$form_state, $course)
 function groupgrade_section_view_form_submit($form, &$form_state) {
   $name = $form['name']['#value'];
   $course = $form['course']['#value'];
-  $description = $form['description']['#value'];
+  $description = (isset($form['description']['#value'])) ? $form['description']['#value'] : NULL;
   $semester = $form['semester']['#value'];
 
   $section = new Section;

@@ -225,7 +225,7 @@ function groupgrade_baseaccess() {
  * @return string
  */
 function ggPrettyName($user, $limit = 30) {
-  if (count($user->field_first_name) == 0 OR count($user->field_last_name) == 0)
+  if (! isset( $user->field_first_name ) OR ! isset( $user->field_last_name ) OR count($user->field_first_name) == 0 OR count($user->field_last_name) == 0)
     $name = $user->name;
   else
     $name = sprintf('%s %s', $user->field_first_name['und'][0]['value'], $user->field_last_name['und'][0]['value']);
