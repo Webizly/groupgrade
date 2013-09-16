@@ -16,7 +16,7 @@ function groupgrade_tasks_view_specific($specific = '') {
   switch($specific)
   {
     case 'pending' :
-      $headers = array('Due Date', 'Type', 'Course', 'Assignment');
+      $headers = ['Due Date', 'Type', 'Course', 'Assignment'];
       
       $return .= sprintf('<p>%s</p>', t('These are the pending tasks you need to do. Click on a due date to open the task.'));
       if (count($tasks) > 0) : foreach($tasks as $task) :

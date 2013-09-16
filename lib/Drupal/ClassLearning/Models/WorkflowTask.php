@@ -377,11 +377,11 @@ class WorkflowTask extends ModelBase {
     switch ($status)
     {
       case 'pending' :
-        $query->whereIn('status', ['triggered', 'started']);
+        $query->whereIn('status', ['triggered', 'started', 'timed out']);
         break;
 
       case 'completed' :
-        $query->whereIn('status', ['complete', 'timed out']);
+        $query->whereIn('status', ['complete'/*, 'timed out'*/]);
         break;
 
       // No filter
