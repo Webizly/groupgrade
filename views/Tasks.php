@@ -1190,6 +1190,10 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     $items[] = [
       '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t('Correctness'), nl2br($grade->data['correctness']))
     ];
+
+    $items[] = [
+      '#markup' => '<hr />',
+    ];
   endforeach; endif;
 
   $items['grade'] = [
