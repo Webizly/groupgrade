@@ -105,7 +105,7 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
   endif;
 
   // Permissions
-  if ($task == NULL OR (! $admin AND ! in_array($task->status, ['triggered', 'started', 'complete']) ))
+  if ($task == NULL OR (! $admin AND ! in_array($task->status, ['triggered', 'started', 'complete', 'timed out']) ))
     return drupal_not_found();
 
   if ($task->status !== 'complete' AND (int) $task->user_id !== (int) $user->uid AND ! $admin)
