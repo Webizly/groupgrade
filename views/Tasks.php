@@ -1198,7 +1198,7 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
 
   $items['grade'] = [
     '#type' => 'textfield',
-    '#title' => 'Grade (0-50)',
+    '#title' => 'Grade (0-100)',
     '#required' => true,
     '#default_value' => (isset($task->data['grade'])) ? $task->data['grade'] : '',
   ];
