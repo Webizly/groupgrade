@@ -371,23 +371,25 @@ class WorkflowTask extends ModelBase {
    */
   public static function queryByStatus($user, $status = 'pending')
   {
-    $query = self::where('user_id', '=', $user)
-      ->orderBy('force_end', 'desc');
+    $query = self::where('user_id', '=', $user);
 
     switch ($status)
     {
       case 'pending' :
-        $query->whereIn('status', ['triggered', 'started', 'timed out']);
+        $query->whereIn('status', ['triggered', 'started', 'timed out'])
+          ->orderBy('force_end', 'asc');
         break;
 
       case 'completed' :
-        $query->whereIn('status', ['complete'/*, 'timed out'*/]);
+        $query->whereIn('status', ['complete'/*, 'timed out'*/])
+          ->orderBy('force_end', 'desc');
         break;
 
       // No filter
       case 'all' :
-        $query->where('status', '!=', 'not triggered');
-        $query->where('status', '!=', 'expired');
+        $query->where('status', '!=', 'not triggered')
+          ->where('status', '!=', 'expired')
+          ->orderBy('force_end', 'desc');
 
         break;
     }
