@@ -241,6 +241,7 @@ Course: %s
 Assignment: %s
 Task: %s
 Due: %s
+<a href="%s">Click here</a> to work on your task.
 
 Note: This will not affect other tasks that you have been assigned to, only the one shown above.
 
@@ -251,7 +252,8 @@ Thanks!',
           $courseSectionSemester,
           $assignment->assignment_title,
           $action_human,
-          $dueDate
+          $dueDate,
+          $taskURL
         );
         break;
 
