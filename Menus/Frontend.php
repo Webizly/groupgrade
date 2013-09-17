@@ -503,7 +503,7 @@ return array(
 
   'class/instructor/%/assignment/%/timed-out' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Timed Out',
+    'title' => 'Late Workflows',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
