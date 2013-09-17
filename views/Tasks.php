@@ -175,7 +175,7 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
   $params['workflow'] = $task->workflow()->first();
   
   if (! $admin)
-    $params['edit'] = ($task->status == 'triggered' OR $task->status == 'started');
+    $params['edit'] = ( in_array($task->status, ['triggered', 'started', 'timed out']) );
   else
     $params['edit'] = FALSE;
 
