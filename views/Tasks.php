@@ -1176,11 +1176,19 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
   // Previous grades
   if (count($grades) > 0) : foreach ($grades as $grade) :
     $items[] = [
-      '#markup' => sprintf('<h4>%s: %s</h4>', t('Grade'), $grade->data['grade'].'%')
+      '#markup' => sprintf('<h4>%s: %s</h4>', t('Completeness Grade'), $grade->data['completeness-grade'].'%')
     ];
 
     $items[] = [
-      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t('Grade Justification'), nl2br($grade->data['justification']))
+      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t('Completeness'), nl2br($grade->data['completeness']))
+    ];
+
+    $items[] = [
+      '#markup' => sprintf('<h4>%s: %s</h4>', t('Correctness Grade'), $grade->data['correctness-grade'].'%')
+    ];
+
+    $items[] = [
+      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t('Correctness'), nl2br($grade->data['correctness']))
     ];
   endforeach; endif;
 
