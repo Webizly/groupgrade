@@ -530,4 +530,19 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ),
+
+   'class/instructor/%/reports' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Reports',
+    
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_user',
+    'page arguments' => array(2),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
+  ),
 );

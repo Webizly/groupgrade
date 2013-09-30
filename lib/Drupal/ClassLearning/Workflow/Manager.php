@@ -227,23 +227,22 @@ Thanks!',
       case 'expired' :
         $subject = sprintf('[%s] %s %s %s %s',
           variable_get('site_name', 'CLASS Development'),
-          t('Removed from'),
+          t('Now late for'),
           $action_human,
-          t('task for'),
+          t('for for'),
           $courseSectionSemester
         );
 
         $body = sprintf('Hello,
 
-This is a notification from %s. Due to lateness, you have been removed from the following task, and you will no longer be allowed to work on it.
+This is a notification from %s. You are now marked as late for the task. You may still continue working on the task and submit it, though it will have 
+a late flag appended to it.
 
 Course: %s
 Assignment: %s
 Task: %s
 Due: %s
 <a href="%s">Click here</a> to work on your task.
-
-Note: This will not affect other tasks that you have been assigned to, only the one shown above.
 
 If you have any questions, please contact your instructor.
 
