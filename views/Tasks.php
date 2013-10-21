@@ -1339,3 +1339,59 @@ function gg_reassign_task_submit($form, &$form_state)
 
   return drupal_set_message('User reassigned and task re-triggered.');
 }
+
+/**
+ * Reassign to Contingency Tasks
+ */
+function groupgrade_reassign_to_contig() {
+  $pool = $removePool = [];
+  foreach ([
+    'omf3', 'dkp35', 'eak8', 'dcs24', 'dbh2', 'jrb42', 'eos2', 'amr48', 'mr429', 'mm57'
+  ] as $u) :
+    $pool[] =  user_load_by_name($u);
+  endforeach;
+
+  // Let's find the people we're going to remove
+  foreach ([
+    'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dvp35', 'scf22', 'dka8'
+  ] as $u) :
+    $removePool = user_load_by_name($u);
+  endforeach;
+
+  // Get all of their tasks and reassign them randomly
+  if ($removePool) : foreach ($removePool as $removeUser) :
+    $tasks = Task::where('user_id', $removeUser['uid'])
+      ->whereIn('status', ['not triggered', 'triggered', 'started', 'expired', 'timed out'])
+      ->get();
+
+    // They're not assigned any tasks that we're going to change
+    if (count($tasks) == 0) continue;
+
+    // Go though all assigned tasks
+    foreach ($tasks as $task)
+    {
+      $foundUser = false;
+      $i = 0;
+      while (! $foundUser) {
+        $i++;
+
+        // We cannot continue since we've gone through all the users
+        if ($i > count($pool))
+          throw new \Exception('Contingency exception: cannot assign user due to unavailable users.');
+
+        $reassignUser = $pool[array_rand($pool)];
+
+        // Let's check if the user we found is in the workflow
+        if (Task::where('workflow_id', $task->workflow_id)
+          ->where('user_id', $reassignUser['uid'])
+          ->count() == 0)
+          // They're not in the workflow!
+          $foundUser = TRUE;
+      }
+
+      // Now that we've found the user, let's reassign it
+      $task->user_id = $user;
+      $task->trigger(true);
+    }
+  endforeach; endif;
+}
