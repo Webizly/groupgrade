@@ -3,18 +3,19 @@ return array(
 // My Tasks/Classes/Assignment
   'class' => array(
     'title' => 'CLASS Learning System',
-    'page callback' => 'groupgrade_reassign_to_contig',
+    'page callback' => 'groupgrade_tasks_dashboard',
+    //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Tasks.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
     
     // Permissions
-    'access arguments' => array('access administration pages'), 
+    'access callback' => 'groupgrade_baseaccess',
   ),
 
   // My Tasks/Classes/Assignment
   'class/reallocate' => array(
     'title' => 'CLASS Learning System',
-    'page callback' => 'groupgrade_tasks_dashboard',
+    'page callback' => 'groupgrade_reassign_to_contig',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Tasks.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
