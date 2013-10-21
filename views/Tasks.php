@@ -1394,8 +1394,8 @@ function groupgrade_reassign_to_contig() {
       }
 
       // Now that we've found the user, let's reassign it
-      $task->user_id = $user;
-      $task->trigger(true);
+      //$task->user_id = $user;
+      //$task->trigger(true);
     }
   endforeach; endif;
   echo PHP_EOL.PHP_EOL."DONE!!!!";
