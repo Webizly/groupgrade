@@ -1347,16 +1347,14 @@ function groupgrade_reassign_to_contig() {
   $pool = $removePool = [];
   foreach ([
     'omf3', 'dkp35', 'eak8', 'dcs24', 'dbh2', 'jrb42', 'eos2', 'amr48', 'mr429', 'mm57'
-  ] as $u) :
+  ] as $u)
     $pool[] =  user_load_by_name($u);
-  endforeach;
 
   // Let's find the people we're going to remove
   foreach ([
     'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dvp35', 'scf22', 'dka8'
-  ] as $u) :
+  ] as $u)
     $removePool = user_load_by_name($u);
-  endforeach;
 
   // Get all of their tasks and reassign them randomly
   if ($removePool) : foreach ($removePool as $removeUser) :
