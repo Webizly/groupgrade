@@ -1358,9 +1358,9 @@ function groupgrade_reassign_to_contig() {
 
   // Get all of their tasks and reassign them randomly
   if ($removePool) : foreach ($removePool as $removeUser) :
-    echo "Removing tasks for ".$removeUser['name'].PHP_EOL;
+    echo "Removing tasks for ".$removeUser->name.PHP_EOL;
 
-    $tasks = Task::where('user_id', $removeUser['uid'])
+    $tasks = Task::where('user_id', $removeUser->uid)
       ->whereIn('status', ['not triggered', 'triggered', 'started', 'expired', 'timed out'])
       ->get();
 
@@ -1387,7 +1387,7 @@ function groupgrade_reassign_to_contig() {
 
         // Let's check if the user we found is in the workflow
         if (Task::where('workflow_id', $task->workflow_id)
-          ->where('user_id', $reassignUser['uid'])
+          ->where('user_id', $reassignUser->uid)
           ->count() == 0)
           // They're not in the workflow!
           $foundUser = TRUE;
