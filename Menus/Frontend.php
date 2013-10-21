@@ -19,9 +19,6 @@ return array(
     //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Tasks.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
-    
-    // Permissions
-    'access callback' => 'groupgrade_baseaccess',
   ),
 
   // Default Parent Task
