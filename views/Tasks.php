@@ -1399,4 +1399,5 @@ function groupgrade_reassign_to_contig() {
     }
   endforeach; endif;
   echo PHP_EOL.PHP_EOL."DONE!!!!";
+  exit;
 }
