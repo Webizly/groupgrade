@@ -1358,16 +1358,22 @@ function groupgrade_reassign_to_contig() {
 
   // Get all of their tasks and reassign them randomly
   if ($removePool) : foreach ($removePool as $removeUser) :
+    echo "Removing tasks for ".$removeUser['name'].PHP_EOL;
+
     $tasks = Task::where('user_id', $removeUser['uid'])
       ->whereIn('status', ['not triggered', 'triggered', 'started', 'expired', 'timed out'])
       ->get();
 
     // They're not assigned any tasks that we're going to change
-    if (count($tasks) == 0) continue;
+    if (count($tasks) == 0) :
+      echo "No tasks to remove!".PHP_EOL;
+      continue;
+    endif;
 
     // Go though all assigned tasks
     foreach ($tasks as $task)
     {
+      echo "Removing task ".$task->id.PHP_EOL;
       $foundUser = false;
       $i = 0;
       while (! $foundUser) {
@@ -1392,4 +1398,5 @@ function groupgrade_reassign_to_contig() {
       $task->trigger(true);
     }
   endforeach; endif;
+  echo PHP_EOL.PHP_EOL."DONE!!!!";
 }
