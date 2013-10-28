@@ -87,6 +87,42 @@ function groupgrade_tasks_view_specific($specific = '') {
   return $return;
 }
 
+function groupgrade_user_grades() {
+  global $user;
+  $return = '';
+
+  // Retrieve all of their workflows where they are assigned to "create solution"
+  $tasks = Task::where('user_id', $user->uid)
+    ->whereType('create solution')
+    ->get();
+
+  $rows = [];
+
+  foreach ($tasks as $task) :
+    $assignment = $task->assignment()->first();
+    $asec = $task->assignmentSection()->first();
+    $section = $asec->section()->first();
+    $course = $section->course()->first();
+
+    $workflow = $task->workflow()->first();
+    $grade = (isset($workflow->data->grade)) ? ((int) $workflow->data->grade).'%' : 'n/a';
+    $rows[] = [
+      sprintf('%s %s', $course->course_name, $section->section_name),
+      $assignment->assignment_title,
+      $grade
+    ];
+
+  endforeach;
+  
+  $return .= theme('table', array(
+    'header' => ['Course', 'Assignment', 'Grade Recieved'],
+    'rows' => $rows,
+    'attributes' => ['width' => '100%'],
+    'empty' => 'No grades recieved.',
+  ));
+  return $return;
+}
+
 /**
  * View a specific task
  *

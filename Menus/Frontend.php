@@ -19,6 +19,9 @@ return array(
     //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Tasks.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access callback' => 'groupgrade_baseaccess',
   ),
 
   // Default Parent Task
@@ -110,6 +113,18 @@ return array(
     'page arguments' => array('all'),
     'access callback' => TRUE,
     'weight' => 3,
+  ),
+
+  'class/default/grades' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Grades',
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_user_grades',
+    'page arguments' => [],
+    'access callback' => TRUE,
+    'weight' => 4,
   ),
 
   'class/classes/first' => array(
