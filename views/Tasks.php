@@ -105,7 +105,7 @@ function groupgrade_user_grades() {
     $course = $section->course()->first();
 
     $workflow = $task->workflow()->first();
-    $grade = (isset($workflow->data->grade)) ? ((int) $workflow->data->grade).'%' : 'n/a';
+    $grade = (isset($workflow->data['grade'])) ? ((int) $workflow->data['grade']).'%' : 'n/a';
     $rows[] = [
       sprintf('%s %s', $course->course_name, $section->section_name),
       $assignment->assignment_title,
