@@ -108,7 +108,7 @@ function groupgrade_user_grades() {
     $grade = (isset($workflow->data['grade'])) ? ((int) $workflow->data['grade']).'%' : 'n/a';
     $rows[] = [
       sprintf('%s %s', $course->course_name, $section->section_name),
-      $assignment->assignment_title,
+      sprintf('<a href="%s">%s</a>', url('class/workflow/'.$task->workflow_id), $assignment->assignment_title),
       $grade
     ];
 
