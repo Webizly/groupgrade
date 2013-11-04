@@ -1382,16 +1382,16 @@ function gg_reassign_task_submit($form, &$form_state)
 function groupgrade_reassign_to_contig() {
   $pool = $removePool = [];
   foreach ([
-    'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dbp35', 'scf22', 'dka8'
+    'omf3', 'dkp35', 'eak8', 'dcs24', 'dbh2', 'jrb42', 'eos2', 'amr48', 'mr429', 'mm57'
   ] as $u)
     $pool[] =  user_load_by_name($u);
 
   // Let's find the people we're going to remove
   foreach ([
-    'omf3', 'dkp35', 'eak8', 'dcs24', 'dbh2', 'jrb42', 'eos2', 'amr48', 'mr429', 'mm57'
+    'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dbp35', 'scf22', 'dka8'
   ] as $u)
-    $removePool = user_load_by_name($u);
-
+    $removePool[] = user_load_by_name($u);
+  var_dump($removePool);exit;
   // Get all of their tasks and reassign them randomly
   if ($removePool) : foreach ($removePool as $removeUser) :
     echo "Removing tasks for ".$removeUser->name.PHP_EOL;
@@ -1434,8 +1434,7 @@ function groupgrade_reassign_to_contig() {
       // We're going to reassign all tasks assigned to this user in the workflow
       Task::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
-        ->update(['user_id', $reassignUser->uid])
-        ->save();
+        ->update(['user_id' => $reassignUser->uid]);
     }
   endforeach; endif;
   echo PHP_EOL.PHP_EOL."DONE!!!!";
