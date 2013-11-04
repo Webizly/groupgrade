@@ -1434,7 +1434,7 @@ function groupgrade_reassign_to_contig() {
       // We're going to reassign all tasks assigned to this user in the workflow
       Task::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
-        ->where('status', ['triggered', 'started', 'timed out'])
+        ->whereIn('status', ['triggered', 'started', 'timed out'])
         ->update([
           'user_id' => $reassignUser->uid,
           'status' => 'triggered',
@@ -1445,7 +1445,7 @@ function groupgrade_reassign_to_contig() {
         // Different for non-triggered already
         Task::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
-        ->whereIn('status', 'not triggered')
+        ->where('status', 'not triggered')
         ->update([
           'user_id' => $reassignUser->uid,
         ]);
