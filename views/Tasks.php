@@ -1391,14 +1391,14 @@ function groupgrade_reassign_to_contig() {
     'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dbp35', 'scf22', 'dka8'
   ] as $u)
     $removePool[] = user_load_by_name($u);
-  
+
   // Get all of their tasks and reassign them randomly
   if ($removePool) : foreach ($removePool as $removeUser) :
     echo "Removing tasks for ".$removeUser->name.PHP_EOL;
 
     $tasks = Task::where('user_id', $removeUser->uid)
       ->groupBy('workflow_id')
-      ->whereIn('status', ['not triggered', 'triggered', 'started', 'expired', 'timed out'])
+      ->whereIn('status', ['not triggered', 'triggered', 'started', 'timed out'])
       ->get();
 
     // They're not assigned any tasks that we're going to change
@@ -1434,11 +1434,20 @@ function groupgrade_reassign_to_contig() {
       // We're going to reassign all tasks assigned to this user in the workflow
       Task::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
+        ->whereIn('status', ['triggered', 'started', 'timed out'])
         ->update([
           'user_id' => $reassignUser->uid,
           'status' => 'triggered',
           'start' => Carbon\Carbon::now()->toDateTimeString(),
          // 'force_end' => $this->timeoutTime()->toDateTimeString()
+        ]);
+
+        // Different for non-triggered already
+        Task::where('user_id', $removeUser->uid)
+        ->where('workflow_id', $task->workflow_id)
+        ->whereIn('status', 'not triggered')
+        ->update([
+          'user_id' => $reassignUser->uid,
         ]);
     }
   endforeach; endif;
