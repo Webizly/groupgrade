@@ -1382,13 +1382,13 @@ function gg_reassign_task_submit($form, &$form_state)
 function groupgrade_reassign_to_contig() {
   $pool = $removePool = [];
   foreach ([
-    'omf3', 'dkp35', 'eak8', 'dcs24', 'dbh2', 'jrb42', 'eos2', 'amr48', 'mr429', 'mm57'
+    'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dbp35', 'scf22', 'dka8'
   ] as $u)
     $pool[] =  user_load_by_name($u);
 
   // Let's find the people we're going to remove
   foreach ([
-    'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dvp35', 'scf22', 'dka8'
+    'omf3', 'dkp35', 'eak8', 'dcs24', 'dbh2', 'jrb42', 'eos2', 'amr48', 'mr429', 'mm57'
   ] as $u)
     $removePool = user_load_by_name($u);
 
@@ -1430,8 +1430,8 @@ function groupgrade_reassign_to_contig() {
       }
 
       // Now that we've found the user, let's reassign it
-      //$task->user_id = $user;
-      //$task->trigger(true);
+      $task->user_id = $user;
+      $task->trigger(true);
     }
   endforeach; endif;
   echo PHP_EOL.PHP_EOL."DONE!!!!";
