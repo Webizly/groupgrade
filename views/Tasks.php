@@ -1397,6 +1397,7 @@ function groupgrade_reassign_to_contig() {
     echo "Removing tasks for ".$removeUser->name.PHP_EOL;
 
     $tasks = Task::where('user_id', $removeUser->uid)
+      ->groupBy('workflow_id')
       ->whereIn('status', ['not triggered', 'triggered', 'started', 'expired', 'timed out'])
       ->get();
 
@@ -1430,8 +1431,11 @@ function groupgrade_reassign_to_contig() {
       }
 
       // Now that we've found the user, let's reassign it
-      $task->user_id = $user;
-      $task->trigger(true);
+      // We're going to reassign all tasks assigned to this user in the workflow
+      Task::where('user_id', $removeUser->uid)
+        ->where('workflow_id', $task->workflow_id)
+        ->update(['user_id', $reassignUser->uid])
+        ->save();
     }
   endforeach; endif;
   echo PHP_EOL.PHP_EOL."DONE!!!!";
