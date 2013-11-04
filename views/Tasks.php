@@ -1434,7 +1434,12 @@ function groupgrade_reassign_to_contig() {
       // We're going to reassign all tasks assigned to this user in the workflow
       Task::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
-        ->update(['user_id' => $reassignUser->uid]);
+        ->update([
+          'user_id' => $reassignUser->uid,
+          'status' => 'triggered',
+          'start' => Carbon\Carbon::now()->toDateTimeString(),
+         // 'force_end' => $this->timeoutTime()->toDateTimeString()
+        ]);
     }
   endforeach; endif;
   echo PHP_EOL.PHP_EOL."DONE!!!!";
