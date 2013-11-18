@@ -21,7 +21,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
     
     // Permissions
-    'access callback' => 'groupgrade_baseaccess',
+    'access arguments' => array('access administration pages'), 
   ),
 
   // Default Parent Task
