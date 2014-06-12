@@ -116,6 +116,32 @@ class Allocator {
   }
 
   /**
+   * Array shifter
+   * Shifts all data in an array to the left by one spot.
+   * Not too great, but good enough for now!
+   * @return array
+   */
+  public function shift($a){
+
+    //If there's only 1 element, don't fool around
+    if(count($a) == 1)
+      return $a;
+
+    //Copy the first entry
+    $rememberMe = $a[0];
+
+    //Let's shift that data!
+    for($i = 0; $i < count($a) - 1; $i++) :
+      $a[$i] = $a[$i + 1];
+    endfor;
+    
+    //Set the last element to the first element of the old array
+    $a[count($a) - 1] = $rememberMe;
+
+    return $a;
+  }
+
+  /**
    * Grunt work to assign users
    *
    * It'd be best to run `assignmentRun()` as that method automatically detects errors
@@ -137,18 +163,34 @@ class Allocator {
     if (count($this->workflows) == 0)
       throw new AllocatorException('No workflows to allocate to.');
 
+    //ONLY GOOD FOR USE CASE 1A (is it?)
+    $randomizedPool = null;
+
     // Now let's find the assignes
     foreach($this->roles as $role_id => $role_data) :
       $rolePool = $this->getPool($role_data['rules']['pool']['name'])->all();
-
       // Let's keep this very random
-      $rolePool = shuffle_assoc($rolePool);
+      if(!isset($randomizedPool)) :
+	print "<br><br>Role Pool<br>";
+	var_export($rolePool);
+	print "<br>";
+        $randomizedPool = shuffle_alloc($rolePool);
+	//shuffle($randomizedPool); Destroys keys!
+	endif;
 
       // Add it to a queue
-      $this->roles_queue[$role_id] = $rolePool;
-    endforeach;
-
+      // Very amateurish, but time is limited!
+      // If this isn't an instructor pool, add our randomized pool. Otherwise add the rolePool.
+      if($role_data['rules']['pool']['name'] != 'instructor')
+        $this->roles_queue[$role_id] = $randomizedPool;
+      else
+        $this->roles_queue[$role_id] = $rolePool;
+	watchdog(WATCHDOG_INFO,"ROLES QUEUE" . print_r($this->roles_queue),$this->roles_queue);
+          endforeach;
+    
+    $workflowCount = -1;
     // Go though the workflows
+    $original_queue = $this->roles_queue;
     foreach($this->workflows as $workflow_id => $workflow) :
       // Loop though each role inside of the workflow
       // 
@@ -156,6 +198,17 @@ class Allocator {
       // 
       // Can join: assign and remove from queue
       // Can't join: point to next user in queue
+      $shiftCount = 0;
+      //How many instances of the workflow have we been through?
+      //Used for iteration
+      $workflowCount++;
+      $this->roles_queue = $original_queue;
+      $problemCreator = null;
+      $solutionCreator = null;
+ 
+      //We need to set a temporary variable so the iteration doesn't start skipping people
+      $workflowStep = $workflowCount;
+
       foreach($workflow as $role_id => $ignore) :
         // Just check if it's already assigned to be sure
         if ($ignore !== NULL)
@@ -163,32 +216,73 @@ class Allocator {
         
         $currentRole = $this->roles[$role_id];
 
-        // If they aren't pulling from a list, they're going to be taking random items from a list
-        if (! $currentRole['rules']['pool']['pull after']) :
-          $this->roles_queue[$role_id] = shuffle_assoc($this->roles_queue[$role_id]);
-        endif;
+	for($i = 0; $i < $shiftCount + $workflowStep; $i++) :
+          $this->roles_queue[$role_id] = $this->shift($this->roles_queue[$role_id]);
+	endfor;
 
+	//Prevent future skipping
+	//$workflowStep = 0;
+
+        // If they aren't pulling from a list, they're going to be taking random items from a list
+        //if (! $currentRole['rules']['pool']['pull after']) :
+          //$this->roles_queue[$role_id] = shuffle_assoc($this->roles_queue[$role_id]);
+        //endif;
+	
+	//Let's forget about aliases for now...
+	/*
         // See if the task instance has a workflow alias
         if ($this->workflowTaskHasAlias($role_id, $currentRole, $this->workflows[$workflow_id]))
         {
           // Assign the user based upon the task alias
           $this->workflows[$workflow_id][$role_id] = $this->assignTaskAlias($role_id, $currentRole, $this->workflows[$workflow_id]);
-        } else {
+        } else {*/
           // Start from the beginning of the queue
           foreach($this->roles_queue[$role_id] as $queue_id => $user) :
             // They're not a match -- skip to the next user in queue
-            if ($this->canEnterWorkflow($user, $this->workflows[$workflow_id], $role_id))
-            {
+            //if ($this->canEnterWorkflow($user, $this->workflows[$workflow_id], $role_id))
+            //{
+
+	      //Set up "aliases"
+	      //The first grade solution task
+	      if($currentRole['name'] == 'grade solution' && isset($problemCreator)) :
+		$this->workflows[$workflow_id][$role_id] = $problemCreator;
+		unset($problemCreator);
+		break;
+	      endif;
+
+	       //The dispute task
+	      if($currentRole['name'] == 'dispute' && isset($solutionCreator)) :
+		$this->workflows[$workflow_id][$role_id] = $solutionCreator;
+		unset($solutionCreator);
+		break;
+	      endif;
+
+
+	      //Remember certain roles for later
+              if($currentRole['name'] == 'create problem')
+		$problemCreator = $user;
+	      
+	      if($currentRole['name'] == 'create solution')
+	        $solutionCreator = $user;
+
+	      
+
               $this->workflows[$workflow_id][$role_id] = $user;
+	      if($this->roles[$role_id]['rules']['pool']['name'] != 'instructor')
+	        $shiftCount++;
+
+	      print "<br><br><br>HELLOHELLO<br><br><br>";
+	      print "USER " . $user . " IS BEING ADDED TO THE WORKFLOW NUMBER " . $workflow_id . " FOR TASK NUMBER " . $role_id . ". THE TASK NAME IS " . $currentRole['name'] . $this->roles[$role_id]['rules']['pool']['name'] . ".";
+	      print "<br><br><br>HELLOHELLO<br><br><br>";
 
               // Should they be removed from the pool?
-              if ($currentRole['rules']['pool']['pull after'])
-                unset($this->roles_queue[$role_id][$queue_id]);
+              //if ($currentRole['rules']['pool']['pull after'])
+               // unset($this->roles_queue[$role_id][$queue_id]);
 
               break;
-            }
+            //}
           endforeach;
-        }
+       // }
         endforeach;
       endforeach;
   }
@@ -601,6 +695,17 @@ class Allocator {
    */
   public function dump()
   {
+
+  print "<br><br><br>DEBUGGING<br>";
+  print "ROLES<br>";
+  print_r($this->roles);
+  print "<br>ROLE POOL<br>";
+  foreach($this->roles as $role_id => $role_data) :
+    print_r($this->getPool($role_data['rules']['pool']['name'])->all());
+  endforeach;
+  print "<br>TASK INSTANCE STORAGE<br>";
+  print_r($this->taskInstanceStorage);
+
     ?>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script type="text/javascript">
