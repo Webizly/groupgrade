@@ -7,6 +7,7 @@ use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Workflow,
   Drupal\ClassLearning\Models\WorkflowTask,
   Drupal\ClassLearning\Models\AssignmentSection,
+  Drupal\ClassLearning\Models\Assignment,
 
   Drupal\ClassLearning\Workflow\Allocator,
   Drupal\ClassLearning\Workflow\TaskFactory,
@@ -337,16 +338,21 @@ Thanks!',
   {
     $workflows = [];
 
+	//This might not be the best choice of implementation, but query assignment table to get assignment_usecase
+	$assignment = Assignment::where('assignment_id', '=', $a->assignment_id)
+	  ->first(); 
+
     $users = SectionUsers::where('section_id', '=', $a->section_id)
       ->where('su_status', '=', 'active')
       ->where('su_role', '=', 'student')
       ->get();
 
+
     // We're just creating a workflow for each user
     // They're not actually assigned to this workflow
     foreach($users as $null) :
       $w = new Workflow;
-      $w->type = 'one_a';
+      $w->type = $assignment->assignment_usecase;
       $w->assignment_id = $a->asec_id;
       $w->workflow_start = Carbon::now()->toDateTimeString();
       $w->save();
@@ -361,7 +367,7 @@ Thanks!',
     $allocator = new Allocator();
 
     // Add the roles
-    foreach (self::getTasks() as $role_name => $role)
+    foreach (self::getTasks($assignment->assignment_usecase) as $role_name => $role)
     {
       if (! isset($role['internal']) OR ! $role['internal']) :
         $count = 1;
@@ -369,8 +375,15 @@ Thanks!',
         if (isset($role['count']))
           $count = (int) $role['count'];
 
+		// With the new 'behavior' feature we're adding, this is bound to cause problems.
+		$n = null;
+		if(isset($role['behavior']))
+			$n = $role['behavior'];
+		else
+			$n = $role_name;
+		
         for ($i = 0; $i < $count; $i++)
-          $allocator->createRole($role_name, $role);
+          $allocator->createRole($n, $role);
       endif;
     }
 
@@ -389,7 +402,7 @@ Thanks!',
       $allocator->addWorkflow($workflow->workflow_id);
 
     $run = $allocator->assignmentRun();
-    $allocator->dump();
+    //$allocator->dump();
 
     // Now we have to intepert the response of the allocator
     $taskInstances = $run->getTaskInstanceStorage();
@@ -427,7 +440,7 @@ Thanks!',
    */
   protected static function triggerTaskCreation($workflow, $assignment, $users)
   {
-    $factory = new TaskFactory($workflow, self::getTasks());
+    $factory = new TaskFactory($workflow, self::getTasks($workflow->type));
     $factory->createTasks();
   }
 
@@ -436,213 +449,443 @@ Thanks!',
    *
    * @return array
    */
-  public static function getTasks()
+  public static function getTasks($type)
   {
-    return [
-      'create problem' => [
-        'duration' => 3,
-        'trigger' => [
-          [
-            'type' => 'first task trigger',
-          ]
-        ],
-
-        'user alias' => 'grade solution',
-
-        'instructions' => 'Read the assignment instructions and enter '
-          .'a problem in the box below. Make your problem as clear as '
-          .'possible so the person solving it will understand what you mean. '
-          .'This solution is graded out of 100 points.',
-      ],
-
-      'edit problem' => [
-        'pool' => [
-          'name' => 'instructor',
-          'pull after' => false,
-        ],
-
-        'duration' => 2,
-
-        'trigger' => [
-          [
-            'type' => 'reference task status',
-            'task type' => 'create problem',
-            'task status' => 'complete',
-          ],
-        ],
-
-        'reference task' => 'create problem',
-        'instructions' => 'Rephrase the problem (if necessary) so it is '
-          .'appropriate to the assignment and clear to the person solving '
-          .'it. The solver and graders will only see your edited version, not '
-          .'the original version. (Others not involved in solving or grading '
-          .'will see both the original and edited versions.) You can also '
-          .'leave a comment to explain any rephrasing.',
-      ],
-
-      'create solution' => [
-        'duration' => 3,
-        'trigger' => [
-          [
-            'type' => 'reference task status',
-            'task type' => 'edit problem',
-            'task status' => 'complete',
-          ],
-        ],
-
-        'user alias' => 'dispute',
-
-        'reference task' => 'edit problem',
-        'instructions' => 'Solve the problem as fully and as clearly as you '
-          .'can. Explain your reasoning (if necessary).',
-      ],
-
-      'grade solution' => [
-        'count' => 2,
-        'duration' => 3,
-        'user alias' => 'create problem',
-
-        // This configuration variable defines if the role of the grade solution
-        // should take over multiple instances of the task instance.
-        // 
-        // If there are two instances of 'grade solution', setting this to true will
-        // make sure that only one get's an alias. Setting it to false will make it
-        // it an alias for all the roles.
-        'user alias all types' => true,
-
-        'trigger' => [
-          [
-            'type' => 'reference task status',
-            'task type' => 'create solution',
-            'task status' => 'complete',
-          ],
-        ],
-
-        'reference task' => 'create solution',
-        'instructions' => 'Grade the solution to the specific problem shown '
-          .'above. (There are several different problems so be sure to read '
-          .'the one being solved here.) Each grade has several parts. Give '
-          .'a score and an explanation of that score for each part of the '
-          .'grade. Your explanation should be detailed, and several sentences '
-          .'long.',
-      ],
-
-      // Resolve the grades
-      'resolve grades' => [
-        'internal' => true,
-
-        // Default value
-        'value' => true,
-
-        // Trigger once all the grades are submitted
-        'trigger' => [
-          [
-            'type' => 'reference task status',
-            'task type' => 'grade solution',
-            'task status' => 'complete',
-          ],
-        ],
-
-        'reference task' => 'grade solution',
-      ],
-
-      // Grades are fine, store them in the workflow
-      'grades ok' => [
-        'internal' => true,
-        'trigger' => [
-          [
-            'type' => 'compare value of task',
-            'task type' => 'resolve grades',
-            'compare value' => true,
-          ]
-        ],
-
-        'reference task' => 'grade solution',
-        
-        // Expire if grades are out of range
-        'expire' => [
-          [
-            'type' => 'compare value of task',
-            'task type' => 'resolve grades',
-            'compare value' => false,
-          ]
-        ],
-      ],
-
-      // Grades are out of a range and we need a second grader
-      'resolution grader' => [
-        'duration' => 3,
-        'trigger' => [
-          [
-            'type' => 'compare value of task',
-            'task type' => 'resolve grades',
-            'compare value' => false,
-          ]
-        ],
-
-        // Expire if grades are in range
-        'expire' => [
-          [
-            'type' => 'compare value of task',
-            'task type' => 'resolve grades',
-            'compare value' => true,
-          ]
-        ],
-
-        'reference task' => 'create solution',
-        'instructions' => 'Because the regular graders did give the same '
-          .'grade, please resolve the grade disagreement. Assign your '
-          .'own score and justification for each part of the grade, and also '
-          .'please provide an explanation.',
-      ],
-
-      // Dispute grades
-      // This step gives the option to dispute the grade they have recieved on their
-      // soln to yet-another-grader
-      'dispute' => [
-        'duration' => 2,
-        'user alias' => 'create solution',
-
-        // Trigger this if one of the tasks "resolution grader" or
-        // "grades ok" is complete.
-        'trigger' => [
-          [
-            'type' => 'check tasks for status',
-            'task types' => ['resolution grader', 'grades ok'],
-            'task status' => 'complete'
-          ],
-        ],
-
-        'instructions' => 'You have the option to dispute your grade. To do '
-          .'so, you need to fully grade your own solution. Assign your own '
-          .'score and justification for each part of the grade. You must also '
-          .'explain why the other graders were wrong.',
-      ],
-
-      // Resolve a dispute and end the workflow
-      // Trigger only if the "dispute" task has a value of true
-      'resolve dispute' => [
-        'pool' => [
-          'name' => 'instructor',
-          'pull after' => false,
-        ],
-
-        'duration' => 2,
-
-        'trigger' => [
-          [
-            'type' => 'compare value of task',
-            'task type' => 'dispute',
-            'compare value' => true,
-          ],
-        ],
-
-        'instructions' => 'The problem solver is disputing his or her grade. '
-          .'You need to provide the final grade. Assign a final score with '
-          .'justification for each part of the grade, and also please provide '
-          .'an explanation.',
-      ],
-    ];
+	/*
+	$sql = "select data from pla_usecase where type = :type";
+	$query = db_query($sql, array(':type' => $type));
+	
+	$result = $query->fetchAssoc();
+	//watchdog(WATCHDOG_INFO, 'What is stuff? ' . print_r(unserialize($result['data'])));
+	
+	return unserialize($result['data']);
+	*/
+	
+  	//In the future, this should query the database for sets of tasks, but for now...
+  	
+  	switch($type){
+		case 'one_a':
+				return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => 'Read the assignment instructions and enter '
+	          .'a problem in the box below. Make your problem as clear as '
+	          .'possible so the person solving it will understand what you mean. '
+	          .'This solution is graded out of 100 points.',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' => 'Rephrase the problem (if necessary) so it is '
+	          .'appropriate to the assignment and clear to the person solving '
+	          .'it. The solver and graders will only see your edited version, not '
+	          .'the original version. (Others not involved in solving or grading '
+	          .'will see both the original and edited versions.) You can also '
+	          .'leave a comment to explain any rephrasing.',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => 'Solve the problem as fully and as clearly as you '
+	          .'can. Explain your reasoning (if necessary).',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => 'Grade the solution to the specific problem shown '
+	          .'above. (There are several different problems so be sure to read '
+	          .'the one being solved here.) Each grade has several parts. Give '
+	          .'a score and an explanation of that score for each part of the '
+	          .'grade. Your explanation should be detailed, and several sentences '
+	          .'long.',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => 'Because the regular graders did give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and also '
+	          .'please provide an explanation.',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => 'You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.',
+	      ],
+	    ];
+		
+		case 'special':
+			return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'task reference id' => 100,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => 'Hickory Dickory Dock!',
+	      ],
+	
+		
+	      //Test the new trigger
+		  'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false, //Not used anymore?
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference unique task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	            'task reference id' => '100',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' => 'My name is Edit Problem',
+	      ],
+	
+	      //Test the new trigger
+		  'edit carrots' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false, //Not used anymore?
+	        ],
+	
+			'behavior' => 'edit problem',
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference unique task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	            'task reference id' => '100',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' => 'My name is Edit Carrots',
+	      ],
+	      
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => 'Hickory Dickory Dock!',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => 'Hickory Dickory Dock!',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => 'Hickory Dickory Dock!',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => 'YHickory Dickory Dock!',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'Hickory Dickory Dock!',
+	      ],
+	    ];
+		
+  	}
+    
   }
 
   /**

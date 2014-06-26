@@ -185,7 +185,7 @@ class Allocator {
         $this->roles_queue[$role_id] = $randomizedPool;
       else
         $this->roles_queue[$role_id] = $rolePool;
-	//watchdog(WATCHDOG_INFO,"ROLES QUEUE" . print_r($this->roles_queue),$this->roles_queue);
+	watchdog(WATCHDOG_INFO,"ROLES QUEUE" . print_r($this->roles_queue),$this->roles_queue);
           endforeach;
     
     $workflowCount = -1;

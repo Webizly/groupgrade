@@ -538,7 +538,9 @@ function groupgrade_cron() {
   // Check the timeout of the tasks
   WorkflowManager::checkTimeoutTasks();
 
-  }
+  echo 'OK';
+
+}
 
 if (! function_exists('shuffle_assoc')) :
   /**

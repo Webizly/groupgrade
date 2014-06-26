@@ -59,11 +59,17 @@ class TaskFactory {
         $t->workflow_id = $this->workflow->workflow_id;
 
         // We're not assigning users at this stage
-        $t->type = $name;
+        $n = null;
+        if(isset($task['behavior']))
+        	$n = $task['behavior'];
+		else
+			$n = $name;
+		
+		$t->type = $n;
         $t->status = 'not triggered';
         $t->start = NULL;
 
-        $t->settings = $this->tasks[$name];
+        $t->settings = $this->tasks[$n];
         $t->data = [];
         $t->save();
       endfor;

@@ -1180,7 +1180,6 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
   ];
 
   if (! $params['edit']) :
-/* Old content
     $items['grade lb'] = [
       '#markup' => sprintf('<strong>%s:</strong>', t('Grade')),
     ];
@@ -1204,50 +1203,7 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
       '#type' => 'item',
       '#markup' => (isset($task->data['comment'])) ? nl2br($task->data['comment']) : '',
     ];
-*/
 
-	//Completeness Grade
-	$items['completeness-grade lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Completeness Grade')),
-    ];
-    $items['completeness-grade'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
-    ];
-	//Completeness Justification
-	$items['completeness lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Completeness Justification')),
-    ];
-    $items['completeness'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
-    ];
-
-	//Correctness Grade
-	$items['correctness-grade lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Correctness Grade')),
-    ];
-    $items['correctness-grade'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
-    ];
-	//Correctness Justification
-	$items['correctness lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Correctness Justification')),
-    ];
-    $items['correctness'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
-    ];
-
-	//Why was it resolved this way?
-    $items['comment lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Why was it resolved it this way?')),
-    ];
-    $items['comment'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['comment'])) ? nl2br($task->data['comment']) : '',
-    ];
     return $items;
   endif;
 
@@ -1278,8 +1234,6 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
       '#markup' => '<hr />',
     ];
   endforeach; endif;
-/*
- * Old content
 
   $items['grade'] = [
     '#type' => 'textfield',
@@ -1294,39 +1248,6 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     '#required' => true,
     '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
   ];
-*/
-
-//New content
-
-$items['completeness-grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Grade how complete the solution is. (0-50)',
-    '#required' => true,
-    '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
-  ];
-
-  $items['completeness'] = [
-    '#type' => 'textarea',
-    '#title' => 'Justify your grade of the solution\'s completeness',
-    '#required' => true,
-    '#default_value' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
-  ];
-
-  $items['correctness-grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Grade how correct the solution is. (0-50)',
-    '#required' => true,
-    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
-  ];
-
-  $items['correctness'] = [
-    '#type' => 'textarea',
-    '#title' => 'Justify your grade of the solution\'s correctness',
-    '#required' => true,
-    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
-  ];
-
-//End of new content
 
   $items['comment'] = [
     '#type' => 'textarea',
@@ -1355,30 +1276,14 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
     
-/* Old code
   $grade = (int) $form['grade']['#value'];
   if ($grade !== abs($grade) OR $grade < 0 OR $grade > 100)
     return drupal_set_message(t('Invalid grade: '.$grade));
-*/
-
-  //Grab values from the form
-  $completeGrade = (int) $form['completeness-grade']['#value'];
-  //This code works, but the grade is still submitted anyway. Just a reminder...
-  if ($completeGrade !== abs($completeGrade) OR $completeGrade < 0 OR $completeGrade > 100)
-    return drupal_set_message(t('Invalid grade: '.$completeGrade));
   
-  $correctGrade = (int) $form['correctness-grade']['#value'];
-  //This code works, but the grade is still submitted anyway. Just a reminder...
-  if ($correctGrade !== abs($correctGrade) OR $correctGrade < 0 OR $correctGrade > 100)
-    return drupal_set_message(t('Invalid grade: '.$correctGrade));
-
-
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
   $task->setDataAttribute([
-    'completeness-grade' =>  $completeGrade,
-    'completeness' => $form['completeness']['#value'],
-    'correctness-grade' => $correctGrade,
-    'correctness' => $form['correctness']['#value'],
+    'grade' =>  $grade,
+    'justification' => $form['justification']['#value'],
     'comment' => $form['comment']['#value']
   ]);
 
@@ -1389,7 +1294,7 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
     $task->complete();
 
     $workflow = $task->workflow()->first();
-    $workflow->setData('grade', $completeGrade + $correctGrade);
+    $workflow->setData('grade', $grade);
     $workflow->save();
   endif;
   

@@ -152,6 +152,40 @@ class WorkflowTask extends ModelBase {
 
         break;
 
+	  // Searches for ALL task types that match a unique id and compares the status.
+	  // Very similar to condition above, just altered slightly to support more complicated, non-linear usecases.
+	  case 'reference unique task status':
+		if (! isset($condition['task status']))
+          throw new ModelException('Condition not defined for "type of tasks status"', 500, null, $condition);
+
+        if (! isset($condition['task type']))
+          throw new ModelException('Condition not defined for "type of tasks status"', 500, null, $condition);
+        
+		if (! isset($condition['task reference id']))
+		  throw new ModelException('Task reference id is not set!', 500, null, $condition);
+		
+        // Query the other workflow tasks
+        $tasks = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+          ->whereType($condition['task type'])
+          ->get();
+
+        // If there are no tasks found, the conditions cannot be met
+        // They need to all meet a status to meet the conditions
+        if ($tasks == NULL)
+          return FALSE;
+
+        foreach ($tasks as $task) :
+          // Correct status
+          if ($task->status == $condition['task status'] && $task->settings['task reference id'] == $condition['task reference id'])
+		    // We found what we're looking for 
+            return TRUE;
+        endforeach;
+		
+		// We didn't find what we were looking for...
+		return FALSE;
+		
+	  break;
+
       // Check the value of another task and see if it's not (or is) in a certain range
       // Reference the other task by the task type
       case 'value of task out of range' :
@@ -308,7 +342,16 @@ class WorkflowTask extends ModelBase {
     // Notify user
     WorkflowManager::notifyUser('expired', $this);
 
-    $this->save();
+	//Is this a dispute? If so, set it to complete.
+	if($this->type == 'dispute'){
+		//Not disputing!
+		$this->setData('value', false);
+		$this->save();
+		$this->complete();
+	}
+	else
+		//If not, just save.
+    	$this->save();
   }
 
   /**

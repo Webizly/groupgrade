@@ -10,7 +10,9 @@ use Drupal\ClassLearning\Models\User,
   Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Semester,
   Drupal\ClassLearning\Models\Assignment,
-  Drupal\ClassLearning\Models\AssignmentSection;
+  Drupal\ClassLearning\Models\AssignmentSection,
+  Drupal\ClassLearning\Models\Workflow,
+  Drupal\ClassLearning\Models\WorkflowTask;
 
 function groupgrade_assignment_dash() {
   global $user;
@@ -55,6 +57,18 @@ function groupgrade_create_assignment()
     '#required' => true, 
   );
 
+  //To do: Query the database to return all the types of available usecases.
+
+  $items['usecase'] = array(
+    '#type' => 'select',
+    '#title' => t("Problem type"),
+    '#default_value' => variable_get("one_a", true),
+    '#options' => array(
+	  'one_a' => t("Usecase 1A"),
+	  'special' => t("Special"),
+	  ),
+  );
+
   $items['description'] = array(
     '#title' => 'Assignment Instructions to Students',
     '#type' => 'textarea',
@@ -75,11 +89,13 @@ function groupgrade_create_assignment_submit($form, &$form_state)
 
   $title = $form['title']['#value'];
   $description = $form['description']['#value'];
+  $usecase = $form['usecase']['#value'];
 
   $a = new Assignment;
   $a->user_id = $user->uid;
   $a->assignment_title = $title;
   $a->assignment_description = $description;
+  $a->assignment_usecase = $usecase;
   $a->save();
 
   drupal_set_message(sprintf('Assignment "%s" created.  The assignment must be assigned to a section to initiate the workflow.', $a->assignment_title));
@@ -421,4 +437,81 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
 
   drupal_set_message(t('Assignment Section and all related tasks/workflows deleted.'));
   return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
+}
+
+function groupgrade_view_allocation($assignment){
+  // We need to get the workflows associated with this assignment. Then, for each workflow, we can 
+  // find the tasks associated with that workflow. The tasks will have the user's id attached to them.
+  
+  drupal_set_title("View Allocation");
+
+  $headers = array();
+  $rows = array();
+  
+  $workflows = Workflow::where('assignment_id', '=', $assignment)
+    ->get();
+  
+  foreach($workflows as $whocares => $workflow) :
+	  
+	$tasks = WorkflowTask::where('workflow_id', '=', $workflow['workflow_id'])
+	  ->get();
+	
+	$i = 0;
+	$results;
+	
+	foreach($tasks as $yawn => $task) :
+		$user = user_load($task['user_id']);
+		$headers[$i] = $task['type'];
+		$i+=1;
+		$color;
+		$hide = false;
+		
+		switch($task['status']){
+			
+			case 'complete': $color = "#B4F0BB"; break;
+			case 'not triggered': $color = "#E8E8E8"; $hide = true; break;
+			case 'timed out': $color = "#FCC7C7"; break;
+			case 'expired': $color = "#FCC7C7"; break;
+			default: $color = "#FFFFFF"; break;
+		}
+		
+		if(!$hide)
+		  $r['print'] = "<a href=" . url('class/task/' . $task['task_id']) . ">" . $user->name . "</a>";
+		else
+		  $r['print'] = $user->name;
+		$r['color'] = $color;
+		$results[] = $r;
+	endforeach;
+  	
+	$rows[] = $results;
+	unset($results);
+	
+  endforeach;
+
+  $return = "<table><tr>";
+  
+  foreach($headers as $header => $head){
+  	$return .= "<th>" . $head . "</th></span>";
+  }
+  
+  $return .= "</tr>";
+  
+  foreach($rows as $garbage => $row){
+  	$return .= "<tr>";
+	foreach($row as $moregarbage => $data){
+	  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['print'] . "</td>";
+	}
+	$return .= "</tr>";
+  }
+
+  /*$return = theme('table', array(
+    'rows' => $rows,
+    'header' => $headers,
+    'empty' => t('Nothing to display.'),
+    //'attributes' => array('width' => '100%'),
+  ));*/
+
+  $return .= "</table>";
+  
+  return $return;
 }
