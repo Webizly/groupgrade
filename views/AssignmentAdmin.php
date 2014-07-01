@@ -440,78 +440,142 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
 }
 
 function groupgrade_view_allocation($assignment){
-  // We need to get the workflows associated with this assignment. Then, for each workflow, we can 
-  // find the tasks associated with that workflow. The tasks will have the user's id attached to them.
+  // Workflow's assignment_id is for ASSIGNMENT SECTION!!! 
   
   drupal_set_title("View Allocation");
 
+  $return = '';
+  
+  // Before anything, let's print out a legend
+  
+  $return .= "<h2>Legend</h2>";
+  $return .= "<table><tr>";
+  $return .= "<th style='background:#FFFFFF'>In Progress</th><th style='background:#B4F0BB'>Complete</th><th style='background:#FCC7C7'>Late</th><th style='background:#E8E8E8'>Inactive</th>";
+  $return .= "</tr></table><br>";
+  
+  // We have assignment given to us. We need to find the workflows through assignment section!
+  
+  $asecs = AssignmentSection::where('assignment_id', '=', $assignment)
+    ->get();
+  
+  // Our array that keeps users confidential
+  $replacement = array();
+  $numstudents = 0;
+  $numinstructors = 0;
+  
   $headers = array();
   $rows = array();
   
-  $workflows = Workflow::where('assignment_id', '=', $assignment)
-    ->get();
+  foreach($asecs as $asec) :
   
-  foreach($workflows as $whocares => $workflow) :
+	  $return .= "<h2>Assignment Section #" . $asec['asec_id'] . "</h2>";   
+  
+	  $workflows = Workflow::where('assignment_id', '=', $asec['asec_id'])
+	    ->get();
 	  
-	$tasks = WorkflowTask::where('workflow_id', '=', $workflow['workflow_id'])
-	  ->get();
-	
-	$i = 0;
-	$results;
-	
-	foreach($tasks as $yawn => $task) :
-		$user = user_load($task['user_id']);
-		$headers[$i] = $task['type'];
-		$i+=1;
-		$color;
-		$hide = false;
+	  if(count($workflows) == 0)
+	    return "No workflows for this assignment found.";
+	  
+	  foreach($workflows as $whocares => $workflow) :  
+		  
+		$tasks = WorkflowTask::where('workflow_id', '=', $workflow['workflow_id'])
+		  ->get();
 		
-		switch($task['status']){
+		if(count($tasks) == 0)
+	      return "No tasks found for this assignment.";  
+		
+		$i = 0;
+		$results = array();
+		
+		foreach($tasks as $yawn => $task) :
+	
+		  $printuser = '';
+		  if(!isset($task['user_id'])){
+		  	$printuser = 'AUTOMATIC';
+		  }
+		  else{
+		    $user = user_load($task['user_id']);
+			//Does this user exist in our array?
+			if(isset($replacement[$user->name])){
+		      $printuser = $replacement[$user->name];
+		      //print "USER FOUND, " . $user->name . " EXISTS<br>";
+			}
+			else{
+			  // The user doesn't, let's put them in the array then
+			  // But first, is this a user or an instructor?
+			  $num = $numstudents;
+			  $title = "Student";
+			  $numstudents++;
+			  if(isset($task['settings']['pool']['name']))
+			    if($task['settings']['pool']['name'] == "instructor")
+				{
+				  $num = $numinstructors;
+				  $title = "Instructor";
+			      $numinstructors++;
+				  //False alarm on the user, it was actually a student!
+				  $numstudents--;
+				}
+			  $replacement[$user->name] = $title . ' ' . $num;
+			  $printuser = $replacement[$user->name];
+			  
+			  //print "USER NOT FOUND, SETTING " . $user->name . " AS USER " . $num . "<br>";
+			}
+		    
+		  }
 			
-			case 'complete': $color = "#B4F0BB"; break;
-			case 'not triggered': $color = "#E8E8E8"; $hide = true; break;
-			case 'timed out': $color = "#FCC7C7"; break;
-			case 'expired': $color = "#FCC7C7"; break;
-			default: $color = "#FFFFFF"; break;
-		}
+			$headers[$i] = $task['type'];
+			$i+=1;
+			$color;
+			$hide = false;
+			
+			switch($task['status']){
+				
+				case 'complete': $color = "#B4F0BB"; break;
+				case 'not triggered': $color = "#E8E8E8"; $hide = true; break;
+				case 'timed out': $color = "#FCC7C7"; break;
+				case 'expired': $color = "#FCC7C7"; break;
+				default: $color = "#FFFFFF"; break;
+			}
+			
+			if(!$hide)
+			  $r['print'] = "<a href=" . url('class/task/' . $task['task_id']) . ">" . $printuser . "</a>";
+			else
+			  $r['print'] = $printuser;
+			$r['color'] = $color;
+			$results[] = $r;
+		endforeach;
+	  	
+		$rows[] = $results;
+		unset($results);
 		
-		if(!$hide)
-		  $r['print'] = "<a href=" . url('class/task/' . $task['task_id']) . ">" . $user->name . "</a>";
-		else
-		  $r['print'] = $user->name;
-		$r['color'] = $color;
-		$results[] = $r;
-	endforeach;
-  	
-	$rows[] = $results;
-	unset($results);
+	  endforeach;
 	
+	  $return .= "<table><tr>";
+	  
+	  foreach($headers as $header => $head){
+	  	$return .= "<th>" . $head . "</th></span>";
+	  }
+	  
+	  $return .= "</tr>";
+	  
+	  foreach($rows as $garbage => $row){
+	  	$return .= "<tr>";
+		foreach($row as $moregarbage => $data){
+		  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['print'] . "</td>";
+		}
+		$return .= "</tr>";
+	  }
+	
+	  /*$return = theme('table', array(
+	    'rows' => $rows,
+	    'header' => $headers,
+	    'empty' => t('Nothing to display.'),
+	    //'attributes' => array('width' => '100%'),
+	  ));*/
+	
+	  $return .= "</table><br><br>";
+	  
   endforeach;
 
-  $return = "<table><tr>";
-  
-  foreach($headers as $header => $head){
-  	$return .= "<th>" . $head . "</th></span>";
-  }
-  
-  $return .= "</tr>";
-  
-  foreach($rows as $garbage => $row){
-  	$return .= "<tr>";
-	foreach($row as $moregarbage => $data){
-	  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['print'] . "</td>";
-	}
-	$return .= "</tr>";
-  }
-
-  /*$return = theme('table', array(
-    'rows' => $rows,
-    'header' => $headers,
-    'empty' => t('Nothing to display.'),
-    //'attributes' => array('width' => '100%'),
-  ));*/
-
-  $return .= "</table>";
-  
   return $return;
 }
