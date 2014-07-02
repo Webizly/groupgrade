@@ -231,6 +231,16 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
 	
   }
   
+  // If this is a revise and resubmit task
+  if ($task->type == 'revise and resubmit'){
+  	
+	//edit and approve HAS to exist somewhere. Get it.
+	
+	$params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+      ->whereType('edit and approve')
+      ->first();
+  }
+  
   if ($task->type == 'grade solution' OR $task->type == 'dispute' OR $task->type == 'resolve dispute' OR $task->type == 'resolution grader')
   {
     $params['solution'] = Task::where('workflow_id', '=', $task->workflow_id)
