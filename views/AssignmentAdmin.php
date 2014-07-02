@@ -533,12 +533,12 @@ function groupgrade_view_allocation($assignment,$view_names){
 			$headers[$i] = $task['type'];
 			$i+=1;
 			$color;
-			$hide = false;
+			$hide = true;
 			
 			switch($task['status']){
 				
-				case 'complete': $color = "#B4F0BB"; break;
-				case 'not triggered': $color = "#E8E8E8"; $hide = true; break;
+				case 'complete': $color = "#B4F0BB"; $hide = false; break;
+				case 'not triggered': $color = "#E8E8E8"; break;
 				case 'timed out': $color = "#FCC7C7"; break;
 				case 'expired': $color = "#FCC7C7"; break;
 				default: $color = "#FFFFFF"; break;
