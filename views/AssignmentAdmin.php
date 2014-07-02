@@ -440,7 +440,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
 }
 
 function groupgrade_view_allocation($assignment){
-  // Workflow's assignment_id is for ASSIGNMENT SECTION!!! 
+  // Workflow's assignment_id is for assignment section, not assignment!
   
   drupal_set_title("View Allocation");
 
@@ -467,6 +467,8 @@ function groupgrade_view_allocation($assignment){
   $rows = array();
   
   foreach($asecs as $asec) :
+  
+  	  unset($rows);
   
 	  $return .= "<h2>Assignment Section #" . $asec['asec_id'] . "</h2>";   
   
@@ -543,6 +545,7 @@ function groupgrade_view_allocation($assignment){
 			  $r['print'] = $printuser;
 			$r['color'] = $color;
 			$results[] = $r;
+			
 		endforeach;
 	  	
 		$rows[] = $results;
