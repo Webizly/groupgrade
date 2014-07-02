@@ -439,7 +439,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
   return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
 }
 
-function groupgrade_view_allocation($assignment){
+function groupgrade_view_allocation($assignment,$view_names){
   // Workflow's assignment_id is for assignment section, not assignment!
   
   drupal_set_title("View Allocation");
@@ -497,7 +497,7 @@ function groupgrade_view_allocation($assignment){
 		  }
 		  else{
 		    $user = user_load($task['user_id']);
-			//Does this user exist in our array?
+			// Does this user exist in our array?
 			if(isset($replacement[$user->name])){
 		      $printuser = $replacement[$user->name];
 		      //print "USER FOUND, " . $user->name . " EXISTS<br>";
@@ -517,7 +517,12 @@ function groupgrade_view_allocation($assignment){
 				  //False alarm on the user, it was actually a student!
 				  $numstudents--;
 				}
-			  $replacement[$user->name] = $title . ' ' . $num;
+			  // Is $view_names on? Then we're displaying real names.
+			  // Else, only display aliases.
+			  if(!$view_names)
+			    $replacement[$user->name] = $title . ' ' . $num;
+			  else
+			  	$replacement[$user->name] = $user->name;
 			  $printuser = $replacement[$user->name];
 			  
 			  //print "USER NOT FOUND, SETTING " . $user->name . " AS USER " . $num . "<br>";

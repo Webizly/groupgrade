@@ -385,6 +385,7 @@ return array(
   ),
 */
 
+  // For Instructors AND Administrators
   'class/instructor/assignments/%/allocation' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'View Allocation',
@@ -392,12 +393,25 @@ return array(
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page arguments' => array(3),
+    'page arguments' => array(3,false),
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
     'weight' => 3,
   ),
+  
+  // For Administrators ONLY
+  'class/instructor/assignments/%/administrator-allocation' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Administrator Allocation View',
+    'page callback' => 'groupgrade_view_allocation',
+    'file' => 'AssignmentAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
+    'page arguments' => array(3,true),
+    'access arguments' => array('access administration pages'),
+    'weight' => 5,
+  ),
+  
   /**
    * ===============================
    * Manage the Workflows
