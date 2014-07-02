@@ -192,9 +192,43 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
       ->first();
   } else {
     // Automatically include the edited problem working with
-    $params['problem'] = Task::where('workflow_id', '=', $task->workflow_id)
+    // This has to be edited with respect to the new edit and approve task.
+    $previous = Task::where('workflow_id', '=', $task->workflow_id)
       ->whereType('edit problem')
       ->first();
+	  
+	// If not null, save to $params
+	if(isset($previous)){
+		$params['previous task'] = $previous;
+	}
+	else{
+		// No edit task found, it has to be an edit and approve task then.
+		$params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+          ->whereType('edit and approve')
+          ->first();
+	}
+  }
+  
+  // If this is an edit and approve task...
+  if ($task->type == 'edit and approve'){
+  	
+	// We need to be able to have the history on hand. Does the history even exist?
+	// Check for problem in a 'revise and resubmit' task. If it exists, use that instead of create problem
+		
+	$revise = Task::where('workflow_id', '=', $task->workflow_id)
+	  ->whereType('revise and resubmit')
+	  ->first();
+	
+	// So does the task exist?
+	if(isset($revise->data['history']))
+	  $params['previous task'] = $revise;
+	else{
+	  // Otherwise, we do exactly what was done up above with edit problem
+	  $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+        ->whereType('create problem')
+        ->first();
+	}
+	
   }
   
   if ($task->type == 'grade solution' OR $task->type == 'dispute' OR $task->type == 'resolve dispute' OR $task->type == 'resolution grader')
