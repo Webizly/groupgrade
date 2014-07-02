@@ -199,11 +199,11 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
 	  
 	// If not null, save to $params
 	if(isset($previous)){
-		$params['previous task'] = $previous;
+		$params['problem'] = $previous;
 	}
 	else{
 		// No edit task found, it has to be an edit and approve task then.
-		$params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
+		$params['problem'] = Task::where('workflow_id', '=', $task->workflow_id)
           ->whereType('edit and approve')
           ->first();
 	}
@@ -219,11 +219,11 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
 	  ->whereType('revise and resubmit')
 	  ->first();
 	
-	// So does the task exist?
+	// So does the task exist? Check for history
 	if(isset($revise->data['history']))
 	  $params['previous task'] = $revise;
 	else{
-	  // Otherwise, we do exactly what was done up above with edit problem
+	  // No history exists, just get create problem then
 	  $params['previous task'] = Task::where('workflow_id', '=', $task->workflow_id)
         ->whereType('create problem')
         ->first();
