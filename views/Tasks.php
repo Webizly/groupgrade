@@ -514,21 +514,21 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   // If we aren't editing anything, just viewing the task
   if (! $params['edit']) :
 	// For each category of grades...
-	foreach($task->data['grades'] as $grade){
+	foreach($task->data['grades'] as $category => $grade){
 		// Print the grade
-	    $items[$grade['category'] . ' lb'] = [
-	      '#markup' => '<strong>'.t($grade['category'] . ' Grade').':</strong>',
+	    $items[$category . ' lb'] = [
+	      '#markup' => '<strong>'.t(ucwords($category) . ' Grade').':</strong>',
 	    ];
-	    $items[$grade['category']] = [
+	    $items[$category . '-grade'] = [
 	      '#type' => 'item',
 	      '#markup' => (((isset($grade['grade'])) ? $grade['grade'] : '')),
 	    ];
 		
 		//And the justification
-		$items[$grade['category'] . '-justification lb'] = [
-      	  '#markup' => '<strong>'.t(ucwords($grade['category']) . ' Justification').':</strong>',
+		$items[$category . '-justification lb'] = [
+      	  '#markup' => '<strong>'.t(ucwords($category) . ' Justification').':</strong>',
     	];
-    	$items[$grade['category'] . '-justification'] = [
+    	$items[$category . '-justification'] = [
       	  '#type' => 'item',
       	  '#markup' => (! isset($grade['justification'])) ? '' : nl2br($grade['justification']),
     	];
@@ -551,35 +551,22 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items[] = ['#markup' => sprintf('<h5>%s: %s</h5>', t('Current Task'), t($params['task']->humanTask()))];
   
-  //Set up another for each loop 
+  //Set up another for each loop, this time for fields
   foreach($task->data['grade'] as $grade){
-	  $items[$grade['category'] . '-grade'] = [
+	  $items[$category . '-grade'] = [
 	    '#type' => 'textfield',
 	    '#title' => $grade['description'],
 	    '#required' => true,
 	    '#default_value' => (isset($grade['grade'])) ? $grade['grade'] : '',
 	  ];
 	
-	  $items[$grade['category']] = [
+	  $items[$category . '-justification'] = [
 	    '#type' => 'textarea',
 	    '#title' => 'Justify your grade',
 	    '#required' => true,
 	    '#default_value' => (isset($grade['justification']) ? $grade['justification'] : '',
 	  ];
 	
-	  $items['correctness-grade'] = [
-	    '#type' => 'textfield',
-	    '#title' => 'Grade how correct the solution is. (0-50)',
-	    '#required' => true,
-	    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
-	  ];
-	
-	  $items['correctness'] = [
-	    '#type' => 'textarea',
-	    '#title' => 'Justify your grade of the solution\'s correctness',
-	    '#required' => true,
-	    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
-	  ];
   }
   $items['save'] = [
     '#type' => 'submit',
@@ -601,25 +588,27 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
 
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
-    
-  foreach (['completeness-grade', 'correctness-grade'] as $grade) :
-    $form[$grade]['#value'] = (int) $form[$grade]['#value'];
-
-    if ($form[$grade]['#value'] !== abs($form[$grade]['#value'])
-      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 50) :
-
-      // Force to save, not submit
-      $save = true;
-      drupal_set_message(t('Invalid grade: '.$grade), 'error');
+  
+  // For each grade category...
+  
+  foreach ($task->data['grades'] as $category => $grade) :
+  	$form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
+	
+	// Is this bad data?
+	if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
+      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $grade['max']) :
+        return drupal_set_message(t('Invalid grade: ' . $form[$category . '-grade']['#value']), 'error');
+	    //return drupal_goto('class/task/' . $task->task_id);
     endif;
+	
+	// It's good. Save.
+	$grade['grade'] = $form[$category . '-grade']['#value'];
+	$grade['justification'] = $form[$category . '-justification']['#value'];
+	
   endforeach;
-
-  $dataFields = ['completeness-grade', 'completeness', 'correctness-grade', 'correctness'];
+  
+  // Did we hit the save button or the submit button?
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
-
-  // Save the data
-  foreach ($dataFields as $field)
-    $task->setData($field, $form[$field]['#value']);
 
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
