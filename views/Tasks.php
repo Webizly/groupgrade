@@ -246,6 +246,7 @@ function groupgrade_view_task($task_id, $action = 'display', $admin = FALSE)
     $params['solution'] = Task::where('workflow_id', '=', $task->workflow_id)
       ->whereType('create solution')
       ->first();
+	  
   }
 
   if ($task->type == 'create solution')
@@ -630,28 +631,32 @@ function gg_task_dispute_form($form, &$form_state, $params)
   $items = [];
   $task = $params['task'];
   $workflow = $params['workflow'];
+  $grades = Task::where('type', '=', 'grade solution')
+    ->get();
 
   if (! $params['edit']) :
     $items[] = [
       '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
-        t('The solution grade was'),
+        t('The total grade was'),
         (($task->data['value']) ? 'disputed' : 'not disputed')
       )
     ];
 
     // It was disputed, show the propsed grade and justification
     if ($task->data['value']) :
-      foreach (['completeness', 'correctness'] as $aspect) :
-        $grade = (isset($task->data['proposed-'.$aspect.'-grade'])) ? $task->data['proposed-'.$aspect.'-grade'] : '';
-
-        $items['proposed-'.$aspect.'-grade'] = [
-          '#markup' => '<h5>Proposed '.ucfirst($aspect).' Grade: '.$grade.'</h5>'
-        ];
-
-        $items['proposed-'.$aspect] = [
-          '#markup' => '<h5>Proposed '.ucfirst($aspect).' Justification:</h5> <p>'
-          .((isset($task->data['proposed-'.$aspect])) ? nl2br($task->data['proposed-'.$aspect]) : '').'</p>',
-        ];
+      foreach ($grades as $grade) :
+		  foreach ($grade->data['grades'] as $aspect => $junk) :
+	        $g = (isset($task->data['proposed-'.$aspect.'-grade'])) ? $task->data['proposed-'.$aspect.'-grade'] : '';
+	
+	        $items['proposed-'.$aspect.'-grade'] = [
+	          '#markup' => '<h5>Proposed '.ucfirst($aspect).' Grade: '.$g.'</h5>'
+	        ];
+	
+	        $items['proposed-'.$aspect] = [
+	          '#markup' => '<h5>Proposed '.ucfirst($aspect).' Justification:</h5> <p>'
+	          .((isset($task->data['proposed-'.$aspect])) ? nl2br($task->data['proposed-'.$aspect]) : '').'</p>',
+	        ];
+		  endforeach;
 
       endforeach;
       $items['justice lb'] = [
