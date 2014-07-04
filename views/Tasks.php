@@ -1057,6 +1057,105 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   endif;
 }
 
+/*
+function gg_task_edit_and_approve_form($form, &$form_state, $params){	
+	
+  // We could either have a revise and resubmit, or a create problem.
+  // If we're coming from a problem just display problem.
+  // Otherwise display LATEST problem and then accordion the others.
+  $previous;
+  $previous = $params['previous task'];
+  
+  $items = array();
+  
+  if($previous->type = 'create problem'){
+  	
+  	// Print out the problem
+  	$items['highlight'] = array(
+  	  '#markup' => sprintf('<p><strong>%s:</strong></p><p>%s</p><hr />',
+        t('Original Problem'),
+        nl2br($previous->data['problem']))
+	);
+	
+  }
+  
+  if($previous->type = 'edit and submit'){
+  	
+	// We need to print out the history too.
+	// Print it out in reverse order (latest to oldest).
+	
+	$a = new Accordion('History');
+	
+	// Get a hold of that history array (in reverse!)
+	$history = array_reverse($previous->data['history']);
+	
+	foreach($history as $revision){
+		$title = 'revision' . $revision['num'];
+		$id = 'r' . $revision['num'];
+		$contents = sprintf('<p><strong>%s:</strong></p> %s<br><br><p><strong>%s:</strong><br> %s</p>'
+		$a->addGroup($title, $id, $contents, false);
+	}
+  }
+
+  if ($params['action'] == 'display')
+    $items['original problem'] = [
+      '#markup' => sprintf('<p><strong>%s:</strong></p><p>%s</p><hr />',
+        t('Original Problem'),
+        nl2br($params['previous task']->data['problem'])
+      )
+    ];
+
+  if (! $params['edit']) :
+    $items['edited problem lb'] = [
+      '#markup' => sprintf('<strong>%s:</strong>', t('Edited Problem')),
+    ];
+    $items['edited problem'] = [
+      '#type' => 'item',
+      '#markup' => nl2br($problem),
+    ];
+
+    $items['comment lb'] = [
+      '#markup' => sprintf('<strong>%s:</strong>', t('Edited Comments')),
+    ];
+    $items['comment'] = [
+      '#type' => 'item',
+      '#markup' => (empty($comment)) ? sprintf('<em>%s</em>', t('none')) : nl2br($comment),
+    ];
+
+    return $items;
+  endif;
+
+  if (isset($params['task']->settings['instructions']))
+    $items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
+    ];
+
+  $items['body'] = [
+    '#type' => 'textarea',
+    '#required' => true,
+    '#title' => 'Edited Problem',
+    '#default_value' => $problem,
+  ];
+
+  $items['comment'] = [
+    '#type' => 'textarea',
+    '#required' => true,
+    '#title' => 'Editing Comments',
+    '#default_value' => $comment,
+  ];
+
+  $items['save'] = [
+    '#type' => 'submit',
+    '#value' => 'Save Edited Problem For Later',
+  ];
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Submit Edited Problem',
+  ];
+  return $items;
+}
+*/
+
 /**
  * View a workflow
  * @param int
