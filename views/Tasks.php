@@ -631,7 +631,8 @@ function gg_task_dispute_form($form, &$form_state, $params)
   $items = [];
   $task = $params['task'];
   $workflow = $params['workflow'];
-  $grades = Task::where('type', '=', 'grade solution')
+  $grades = Task::whereType('grade solution')
+    ->where('workflow_id', '=', $task->workflow_id)
     ->get();
 
   if (! $params['edit']) :
@@ -642,7 +643,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
       )
     ];
 
-    // It was disputed, show the propsed grade and justification
+    // It was disputed, show the proposed grade and justification
     if ($task->data['value']) :
       foreach ($grades as $grade) :
 		  foreach ($grade->data['grades'] as $aspect => $junk) :
@@ -684,23 +685,17 @@ function gg_task_dispute_form($form, &$form_state, $params)
     nl2br($params['solution']->data['solution'])
   ), true);
 
-  // Grades for the workflow
-  $grades = Task::whereType('grade solution')
-    ->where('workflow_id', '=', $task->workflow_id)
-    ->get();
-
-  if (count($grades) > 0) : foreach ($grades as $grade) :
-    $c = '';
+  if (count($grades) > 0) : foreach ($grades as $grade) : foreach ($grade->data['grades'] as $category => $g) :
     
-    foreach (['completeness', 'correctness'] as $aspect) :
-      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($grade->data[$aspect.'-grade'])) ? $grade->data[$aspect.'-grade'] : '').'</h4>';
+	  $c = '';
+	
+      $c .= '<h4>'.t('Grade '.ucfirst($category)).': '.((isset($g['grade'])) ? $g['grade'] : '').'</h4>';
 
-      if (isset($grade->data[$aspect]))
-        $c .= '<p>'.nl2br($grade->data[$aspect]).'</p>';
-    endforeach;
+      if (isset($g['justification']))
+        $c .= '<p>'.nl2br($g['justification']).'</p>';
 
     $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
-  endforeach; endif;
+	endforeach; endforeach; endif;
 
   // Dispute Grader
   $resolutionGrader = Task::whereType('resolution grader')
@@ -709,19 +704,20 @@ function gg_task_dispute_form($form, &$form_state, $params)
     ->first();
 
   if ($resolutionGrader) :
-    $c = '';
     
-    foreach (['completeness', 'correctness'] as $aspect) :
-      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($resolutionGrader->data[$aspect.'-grade'])) ? $resolutionGrader->data[$aspect.'-grade'] : '').'</h4>';
+    foreach ($resolutionGrader->data['grades'] as $aspect => $g) :
+	  $c = '';
+      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($g['grade'])) ? $g['grade']) : '').'</h4>';
 
-      if (isset($resolutionGrader->data[$aspect]))
-        $c .= '<p>'.nl2br($resolutionGrader->data[$aspect]).'</p>';
+      if (isset($g['justification']))
+        $c .= '<p>'.nl2br($g['justification']).'</p>';
     endforeach;
 
     $a->addGroup('Resolution Grader #'.$resolutionGrader->task_id, 'grade-'.$resolutionGrader->task_id, $c);
   endif;
 
   // Resolved Grade
+  // It's unknown at the moment where this grade will be received from. Leave it like this for now.
   $c = '';
   $c .= sprintf('<h4>%s: %d%%</h4>', t('Grade Recieved'), $workflow->data['grade']);
   $a->addGroup('Resolved Grade', $task->task_id.'-resolved-grade', $c, true);
@@ -744,10 +740,10 @@ function gg_task_dispute_form($form, &$form_state, $params)
     '#markup' => sprintf('<hr /><p>%s</p>', t('Complete the following only if you are going to dispute.'))
   ];
   
-  foreach (['completeness', 'correctness'] as $aspect) :
+  foreach ($grades as $grade) : foreach ($grade->data['grades'] as $aspect => $g) :
     $items['proposed-'.$aspect.'-grade'] = [
       '#type' => 'textfield',
-      '#title' => 'Proposed '.ucfirst($aspect).' Grade (0-50)',
+      '#title' => 'Proposed '.ucfirst($aspect).' Grade (0-' . $g['max'] . ')',
       '#default_value' => (isset($task->data['proposed-'.$aspect.'-grade'])) ? $task->data['proposed-'.$aspect.'-grade'] : '',
     ];
 
@@ -756,7 +752,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
       '#title' => 'Proposed '.ucfirst($aspect).' Justification',
       '#default_value' => (isset($task->data['proposed-'.$aspect])) ? $task->data['proposed-'.$aspect] : '',
     ];
-  endforeach;
+  endforeach; endforeach;
 
   $items['justification'] = [
     '#type' => 'textarea',
