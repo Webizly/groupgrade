@@ -513,28 +513,39 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   // If we aren't editing anything, just viewing the task
   if (! $params['edit']) :
-	// For each category of grades...
-	foreach($task->data['grades'] as $grade){
-		// Print the grade
-	    $items[$grade['category'] . ' lb'] = [
-	      '#markup' => '<strong>'.t($grade['category'] . ' Grade').':</strong>',
-	    ];
-	    $items[$grade['category']] = [
-	      '#type' => 'item',
-	      '#markup' => (((isset($grade['grade'])) ? $grade['grade'] : '')),
-	    ];
-		
-		//And the justification
-		$items[$grade['category'] . '-justification lb'] = [
-      	  '#markup' => '<strong>'.t(ucwords($grade['category']) . ' Justification').':</strong>',
-    	];
-    	$items[$grade['category'] . '-justification'] = [
-      	  '#type' => 'item',
-      	  '#markup' => (! isset($grade['justification'])) ? '' : nl2br($grade['justification']),
-    	];
-		
-    	return $items;
-	}
+    $items['grade lb'] = [
+      '#markup' => '<strong>'.t('Correctness Grade').':</strong>',
+    ];
+    $items['grade'] = [
+      '#type' => 'item',
+      '#markup' => (((isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '')),
+    ];
+
+    $items['correctness lb'] = [
+      '#markup' => '<strong>'.t('Grade Correctness').':</strong>',
+    ];
+    $items['correctness'] = [
+      '#type' => 'item',
+      '#markup' => (! isset($task->data['correctness'])) ? '' : nl2br($task->data['correctness']),
+    ];
+
+    $items['completeness grade lb'] = [
+      '#markup' => '<strong>'.t('Completeness Grade').':</strong>',
+    ];
+    $items['completeness grade'] = [
+      '#type' => 'item',
+      '#markup' => (((isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '')),
+    ];
+
+    $items['completeness lb'] = [
+      '#markup' => '<strong>'.t('Grade Completeness').':</strong>',
+    ];
+    $items['completeness'] = [
+      '#type' => 'item',
+      '#markup' => (! isset($task->data['completeness'])) ? '' : nl2br($task->data['completeness']),
+    ];
+
+    return $items;
   endif;
 
   $items['problem'] = [
@@ -550,37 +561,34 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     ];
 
   $items[] = ['#markup' => sprintf('<h5>%s: %s</h5>', t('Current Task'), t($params['task']->humanTask()))];
-  
-  //Set up another for each loop 
-  foreach($task->data['grade'] as $grade){
-	  $items[$grade['category'] . '-grade'] = [
-	    '#type' => 'textfield',
-	    '#title' => $grade['description'],
-	    '#required' => true,
-	    '#default_value' => (isset($grade['grade'])) ? $grade['grade'] : '',
-	  ];
-	
-	  $items[$grade['category']] = [
-	    '#type' => 'textarea',
-	    '#title' => 'Justify your grade',
-	    '#required' => true,
-	    '#default_value' => (isset($grade['justification']) ? $grade['justification'] : '',
-	  ];
-	
-	  $items['correctness-grade'] = [
-	    '#type' => 'textfield',
-	    '#title' => 'Grade how correct the solution is. (0-50)',
-	    '#required' => true,
-	    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
-	  ];
-	
-	  $items['correctness'] = [
-	    '#type' => 'textarea',
-	    '#title' => 'Justify your grade of the solution\'s correctness',
-	    '#required' => true,
-	    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
-	  ];
-  }
+  $items['completeness-grade'] = [
+    '#type' => 'textfield',
+    '#title' => 'Grade how complete the solution is. (0-50)',
+    '#required' => true,
+    '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
+  ];
+
+  $items['completeness'] = [
+    '#type' => 'textarea',
+    '#title' => 'Justify your grade of the solution\'s completeness',
+    '#required' => true,
+    '#default_value' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
+  ];
+
+  $items['correctness-grade'] = [
+    '#type' => 'textfield',
+    '#title' => 'Grade how correct the solution is. (0-50)',
+    '#required' => true,
+    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
+  ];
+
+  $items['correctness'] = [
+    '#type' => 'textarea',
+    '#title' => 'Justify your grade of the solution\'s correctness',
+    '#required' => true,
+    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
+  ];
+
   $items['save'] = [
     '#type' => 'submit',
     '#value' => 'Save Grade For Later',
