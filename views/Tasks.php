@@ -511,40 +511,30 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items = [];
 
+  // If we aren't editing anything, just viewing the task
   if (! $params['edit']) :
-    $items['grade lb'] = [
-      '#markup' => '<strong>'.t('Correctness Grade').':</strong>',
-    ];
-    $items['grade'] = [
-      '#type' => 'item',
-      '#markup' => (((isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '')),
-    ];
-
-    $items['correctness lb'] = [
-      '#markup' => '<strong>'.t('Grade Correctness').':</strong>',
-    ];
-    $items['correctness'] = [
-      '#type' => 'item',
-      '#markup' => (! isset($task->data['correctness'])) ? '' : nl2br($task->data['correctness']),
-    ];
-
-    $items['completeness grade lb'] = [
-      '#markup' => '<strong>'.t('Completeness Grade').':</strong>',
-    ];
-    $items['completeness grade'] = [
-      '#type' => 'item',
-      '#markup' => (((isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '')),
-    ];
-
-    $items['completeness lb'] = [
-      '#markup' => '<strong>'.t('Grade Completeness').':</strong>',
-    ];
-    $items['completeness'] = [
-      '#type' => 'item',
-      '#markup' => (! isset($task->data['completeness'])) ? '' : nl2br($task->data['completeness']),
-    ];
-
-    return $items;
+	// For each category of grades...
+	foreach($task->data['grades'] as $grade){
+		// Print the grade
+	    $items[$grade['category'] . ' lb'] = [
+	      '#markup' => '<strong>'.t($grade['category'] . ' Grade').':</strong>',
+	    ];
+	    $items[$grade['category']] = [
+	      '#type' => 'item',
+	      '#markup' => (((isset($grade['grade'])) ? $grade['grade'] : '')),
+	    ];
+		
+		//And the justification
+		$items[$grade['category'] . '-justification lb'] = [
+      	  '#markup' => '<strong>'.t(ucwords($grade['category']) . ' Justification').':</strong>',
+    	];
+    	$items[$grade['category'] . '-justification'] = [
+      	  '#type' => 'item',
+      	  '#markup' => (! isset($grade['justification'])) ? '' : nl2br($grade['justification']),
+    	];
+		
+    	return $items;
+	}
   endif;
 
   $items['problem'] = [
