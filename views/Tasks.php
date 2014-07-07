@@ -853,42 +853,37 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 {
   $task = $params['task'];
 
+  $grades = Task::whereType('grade solution')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->get();
+
   $items = [];
 
   if (! $params['edit']) :
     
     
     $data = [];
-    foreach ($dataFields as $field)
-      $data[$field] = (isset($task->data[$field])) ? $task->data[$field] : '';
-
-    $items['correctness-grade'] = [
-      '#type' => 'item',
-      '#markup' => sprintf('<p><strong>%s:</strong> %d%%', t('Correctness Grade'), $data['correctness-grade'])
-    ];
-
-    $items['correctness'] = [
-      '#type' => 'item',
-      '#markup' => sprintf('<p><strong>%s:</strong><br /> %s', t('Correctness'), nl2br($data['correctness']))
-    ];
-
-    $items['completeness-grade'] = [
-      '#type' => 'item',
-      '#markup' => sprintf('<p><strong>%s:</strong> %d%%', t('Completeness Grade'), $data['completeness-grade'])
-    ];
-
-    $items['completeness'] = [
-      '#type' => 'item',
-      '#markup' => sprintf('<p><strong>%s:</strong><br /> %s', t('Completeness'), nl2br($data['completeness']))
-    ];
-
-    $items['justice lb'] = [
-      '#markup' => '<strong>'.t('Grade Justification').':</strong>',
-    ];
-    $items['justice'] = [
-      '#type' => 'item',
-      '#markup' => sprintf('<p>%s</p>', nl2br($data['justification'])),
-    ];
+    foreach (current($grades)->data['grades'] as $field => $g){
+	    $data[$field] = (isset($task->data[$field])) ? $task->data[$field] : '';
+	
+	    $items[$field . '-grade'] = [
+	      '#type' => 'item',
+	      '#markup' => sprintf('<p><strong>%s:</strong> %d%%', t(ucfirst($field). ' Grade'), $data[$field . '-grade'])
+	    ];
+	
+	    $items[$field] = [
+	      '#type' => 'item',
+	      '#markup' => sprintf('<p><strong>%s:</strong><br /> %s', t(ucfirst($field)), nl2br($data[$field]))
+	    ];
+	
+	    $items['justice lb'] = [
+	      '#markup' => '<strong>'.t($field . ' Justification').':</strong>',
+	    ];
+	    $items[$field . ' justice'] = [
+	      '#type' => 'item',
+	      '#markup' => sprintf('<p>%s</p>', nl2br($data[$field . ' justification'])),
+	    ];
+	}
     return $items;
   endif;
 
@@ -909,23 +904,18 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   $a = new Drupal\ClassLearning\Common\Accordion('resolve-dispute');
 
-  // Get the grades
-  $grades = Task::whereType('grade solution')
-    ->where('workflow_id', '=', $task->workflow_id)
-    ->get();
 
   if (count($grades) > 0) : foreach ($grades as $grade) :
     $c = '';
 
-    foreach (['completeness', 'correctness'] as $aspect) :
-      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($grade->data[$aspect.'-grade'])) ? $grade->data[$aspect.'-grade'] : '').'</h4>';
+    foreach ($grade->data['grades'] as $aspect => $g) :
+      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($g['grade'])) ? $g['grade'] : '').'</h4>';
 
-      if (isset($grade->data[$aspect]))
-        $c .= '<p>'.nl2br($grade->data[$aspect]).'</p>';
-    endforeach;
+      if (isset($g['justification']))
+        $c .= '<p>'.nl2br($g['justification']).'</p>';
 
     $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
-  endforeach; endif;
+  endforeach; endforeach; endif;
 
   // Resolved Grade (automatically or via resolution grader)
   $c = '';
@@ -937,11 +927,14 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     ->where('workflow_id', '=', $task->workflow_id)
     ->first();
 
+  // Dispute grades aren't set the same way as a grade solution's grades
+  // Grade solutions are arrays while every other task stores them as plain
+  // values
   if ($disputeTask) :
     $c = '';
-    foreach (['completeness', 'correctness'] as $aspect) :
+    foreach (current($grades)->data['grades'] as $aspect => $g) :
       $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Grade').': '.$disputeTask->data['proposed-'.$aspect.'-grade'].'</h4>';
-    $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Justification').': </h4><p>'.nl2br($disputeTask->data['proposed-'.$aspect]).'</p>';
+      $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Justification').': </h4><p>'.nl2br($disputeTask->data['proposed-'.$aspect]).'</p>';
     endforeach;
     
     $c .= '<h4>'.t('Explain fully why all prior graders were wrong, and your regrading is correct').':</h4>';
@@ -956,46 +949,39 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   ];
 
 
-  $items['completeness-grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Completeness Grade (0-50)',
-    '#required' => true,
-    '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
-  ];
-  $items['completeness'] = [
-    '#type' => 'textarea',
-    '#title' => 'Grade Completeness',
-    '#required' => true,
-    '#default_value' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
-  ];
-
-  $items['correctness-grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Correctness Grade (0-50)',
-    '#required' => true,
-    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
-  ];
-  $items['correctness'] = [
-    '#type' => 'textarea',
-    '#title' => 'Correctness',
-    '#required' => true,
-    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
-  ];
-
-  $items['justification'] = [
-    '#type' => 'textarea',
-    '#title' => 'Grade Justification',
-    '#required' => true,
-    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
-  ];
+  foreach($grades as $grade){
+  	foreach($grade->data['grades'] as $content => $g){
+	  $items[$content . '-grade'] = [
+	    '#type' => 'textfield',
+	    '#title' => $content . ' Grade (0-' . $g['max'] . ')',
+	    '#required' => true,
+	    '#default_value' => (isset($task->data[$content . '-grade'])) ? $task->data[$content . '-grade'] : '',
+	  ];
+	  
+	  $items[$content] = [
+	    '#type' => 'textarea',
+	    '#title' => 'Grade ' . ucfirst($content),
+	    '#required' => true,
+	    '#default_value' => (isset($task->data[$content])) ? $task->data[$content] : '',
+	  ];
+	
+	  $items['justification'] = [
+	    '#type' => 'textarea',
+	    '#title' => 'Grade Justification',
+	    '#required' => true,
+	    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
+	  ];
+	}
+  }
   $items['save'] = [
-    '#type' => 'submit',
-    '#value' => 'Save Grade For Later',
+	'#type' => 'submit',
+	'#value' => 'Save Grade For Later',
   ];
   $items['submit'] = [
-    '#type' => 'submit',
-    '#value' => 'Submit Grade',
+	'#type' => 'submit',
+	'#value' => 'Submit Grade',
   ];
+
   return $items;
 }
 
