@@ -995,21 +995,32 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
   
+  // Just get one of them, we only need to get the criteria
+  $grade = Task::whereType('grade solution')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->first();
+  
   $gradeSum = 0;
 
-  foreach (['completeness-grade', 'correctness-grade'] as $grade) :
-    $form[$grade]['#value'] = (int) $form[$grade]['#value'];
+  foreach ($grade->data['grades'] as $category => $g) :
+    $form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 
-    if ($form[$grade]['#value'] !== abs($form[$grade]['#value'])
-      OR $form[$grade]['#value'] < 0 OR $form[$grade]['#value'] > 50)
-      return drupal_set_message(t('Invalid grade: '.$grade));
+    if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
+      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > 50)
+      return drupal_set_message(t('Invalid grade: '.$category . '-grade'));
     else
-      $gradeSum += $form[$grade]['#value'];
+      $gradeSum += $form[$category . '-grade']['#value'];
   endforeach;
 
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
 
-  $dataFields = ['completeness-grade', 'completeness', 'correctness-grade', 'correctness', 'justification'];
+  $dataFields = ['justification'];
+  
+  foreach($grade->data['grades'] as $category => $g){
+  	$dataFields[] = $category;
+	$dataFields[] = $category . '-grade';
+  }
+  
   foreach ($dataFields as $field)
     $task->setData($field, $form[$field]['#value']);
 
