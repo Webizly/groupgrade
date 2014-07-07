@@ -781,6 +781,10 @@ function gg_task_dispute_form_submit($form, &$form_state)
 {
   $params = $form_state['build_info']['args'][0];
   $task = $params['task'];
+  // Just get one, we only need the criteria here.
+  $grade = Task::whereType('grade solution')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->first();
 
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
@@ -793,7 +797,7 @@ function gg_task_dispute_form_submit($form, &$form_state)
   $task->setData('value', $dispute);
 
   if ($dispute) :
-    foreach (['completeness', 'correctness'] as $aspect) :
+    foreach ($grade->data['grades'] as $aspect => $junk) :
       if (empty($form['proposed-'.$aspect.'-grade']['#value']) OR empty($form['proposed-'.$aspect]['#value']))
         return drupal_set_message(t('You didn\'t submit the '.$aspect.' justification and/or the propsed '.$aspect.' grade.'), 'error');
 
@@ -853,7 +857,6 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   if (! $params['edit']) :
     
-    $dataFields = ['completeness-grade', 'completeness', 'correctness-grade', 'correctness', 'justification'];
     
     $data = [];
     foreach ($dataFields as $field)
