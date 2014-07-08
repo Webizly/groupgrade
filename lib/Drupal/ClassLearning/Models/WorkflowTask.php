@@ -478,6 +478,20 @@ class WorkflowTask extends ModelBase {
   }
 
   /**
+   * Set data in the grades array
+   * 
+   * @param string Key
+   * @param mixed Value
+   */
+   
+   public function setGrades($key, $value = NULL)
+  {
+    $data = $this->data;
+    $data['grades'][$key] = $value;
+    $this->data = $data;
+  }
+
+  /**
    * Set a Setting
    * 
    * @param string Key
