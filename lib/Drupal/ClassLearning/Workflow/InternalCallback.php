@@ -84,8 +84,13 @@ class InternalCallback {
 
     $index = [];
 
-    foreach ($tasks as $it)
-      $index[] = intval($it->data['correctness-grade'] + $it->data['completeness-grade']);
+    foreach ($tasks as $task){
+      $total = 0;
+	  foreach($task->data['grades'] as $g){
+        $total += intval($g['grade']);
+	  }
+	  $index[] = $total;
+    }
 
     $finalGrade = max($index);
     //array_sum($index)/count($index);
