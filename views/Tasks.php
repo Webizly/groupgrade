@@ -697,7 +697,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
       if (isset($g['justification']))
         $c .= '<p>'.nl2br($g['justification']).'</p>';
 
-    $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
+    $a->addGroup('Grader #'.$grade->task_id . ': ' . ucfirst($category), 'grade-'.$grade->task_id.'-'.$category, $c);
 	endforeach; endforeach; endif;
 
   // Dispute Grader
@@ -909,15 +909,16 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
 
   if (count($grades) > 0) : foreach ($grades as $grade) :
-    $c = '';
 
     foreach ($grade->data['grades'] as $aspect => $g) :
+	  $c = '';
+		
       $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($g['grade'])) ? $g['grade'] : '').'</h4>';
 
       if (isset($g['justification']))
         $c .= '<p>'.nl2br($g['justification']).'</p>';
 
-    $a->addGroup('Grader #'.$grade->task_id, 'grade-'.$grade->task_id, $c);
+    $a->addGroup('Grader #'.$grade->task_id . ': ' . ucfirst($aspect), 'grade-'.$grade->task_id.'-'.$aspect, $c);
   endforeach; endforeach; endif;
 
   // Resolved Grade (automatically or via resolution grader)
@@ -935,7 +936,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   // values
   if ($disputeTask) :
     $c = '';
-    foreach (current($grades)->data['grades'] as $aspect => $g) :
+    foreach ($grades[0]->data['grades'] as $aspect => $g) :
       $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Grade').': '.$disputeTask->data['proposed-'.$aspect.'-grade'].'</h4>';
       $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Justification').': </h4><p>'.nl2br($disputeTask->data['proposed-'.$aspect]).'</p>';
     endforeach;
@@ -956,26 +957,28 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   	foreach($grade->data['grades'] as $content => $g){
 	  $items[$content . '-grade'] = [
 	    '#type' => 'textfield',
-	    '#title' => $content . ' Grade (0-' . $g['max'] . ')',
+	    '#title' => ucfirst($content) . ' Grade (0-' . $g['max'] . ')',
 	    '#required' => true,
 	    '#default_value' => (isset($task->data[$content . '-grade'])) ? $task->data[$content . '-grade'] : '',
 	  ];
 	  
 	  $items[$content] = [
 	    '#type' => 'textarea',
-	    '#title' => 'Grade ' . ucfirst($content),
+	    '#title' => ucfirst($content) . ' Justification',
 	    '#required' => true,
 	    '#default_value' => (isset($task->data[$content])) ? $task->data[$content] : '',
 	  ];
 	
-	  $items['justification'] = [
+	}
+  }
+  
+  $items['justification'] = [
 	    '#type' => 'textarea',
 	    '#title' => 'Grade Justification',
 	    '#required' => true,
 	    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
 	  ];
-	}
-  }
+  
   $items['save'] = [
 	'#type' => 'submit',
 	'#value' => 'Save Grade For Later',
