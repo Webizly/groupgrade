@@ -71,8 +71,14 @@ class TaskFactory {
 
         $t->settings = $this->tasks[$n];
         $t->data = [];
+		
+		if(isset($task['criteria'])){
+			$t->setData('grades',$task['criteria']);
+		}
+		
         $t->save();
       endfor;
     endforeach;
+	
   }
 }

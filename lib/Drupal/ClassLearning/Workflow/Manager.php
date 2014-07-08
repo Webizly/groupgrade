@@ -535,6 +535,30 @@ Thanks!',
 	        // it an alias for all the roles.
 	        'user alias all types' => true,
 	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  'politeness' => [
+			    'max' => 10,
+			    'description' => 'Judge how polite this answer is',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'neatness' => [
+			    'max' => 20,
+			    'description' => 'Judge how neat this answer is',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'beauty' => [
+			    'max' => 70,
+			    'description' => 'Judge how beautiful this answer is',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			],	
+	
 	        'trigger' => [
 	          [
 	            'type' => 'reference task status',

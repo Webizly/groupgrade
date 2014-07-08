@@ -553,19 +553,19 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $items[] = ['#markup' => sprintf('<h5>%s: %s</h5>', t('Current Task'), t($params['task']->humanTask()))];
   
   //Set up another for each loop, this time for fields
-  foreach($task->data['grade'] as $grade){
+  foreach($task->data['grade'] as $category => $g){
 	  $items[$category . '-grade'] = [
 	    '#type' => 'textfield',
-	    '#title' => $grade['description'],
+	    '#title' => $g['description'],
 	    '#required' => true,
-	    '#default_value' => (isset($grade['grade'])) ? $grade['grade'] : '',
+	    '#default_value' => (isset($g['grade'])) ? $g['grade'] : '',
 	  ];
 	
 	  $items[$category . '-justification'] = [
 	    '#type' => 'textarea',
 	    '#title' => 'Justify your grade',
 	    '#required' => true,
-	    '#default_value' => (isset($grade['justification']) ? $grade['justification'] : '',
+	    '#default_value' => (isset($g['justification'])) ? $g['justification'] : '',
 	  ];
 	
   }
@@ -707,7 +707,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
     
     foreach ($resolutionGrader->data['grades'] as $aspect => $g) :
 	  $c = '';
-      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($g['grade'])) ? $g['grade']) : '').'</h4>';
+      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.(isset($g['grade']) ? $g['grade'] : '').'</h4>';
 
       if (isset($g['justification']))
         $c .= '<p>'.nl2br($g['justification']).'</p>';
