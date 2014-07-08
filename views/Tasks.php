@@ -518,7 +518,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 	foreach($task->data['grades'] as $category => $grade){
 		// Print the grade
 	    $items[$category . ' lb'] = [
-	      '#markup' => '<strong>'.t(ucwords($category) . ' Grade').':</strong>',
+	      '#markup' => '<strong>'.t(ucwords($category) . ' Grades').':</strong>',
 	    ];
 	    $items[$category . '-grade'] = [
 	      '#type' => 'item',
@@ -534,8 +534,9 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
       	  '#markup' => (! isset($grade['justification'])) ? '' : nl2br($grade['justification']),
     	];
 		
-    	return $items;
 	}
+	
+	return $items;
   endif;
 
   $items['problem'] = [
@@ -559,6 +560,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 	    '#title' => $g['description'],
 	    '#required' => true,
 	    '#default_value' => (isset($g['grade'])) ? $g['grade'] : '',
+	    '#description' => 'Grade Range: 0 - ' . $g['max'],
 	  ];
 	
 	  $items[$category . '-justification'] = [
@@ -599,7 +601,6 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
 	if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
       OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $grade['max']) :
         return drupal_set_message(t('Invalid grade: ' . $form[$category . '-grade']['#value']), 'error');
-	    //return drupal_goto('class/task/' . $task->task_id);
     endif;
 	
 	// It's good. Save.
