@@ -503,7 +503,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
 }
 
 /**
- * Impliments a edit problem form
+ * Implements a grade solution form
  */
 function gg_task_grade_solution_form($form, &$form_state, $params) {
   $problem = $params['problem'];
@@ -553,7 +553,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $items[] = ['#markup' => sprintf('<h5>%s: %s</h5>', t('Current Task'), t($params['task']->humanTask()))];
   
   //Set up another for each loop, this time for fields
-  foreach($task->data['grade'] as $category => $g){
+  foreach($task->data['grades'] as $category => $g){
 	  $items[$category . '-grade'] = [
 	    '#type' => 'textfield',
 	    '#title' => $g['description'],
@@ -605,6 +605,8 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
 	// It's good. Save.
 	$grade['grade'] = $form[$category . '-grade']['#value'];
 	$grade['justification'] = $form[$category . '-justification']['#value'];
+	
+	$task->setGrades($category,$grade);
 	
   endforeach;
   
