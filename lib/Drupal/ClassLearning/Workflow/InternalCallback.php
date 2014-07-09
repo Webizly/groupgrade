@@ -27,6 +27,8 @@ class InternalCallback {
    */
   public static function resolve_grades(WorkflowTask $task)
   {
+  	
+	watchdog(WATCHDOG_INFO, 'Task #' . $task->task_id);
     if (! isset($task->settings['reference task']))
       throw new CallbackException('Workflow task resolve_grades does not have reference task.');
 
@@ -41,10 +43,10 @@ class InternalCallback {
 	$lowest = 999;
     $range = (isset($task->settings['resolve range'])) ? (int) $task->settings['resolve range'] : 15;
 	
-	foreach($tasks as $task){
+	foreach($tasks as $t){
 		//Array of scores
 		$scores = array();
-		foreach($task->data['grades'] as $category => $g){
+		foreach($t->data['grades'] as $category => $g){
 			$scores[] = $g['grade'];
 		}
 		//Add these scores up
