@@ -1456,11 +1456,12 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   
   foreach($grades as $grade) : foreach($grade->data['grades'] as $category => $g) :
 	  $score = $form[$category . '-grade']['#value'];
-	  $total += $score;
-	  if($score !== abs($score) || $score < 0 || $score > $g['max'])
+	  if($score < 0 || $score > $g['max']){
 	    return drupal_set_message(t('Invalid grade: ' . $score),'error');
-	  data[$category . '-grade'] = $form[$category . '-grade']['#value'];
-	  data[$category] = $form[$category]['#value'];
+	  }
+	  $total += $score;
+	  $data[$category . '-grade'] = $form[$category . '-grade']['#value'];
+	  $data[$category] = $form[$category]['#value'];
   endforeach; endforeach;
 
   $data['comment'] = $form['comment']['#value'];
