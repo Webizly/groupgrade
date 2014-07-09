@@ -1437,32 +1437,37 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   if (! $form_state['build_info']['args'][0]['edit'])
     return drupal_not_found();
     
+	// Previous Grades
+  $grades = Task::where('workflow_id', '=', $task->workflow_id)
+    ->whereType('grade solution')
+    ->whereStatus('complete')
+    ->get();
+	
 /* Old code
   $grade = (int) $form['grade']['#value'];
   if ($grade !== abs($grade) OR $grade < 0 OR $grade > 100)
     return drupal_set_message(t('Invalid grade: '.$grade));
 */
 
-  //Grab values from the form
-  $completeGrade = (int) $form['completeness-grade']['#value'];
-  //This code works, but the grade is still submitted anyway. Just a reminder...
-  if ($completeGrade !== abs($completeGrade) OR $completeGrade < 0 OR $completeGrade > 100)
-    return drupal_set_message(t('Invalid grade: '.$completeGrade));
+  //We will be inserting this into task->setDataAttribute
+  $data = array();
   
-  $correctGrade = (int) $form['correctness-grade']['#value'];
-  //This code works, but the grade is still submitted anyway. Just a reminder...
-  if ($correctGrade !== abs($correctGrade) OR $correctGrade < 0 OR $correctGrade > 100)
-    return drupal_set_message(t('Invalid grade: '.$correctGrade));
+  $total = 0;
+  
+  foreach($grades as $grade) : foreach($grade->data['grades'] as $category => $g) :
+	  $score = $form[$category . '-grade']['#value'];
+	  $total += $score;
+	  if($score !== abs($score) || $score < 0 || $score > $g['max'])
+	    return drupal_set_message(t('Invalid grade: ' . $score),'error');
+	  data[$category . '-grade'] = $form[$category . '-grade']['#value'];
+	  data[$category] = $form[$category]['#value'];
+  endforeach; endforeach;
 
+  $data['comment'] = $form['comment']['#value'];
 
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
-  $task->setDataAttribute([
-    'completeness-grade' =>  $completeGrade,
-    'completeness' => $form['completeness']['#value'],
-    'correctness-grade' => $correctGrade,
-    'correctness' => $form['correctness']['#value'],
-    'comment' => $form['comment']['#value']
-  ]);
+  
+  $task->setDataAttribute($data);
 
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
   $task->save();
@@ -1471,7 +1476,7 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
     $task->complete();
 
     $workflow = $task->workflow()->first();
-    $workflow->setData('grade', $completeGrade + $correctGrade);
+    $workflow->setData('grade', $total);
     $workflow->save();
   endif;
   
