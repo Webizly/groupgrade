@@ -1338,39 +1338,26 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     ];
 */
 
-	//Completeness Grade
-	$items['completeness-grade lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Completeness Grade')),
-    ];
-    $items['completeness-grade'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
-    ];
-	//Completeness Justification
-	$items['completeness lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Completeness Justification')),
-    ];
-    $items['completeness'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
-    ];
+	foreach($grades as $grade){
+		foreach($grade->data['grades'] as $category => $g){
+			$items[$category. '-grade lb'] = [
+		      '#markup' => sprintf('<strong>%s:</strong>', t(ucfirst($category) . ' Grade')),
+		    ];
+		    $items[$category. '-grade'] = [
+		      '#type' => 'item',
+		      '#markup' => (isset($task->data[$category. '-grade'])) ? $task->data[$category. '-grade'] : '',
+		    ];
+			//Completeness Justification
+			$items[$category. ' lb'] = [
+		      '#markup' => sprintf('<strong>%s:</strong>', t(ucfirst($category) . ' Justification')),
+		    ];
+		    $items[$category] = [
+		      '#type' => 'item',
+		      '#markup' => (isset($task->data[$category])) ? $task->data[$category] : '',
+		    ];
+		}
+	}
 
-	//Correctness Grade
-	$items['correctness-grade lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Correctness Grade')),
-    ];
-    $items['correctness-grade'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
-    ];
-	//Correctness Justification
-	$items['correctness lb'] = [
-      '#markup' => sprintf('<strong>%s:</strong>', t('Correctness Justification')),
-    ];
-    $items['correctness'] = [
-      '#type' => 'item',
-      '#markup' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
-    ];
 
 	//Why was it resolved this way?
     $items['comment lb'] = [
@@ -1389,76 +1376,39 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     ];
 
   // Previous grades
-  if (count($grades) > 0) : foreach ($grades as $grade) :
+  if (count($grades) > 0) : foreach ($grades as $grade) : foreach($grade->data['grades'] as $category => $g) :
     $items[] = [
-      '#markup' => sprintf('<h4>%s: %s</h4>', t('Completeness Grade'), $grade->data['completeness-grade'])
+      '#markup' => sprintf('<h4>%s: %s</h4>', t(ucfirst($category) . ' Grade'), $g['grade'])
     ];
 
     $items[] = [
-      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t('Completeness'), nl2br($grade->data['completeness']))
+      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t(ucfirst($category)), nl2br($g['justification']))
     ];
 
-    $items[] = [
-      '#markup' => sprintf('<h4>%s: %s</h4>', t('Correctness Grade'), $grade->data['correctness-grade'])
-    ];
-
-    $items[] = [
-      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t('Correctness'), nl2br($grade->data['correctness']))
-    ];
 
     $items[] = [
       '#markup' => '<hr />',
     ];
-  endforeach; endif;
-/*
- * Old content
+  endforeach; endforeach; endif;
 
-  $items['grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Grade (0-100)',
-    '#required' => true,
-    '#default_value' => (isset($task->data['grade'])) ? $task->data['grade'] : '',
-  ];
 
-  $items['justification'] = [
-    '#type' => 'textarea',
-    '#title' => 'Grade Justification',
-    '#required' => true,
-    '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
-  ];
-*/
+foreach($grades as $grade) : foreach($grade->data['grades'] as $category => $g) :
+	$items[$category . '-grade'] = [
+	    '#type' => 'textfield',
+	    '#title' => $g['description'],
+	    '#required' => true,
+	    '#description' => 'Grade Scale: 0 - ' . $g['max'],
+	    '#default_value' => (isset($task->data[$category . '-grade'])) ? $task->data[$category . '-grade'] : '',
+	  ];
+	
+	  $items[$category] = [
+	    '#type' => 'textarea',
+	    '#title' => 'Justify your grade of the solution\'s ' . $category,
+	    '#required' => true,
+	    '#default_value' => (isset($task->data[$category])) ? $task->data[$category] : '',
+	  ];
+endforeach; endforeach;
 
-//New content
-
-$items['completeness-grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Grade how complete the solution is. (0-50)',
-    '#required' => true,
-    '#default_value' => (isset($task->data['completeness-grade'])) ? $task->data['completeness-grade'] : '',
-  ];
-
-  $items['completeness'] = [
-    '#type' => 'textarea',
-    '#title' => 'Justify your grade of the solution\'s completeness',
-    '#required' => true,
-    '#default_value' => (isset($task->data['completeness'])) ? $task->data['completeness'] : '',
-  ];
-
-  $items['correctness-grade'] = [
-    '#type' => 'textfield',
-    '#title' => 'Grade how correct the solution is. (0-50)',
-    '#required' => true,
-    '#default_value' => (isset($task->data['correctness-grade'])) ? $task->data['correctness-grade'] : '',
-  ];
-
-  $items['correctness'] = [
-    '#type' => 'textarea',
-    '#title' => 'Justify your grade of the solution\'s correctness',
-    '#required' => true,
-    '#default_value' => (isset($task->data['correctness'])) ? $task->data['correctness'] : '',
-  ];
-
-//End of new content
 
   $items['comment'] = [
     '#type' => 'textarea',
