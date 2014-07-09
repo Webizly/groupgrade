@@ -86,9 +86,9 @@ class InternalCallback {
 
     $index = [];
 
-    foreach ($tasks as $task){
+    foreach ($tasks as $t){
       $total = 0;
-	  foreach($task->data['grades'] as $g){
+	  foreach($t->data['grades'] as $g){
         $total += intval($g['grade']);
 	  }
 	  $index[] = $total;
