@@ -708,13 +708,14 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
   if ($resolutionGrader) :
     
-    foreach ($resolutionGrader->data['grades'] as $aspect => $g) :
-	  $c = '';
-      $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.(isset($g['grade']) ? $g['grade'] : '').'</h4>';
+	$c = '';
+	
+    foreach($grades[0]->data['grades'] as $category => $g) :
+      $c .= '<h4>'.t('Grade '.ucfirst($category)).': '.(isset($resolutionGrader->data[$category . '-grade']) ? $resolutionGrader->data[$category . '-grade'] : '').'</h4>';
 
-      if (isset($g['justification']))
-        $c .= '<p>'.nl2br($g['justification']).'</p>';
-    endforeach;
+      if (isset($resolutionGrader->data[$category]))
+        $c .= '<p>'.nl2br($resolutionGrader->data[$category]).'</p>';
+	endforeach;
 
     $a->addGroup('Resolution Grader #'.$resolutionGrader->task_id, 'grade-'.$resolutionGrader->task_id, $c);
   endif;
@@ -866,26 +867,19 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     
     
     $data = [];
-    foreach (current($grades)->data['grades'] as $field => $g){
-	    $data[$field] = (isset($task->data[$field])) ? $task->data[$field] : '';
+    foreach ($grades[0]->data['grades'] as $field => $g){
+	    //$data[$field] = (isset($task->data[$field])) ? $task->data[$field] : '';
 	
 	    $items[$field . '-grade'] = [
 	      '#type' => 'item',
-	      '#markup' => sprintf('<p><strong>%s:</strong> %d%%', t(ucfirst($field). ' Grade'), $data[$field . '-grade'])
+	      '#markup' => sprintf('<p><strong>%s:</strong> %d%%', t(ucfirst($field). ' Grade'), $task->data[$field . '-grade'])
 	    ];
 	
 	    $items[$field] = [
 	      '#type' => 'item',
-	      '#markup' => sprintf('<p><strong>%s:</strong><br /> %s', t(ucfirst($field)), nl2br($data[$field]))
+	      '#markup' => sprintf('<p><strong>%s:</strong><br /> %s', t(ucfirst($field)), nl2br($task->data[$field]))
 	    ];
-	
-	    $items['justice lb'] = [
-	      '#markup' => '<strong>'.t($field . ' Justification').':</strong>',
-	    ];
-	    $items[$field . ' justice'] = [
-	      '#type' => 'item',
-	      '#markup' => sprintf('<p>%s</p>', nl2br($data[$field . ' justification'])),
-	    ];
+		
 	}
     return $items;
   endif;
@@ -938,7 +932,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     $c = '';
     foreach ($grades[0]->data['grades'] as $aspect => $g) :
       $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Grade').': '.$disputeTask->data['proposed-'.$aspect.'-grade'].'</h4>';
-      $c .= '<h4>'.t('Proposed '.ucfirst($aspect).' Justification').': </h4><p>'.nl2br($disputeTask->data['proposed-'.$aspect]).'</p>';
+      $c .= '<p>'.nl2br($disputeTask->data['proposed-'.$aspect]).'</p>';
     endforeach;
     
     $c .= '<h4>'.t('Explain fully why all prior graders were wrong, and your regrading is correct').':</h4>';
@@ -1013,7 +1007,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 
     if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
       OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > 50)
-      return drupal_set_message(t('Invalid grade: '.$category . '-grade'));
+      return drupal_set_message(t('Invalid grade: '.$category . '-grade'),'error');
     else
       $gradeSum += $form[$category . '-grade']['#value'];
   endforeach;
