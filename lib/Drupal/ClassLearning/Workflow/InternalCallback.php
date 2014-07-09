@@ -31,27 +31,40 @@ class InternalCallback {
       throw new CallbackException('Workflow task resolve_grades does not have reference task.');
 
     // Get the grades
+    // We need to redefine how this works since we could be using more than 2 values
+    // Get all grades, add, then compare highest with lowest. Just looking for a difference.
     $tasks = WorkflowTask::where('workflow_id', '=', $task->workflow_id)
       ->whereType($task->settings['reference task'])
       ->get();
 
-    $num = -1;
+    $highest = -1;
+	$lowest = 999;
     $range = (isset($task->settings['resolve range'])) ? (int) $task->settings['resolve range'] : 15;
-
-    foreach ($tasks as $it) :
-      if ($num === -1) :
-        $num = intval($it->data['correctness-grade'] + $it->data['completeness-grade']);
-      else :
-        $addGrade = intval($it->data['correctness-grade'] + $it->data['completeness-grade']);
-        if (abs($num-$addGrade) > $range)
-        {
-          // Not in range
-          $task->setData('value', false);
-          return $task->complete();
-        }
-      endif;
-    endforeach;
-
+	
+	foreach($tasks as $task){
+		//Array of scores
+		$scores = array();
+		foreach($task->data['grades'] as $category => $g){
+			$scores[] = $g['grade'];
+		}
+		//Add these scores up
+		$total = 0;
+		foreach($scores as $s){
+			$total+=$s;
+		}
+		
+		//Is this the highest we have received so far? The lowest?
+		if($total > $highest)
+		  $highest = $total;
+		if($total < $lowest)
+		  $lowest = $total;
+	}
+	
+	if(($highest-$lowest) > $range){
+		$task->setData('value', false);
+		return $task->complete();
+	}
+	
     $task->setData('value', true);
     return $task->complete();
   }
