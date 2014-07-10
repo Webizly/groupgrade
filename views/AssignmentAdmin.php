@@ -388,12 +388,31 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 	
 	if($tasks[$key][$key . '-radio']['#value'] == 0){
 		// Duration
-		$task_expire[$key]['duration'] = $tasks[$key][$key . '-duration']['#value'];
+		$t = $tasks[$key][$key . '-duration'['#value'];
+		if(!is_int($t) || $t <= 0)
+		  return drupal_set_message('Invalid duration specified for ' . $key,'error');
+		$task_expire[$key]['duration'] = $t;
 	}
 	else{
 		// Date
+		foreach (['year', 'month', 'day', 'hour', 'minute'] as $i) :
+			$start = $tasks[$key][$key.'-date']['#value'];
+		    if ($start[$i] == '')
+		      $start[$i] = '00';
+		    elseif ((int) $start[$i] < 9)
+		      $start[$i] = '0'.intval($start[$i]);
+		    else
+		      $start[$i] = (string) $start[$i];
+		
+		    if ($i == 'year' AND intval($start[$i]) == 0)
+		      $start[$i] = '0000';
+			
+			$task_expire[$key]['date'] = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
+			if($task_expire[$key]['date'] == '0000-00-00 00:00:00')
+			  return drupal_set_message(t('Expiration date is not set for ' . $key),'error');
+		endforeach;
+		
 	}
-	
   }
   /*foreach($form['task_expire']['#value'] as $name => $task){
     print($task['duration']['#value']);
