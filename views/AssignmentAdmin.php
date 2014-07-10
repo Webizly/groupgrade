@@ -263,13 +263,13 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#type' => 'fieldset',
   );
 
-  $items[] = add_task_field('create problem');
-  $items[] = add_task_field('edit problem',1);
-  $items[] = add_task_field('create solution');
-  $items[] = add_task_field('grade solution');
-  $items[] = add_task_field('resolution grader');
-  $items[] = add_task_field('dispute');
-  $items[] = add_task_field('resolve dispute');
+  add_task_field($items,'create problem');
+  add_task_field($items,'edit problem',1);
+  add_task_field($items,'create solution');
+  add_task_field($items,'grade solution');
+  add_task_field($items,'resolution grader');
+  add_task_field($items,'dispute');
+  add_task_field($items,'resolve dispute',1);
 
   $items['assignment_id'] = array(
     '#type' => 'hidden',
@@ -285,9 +285,9 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 }
 
 //A convenient function that adds tasks to the function above. Saves time!
-function add_task_field($type, $duration = '3'){
+function add_task_field(&$items, $type, $duration = '3'){
 	
-	$choices = array(0 => t('Set Duration'), 1 => t('<span>Set Date</span>'));
+	$choices = array(0 => t('Set Duration'), 1 => t('Set Date'));
 	
 	$items['task_expire'][$type] = array(
     '#type' => 'fieldset',
@@ -332,8 +332,6 @@ function add_task_field($type, $duration = '3'){
 	  ),
 	),
   );
-  
-  return $items;
 }
 
 function groupgrade_add_assignment_section_submit($form, &$form_state)
@@ -373,11 +371,34 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   // Setting task expiration dates. These are set up as follows:
   // $assignment->assignment_settings['task_expire'][$type][values]
   // When setting expiration dates for tasks, use these instead!
-  /*
-  foreach($form['task_expire'] as $name => $task){
-  	
+  
+  // Code worth keeping track of:
+  // --WorkflowTask.php timeoutTime()
+  
+  
+  $task_expire = array();
+  $tasks = form_process_fieldset($form['task_expire'],$form_state);
+  
+  foreach($tasks as $key => $value){
+  	// Is this something we actually set, or is it a fieldset parameter?
+	if(substr($key,0,1) == '#')
+	  continue;
+	
+	// So will this expire after a set amount of days or on a certain date?
+	
+	if($tasks[$key][$key . '-radio']['#value'] == 0){
+		// Duration
+		$task_expire[$key]['duration'] = $tasks[$key][$key . '-duration']['#value'];
+	}
+	else{
+		// Date
+	}
+	
   }
-*/
+  /*foreach($form['task_expire']['#value'] as $name => $task){
+    print($task['duration']['#value']);
+  }*/
+
   return drupal_set_message(sprintf('Added assignment "%s" to section "%s"', $assignment->assignment_title, $sectionObject->section_name));
 }
 
