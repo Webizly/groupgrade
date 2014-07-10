@@ -375,9 +375,13 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   // Code worth keeping track of:
   // --WorkflowTask.php timeoutTime()
   
-  
   $task_expire = array();
   $tasks = form_process_fieldset($form['task_expire'],$form_state);
+  
+  // We saved an assignment section earlier, let's find the assignment
+  // section with the highest id.
+  $asec = AssignmentSection::orderBy('asec_id','desc')
+	->first();
   
   foreach($tasks as $key => $value){
   	// Is this something we actually set, or is it a fieldset parameter?
@@ -388,8 +392,8 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 	
 	if($tasks[$key][$key . '-radio']['#value'] == 0){
 		// Duration
-		$t = $tasks[$key][$key . '-duration'['#value'];
-		if(!is_int($t) || $t <= 0)
+		$t = $tasks[$key][$key . '-duration']['#value'];
+		if(intval($t) <= 0)
 		  return drupal_set_message('Invalid duration specified for ' . $key,'error');
 		$task_expire[$key]['duration'] = $t;
 	}
@@ -414,9 +418,13 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 		
 	}
   }
-  /*foreach($form['task_expire']['#value'] as $name => $task){
-    print($task['duration']['#value']);
-  }*/
+
+  db_insert('pla_task_times')
+	  ->fields(array(
+	  'asec_id' => $asec->asec_id,
+	  'data' => serialize($task_expire),
+	  ))
+	  ->execute();
 
   return drupal_set_message(sprintf('Added assignment "%s" to section "%s"', $assignment->assignment_title, $sectionObject->section_name));
 }
