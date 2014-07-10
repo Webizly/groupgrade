@@ -254,6 +254,54 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#default_value' => '',
   );
 
+  $items['duration_divider'] = array(
+    '#type' => 'item',
+    '#markup' => '<hr><h3>Task Expiration Dates</h3>',
+  );
+
+  $choices = array(0 => t('Set Duration'), 1 => t('Set Date'));
+
+  $items['create problem'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Create Problem',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  
+  $items['create problem']['radio'] = array(
+    '#type' => 'radios',
+    '#title' => t('Expire After: '),
+    '#default_value' => isset($node->radio) ? $node->radio : 0,
+    '#options' => $choices,
+  );
+
+  $items['create problem']['duration'] = array(
+    '#type' => 'textfield',
+    '#title' => '# of Days After Triggering',
+    '#default_value' => '3',
+    '#states' => array(
+	  'visible' => array(
+	    ':input[name="radio"]' => array('value' => 0),
+	  ),
+	),
+  );
+
+  $items['create problem']['date'] = array(
+    '#type' => 'date_select',
+
+    '#date_format' => 'Y-m-d H:i',
+    '#title' => t('Expiration Date'),
+    '#date_year_range' => '-0:+2', 
+
+    // The minute increment.
+    '#date_increment' => '15',
+    '#default_value' => '',
+    '#states' => array(
+	  'visible' => array(
+	    ':input[name="radio"]' => array('value' => 1),
+	  ),
+	),
+  );
 
   $items['assignment_id'] = array(
     '#type' => 'hidden',
@@ -264,6 +312,7 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#type' => 'submit',
     '#value' => t('Add Section'),
   );
+  
   return $items;
 }
 
