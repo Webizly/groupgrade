@@ -263,10 +263,13 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#type' => 'fieldset',
   );
 
-  
   $items[] = add_task_field('create problem');
   $items[] = add_task_field('edit problem',1);
+  $items[] = add_task_field('create solution');
   $items[] = add_task_field('grade solution');
+  $items[] = add_task_field('resolution grader');
+  $items[] = add_task_field('dispute');
+  $items[] = add_task_field('resolve dispute');
 
   $items['assignment_id'] = array(
     '#type' => 'hidden',
@@ -284,7 +287,7 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 //A convenient function that adds tasks to the function above. Saves time!
 function add_task_field($type, $duration = '3'){
 	
-	$choices = array(0 => t('Set Duration'), 1 => t('Set Date'));
+	$choices = array(0 => t('Set Duration'), 1 => t('<span>Set Date</span>'));
 	
 	$items['task_expire'][$type] = array(
     '#type' => 'fieldset',
@@ -367,6 +370,14 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   $sectionObject = Section::find($section);
   $assignment = Assignment::find((int) $form['assignment_id']['#value']);
 
+  // Setting task expiration dates. These are set up as follows:
+  // $assignment->assignment_settings['task_expire'][$type][values]
+  // When setting expiration dates for tasks, use these instead!
+  /*
+  foreach($form['task_expire'] as $name => $task){
+  	
+  }
+*/
   return drupal_set_message(sprintf('Added assignment "%s" to section "%s"', $assignment->assignment_title, $sectionObject->section_name));
 }
 

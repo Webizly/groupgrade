@@ -13,4 +13,11 @@ class Assignment extends ModelBase {
     return \Drupal\ClassLearning\Models\AssignmentSection::where('assignment_id', '=', $this->assignment_id)
       ->join('section', 'section.section_id', '=', 'assignment_section.section_id');
   }
+  
+  public function setSettings($key, $value = NULL)
+  {
+    $assignment_settings = $this->assignment_settings;
+    $assignment_settings[$key] = $value;
+    $this->assignment_settings = $assignment_settings;
+  }
 }
