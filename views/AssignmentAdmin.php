@@ -259,49 +259,14 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#markup' => '<hr><h3>Task Expiration Dates</h3>',
   );
 
-  $choices = array(0 => t('Set Duration'), 1 => t('Set Date'));
-
-  $items['create problem'] = array(
+  $items['task_expire'] = array(
     '#type' => 'fieldset',
-    '#title' => 'Create Problem',
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
   );
+
   
-  $items['create problem']['radio'] = array(
-    '#type' => 'radios',
-    '#title' => t('Expire After: '),
-    '#default_value' => isset($node->radio) ? $node->radio : 0,
-    '#options' => $choices,
-  );
-
-  $items['create problem']['duration'] = array(
-    '#type' => 'textfield',
-    '#title' => '# of Days After Triggering',
-    '#default_value' => '3',
-    '#states' => array(
-	  'visible' => array(
-	    ':input[name="radio"]' => array('value' => 0),
-	  ),
-	),
-  );
-
-  $items['create problem']['date'] = array(
-    '#type' => 'date_select',
-
-    '#date_format' => 'Y-m-d H:i',
-    '#title' => t('Expiration Date'),
-    '#date_year_range' => '-0:+2', 
-
-    // The minute increment.
-    '#date_increment' => '15',
-    '#default_value' => '',
-    '#states' => array(
-	  'visible' => array(
-	    ':input[name="radio"]' => array('value' => 1),
-	  ),
-	),
-  );
+  $items[] = add_task_field('create problem');
+  $items[] = add_task_field('edit problem',1);
+  $items[] = add_task_field('grade solution');
 
   $items['assignment_id'] = array(
     '#type' => 'hidden',
@@ -316,6 +281,57 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
   return $items;
 }
 
+//A convenient function that adds tasks to the function above. Saves time!
+function add_task_field($type, $duration = '3'){
+	
+	$choices = array(0 => t('Set Duration'), 1 => t('Set Date'));
+	
+	$items['task_expire'][$type] = array(
+    '#type' => 'fieldset',
+    '#title' => ucwords($type),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#prefix' => '<div style="margin-bottom:50px">',
+    '#suffix' => '</div>',
+  );
+  
+  $items['task_expire'][$type][$type . '-radio'] = array(
+    '#type' => 'radios',
+    '#title' => t('Expire After: '),
+    '#default_value' => isset($node->radio) ? $node->radio : 0,
+    '#options' => $choices,
+  );
+
+  $items['task_expire'][$type][$type . '-duration'] = array(
+    '#type' => 'textfield',
+    '#title' => '# of Days After Triggering',
+    '#default_value' => $duration,
+    '#states' => array(
+	  'visible' => array(
+	    ':input[name="' . $type . '-radio"]' => array('value' => 0),
+	  ),
+	),
+  );
+
+  $items['task_expire'][$type][$type . '-date'] = array(
+    '#type' => 'date_select',
+
+    '#date_format' => 'Y-m-d H:i',
+    '#title' => t('Expiration Date'),
+    '#date_year_range' => '-0:+2', 
+
+    // The minute increment.
+    '#date_increment' => '15',
+    '#default_value' => '',
+    '#states' => array(
+	  'visible' => array(
+	    ':input[name="' . $type . '-radio"]' => array('value' => 1),
+	  ),
+	),
+  );
+  
+  return $items;
+}
 
 function groupgrade_add_assignment_section_submit($form, &$form_state)
 {
