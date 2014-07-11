@@ -268,14 +268,68 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#suffix' => '</div>',
   );
 
-  add_task_field($items,'create problem');
-  add_task_field($items,'edit problem',1);
-  add_task_field($items,'create solution');
-  add_task_field($items,'grade solution');
-  add_task_field($items,'resolution grader');
-  add_task_field($items,'dispute');
-  add_task_field($items,'resolve dispute',1);
+  $choices = array(0 => t('Set Duration'), 1 => t('Set Date'));
 
+  $types = array(
+	'create problem' => 3,
+	'edit problem' => 1,
+	'create solution' => 3,
+	'grade solution' => 3,
+	'resolution grader' => 3,
+	'dispute' => 3,
+	'resolve dispute' => 1,
+  );
+
+  foreach($types as $type => $duration){
+
+      $t = str_replace(' ','_',$type);
+
+	  $items['task_expire'][$t] = array(
+	    '#type' => 'fieldset',
+	    '#title' => ucwords($type),
+	    '#collapsible' => TRUE,
+	    '#collapsed' => TRUE,
+	    '#prefix' => '<div style="margin-bottom:40px;margin-left:30px;">',
+	    '#suffix' => '</div>',
+	  );
+	  
+	  $items['task_expire'][$t][$t . '-radio'] = array(
+	    '#type' => 'radios',
+	    '#title' => t('Expire After: '),
+	    '#default_value' => 0,
+	    '#options' => $choices,
+	  );
+	
+	  $items['task_expire'][$t][$t . '-duration'] = array(
+	    '#type' => 'textfield',
+	    '#title' => '# of Days After Triggering',
+	    '#default_value' => $duration,
+	    '#states' => array(
+		  'visible' => array(
+		    ':input[name="' . $t . '-radio"]' => array('value' => 0),
+		  ),
+		),
+	  );
+	
+	  $items['task_expire'][$t][$t . '-date'] = array(
+	    '#type' => 'date_select',
+	
+	    '#date_format' => 'Y-m-d H:i',
+	    '#title' => t('Expiration Date'),
+	    '#date_year_range' => '-0:+2', 
+	
+	    // The minute increment.
+	    '#date_increment' => '15',
+	    '#default_value' => '',
+	    '#states' => array(
+		  'visible' => array(
+		    ':input[name="' . $t . '-radio"]' => array('value' => 1),
+		  ),
+		),
+	  );
+
+  }
+	  
   $items['assignment_id'] = array(
     '#type' => 'hidden',
     '#value' => $assignment
@@ -289,55 +343,6 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
   return $items;
 }
 
-//A convenient function that adds tasks to the function above. Saves time!
-function add_task_field(&$items, $type, $duration = '3'){
-	
-	$choices = array(0 => t('Set Duration'), 1 => t('Set Date'));
-	
-	$items['task_expire'][$type] = array(
-    '#type' => 'fieldset',
-    '#title' => ucwords($type),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#prefix' => '<div style="margin-bottom:40px;margin-left:30px;">',
-    '#suffix' => '</div>',
-  );
-  
-  $items['task_expire'][$type][$type . '-radio'] = array(
-    '#type' => 'radios',
-    '#title' => t('Expire After: '),
-    '#default_value' => 0,
-    '#options' => $choices,
-  );
-
-  $items['task_expire'][$type][$type . '-duration'] = array(
-    '#type' => 'textfield',
-    '#title' => '# of Days After Triggering',
-    //'#default_value' => $duration,
-    '#states' => array(
-	  'visible' => array(
-	    ':input[name="' . $type . '-radio"]' => array('value' => 0),
-	  ),
-	),
-  );
-
-  $items['task_expire'][$type][$type . '-date'] = array(
-    '#type' => 'date_select',
-
-    '#date_format' => 'Y-m-d H:i',
-    '#title' => t('Expiration Date'),
-    '#date_year_range' => '-0:+2', 
-
-    // The minute increment.
-    '#date_increment' => '15',
-    '#default_value' => '',
-    '#states' => array(
-	  'visible' => array(
-	    ':input[name="' . $type . '-radio"]' => array('value' => 1),
-	  ),
-	),
-  );
-}
 
 function groupgrade_add_assignment_section_submit($form, &$form_state)
 {
@@ -381,9 +386,8 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   // --WorkflowTask.php timeoutTime()
   
   $task_expire = array();
-  watchdog(WATCHDOG_INFO,'before: ' . $form['task_expire']['create problem']['create problem-duration']['#value']);
+  
   $tasks = form_process_fieldset($form['task_expire'],$form_state);
-  watchdog(WATCHDOG_INFO,'after: ' . $form['task_expire']['create problem']['create problem-duration']['#value']);
   // We saved an assignment section earlier, let's find the assignment
   // section with the highest id.
   $asec = AssignmentSection::orderBy('asec_id','desc')
@@ -402,7 +406,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 		//if(intval($t) <= 0)
 		//  return drupal_set_message('Invalid duration specified for ' . $key,'error');
 		$task_expire[$key]['duration'] = $t;
-		watchdog(WATCHDOG_INFO,'duration ' . $t);
+		drupal_set_message($key . ': ' . $t);
 	}
 	else{
 		// Date
@@ -419,6 +423,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 		      $start[$i] = '0000';
 			
 			$task_expire[$key]['date'] = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
+			drupal_set_message($task_expire[$key]['date']);
 			if($task_expire[$key]['date'] == '0000-00-00 00:00:00')
 			  return drupal_set_message(t('Expiration date is not set for ' . $key),'error');
 		endforeach;
