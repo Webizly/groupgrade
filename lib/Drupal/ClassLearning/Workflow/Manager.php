@@ -544,13 +544,6 @@ Thanks!',
 			    'justification' => '',
 			  ],
 			  
-			  'neatness' => [
-			    'max' => 20,
-			    'description' => 'Judge how neat this answer is',
-			    'grade' => 0,
-			    'justification' => '',
-			  ],
-			  
 			  'beauty' => [
 			    'max' => 70,
 			    'description' => 'Judge how beautiful this answer is',

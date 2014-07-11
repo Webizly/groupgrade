@@ -256,11 +256,16 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 
   $items['duration_divider'] = array(
     '#type' => 'item',
-    '#markup' => '<hr><h3>Task Expiration Dates</h3>',
+    '#markup' => '<hr>',
   );
 
   $items['task_expire'] = array(
     '#type' => 'fieldset',
+    '#title' => 'Task Expiration Dates',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#prefix' => '<div style="margin-bottom:50px;">',
+    '#suffix' => '</div>',
   );
 
   add_task_field($items,'create problem');
@@ -294,21 +299,21 @@ function add_task_field(&$items, $type, $duration = '3'){
     '#title' => ucwords($type),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-    '#prefix' => '<div style="margin-bottom:50px">',
+    '#prefix' => '<div style="margin-bottom:40px;margin-left:30px;">',
     '#suffix' => '</div>',
   );
   
   $items['task_expire'][$type][$type . '-radio'] = array(
     '#type' => 'radios',
     '#title' => t('Expire After: '),
-    '#default_value' => isset($node->radio) ? $node->radio : 0,
+    '#default_value' => 0,
     '#options' => $choices,
   );
 
   $items['task_expire'][$type][$type . '-duration'] = array(
     '#type' => 'textfield',
     '#title' => '# of Days After Triggering',
-    '#default_value' => $duration,
+    //'#default_value' => $duration,
     '#states' => array(
 	  'visible' => array(
 	    ':input[name="' . $type . '-radio"]' => array('value' => 0),
@@ -376,8 +381,9 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
   // --WorkflowTask.php timeoutTime()
   
   $task_expire = array();
+  watchdog(WATCHDOG_INFO,'before: ' . $form['task_expire']['create problem']['create problem-duration']['#value']);
   $tasks = form_process_fieldset($form['task_expire'],$form_state);
-  
+  watchdog(WATCHDOG_INFO,'after: ' . $form['task_expire']['create problem']['create problem-duration']['#value']);
   // We saved an assignment section earlier, let's find the assignment
   // section with the highest id.
   $asec = AssignmentSection::orderBy('asec_id','desc')
@@ -390,17 +396,18 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 	
 	// So will this expire after a set amount of days or on a certain date?
 	
-	if($tasks[$key][$key . '-radio']['#value'] == 0){
+	if($form['task_expire'][$key][$key . '-radio']['#value'] == 0){
 		// Duration
-		$t = $tasks[$key][$key . '-duration']['#value'];
-		if(intval($t) <= 0)
-		  return drupal_set_message('Invalid duration specified for ' . $key,'error');
+		$t = $form['task_expire'][$key][$key . '-duration']['#value'];
+		//if(intval($t) <= 0)
+		//  return drupal_set_message('Invalid duration specified for ' . $key,'error');
 		$task_expire[$key]['duration'] = $t;
+		watchdog(WATCHDOG_INFO,'duration ' . $t);
 	}
 	else{
 		// Date
 		foreach (['year', 'month', 'day', 'hour', 'minute'] as $i) :
-			$start = $tasks[$key][$key.'-date']['#value'];
+			$start = $form['task_expire'][$key][$key.'-date']['#value'];
 		    if ($start[$i] == '')
 		      $start[$i] = '00';
 		    elseif ((int) $start[$i] < 9)

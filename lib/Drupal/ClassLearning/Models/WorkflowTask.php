@@ -390,10 +390,52 @@ class WorkflowTask extends ModelBase {
   {
     if ($this->start == NULL)
       throw new ModelException('Start time for instance cannot be null.');
-
-    $duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 2;
-    return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays($duration);
-  }
+	/*
+	$asec = $this->assignmentSection()->first();
+	
+	$result = db_select('pla_task_times','tt')
+	  ->fields('tt')
+	  ->condition('asec_id',$asec->asec_id,'=')
+	  ->execute()
+	  ->fetchAssoc();
+	 
+	// Nope, default behavior then. 
+	if(count($result) == 0){
+	*/
+    	$duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 2;
+    	return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays($duration);
+		/*
+	}
+	
+	else{
+		// We found something, unserialize data.
+		$times = unserialize($result['data']);
+		foreach($times as $key => $value){
+			// Is this the right type?
+			//watchdog(WATCHDOG_INFO,'Type ' . $key);
+			//watchdog(WATCHDOG_INFO,'Duration ' . $value['duration']);
+			if($this->type != $key)
+			  continue;
+			else{
+			  // Check for durations first.
+			  if(isset($value['duration'])){
+			  	return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays($value['duration']);
+			  }
+			  
+			  // Check for a date.
+			  if(isset($value['date'])){
+			  	return Carbon::createFromFormat(MYSQL_DATETIME, $value['date']);
+			  }
+			  
+			  // Neither are set?!
+			  watchdog(WATCHDOG_INFO,"uh oh");
+			  throw new ModelException('Both duration and date are not set for ' . $this->type . ' task.');
+			}
+		}
+	}
+		 */
+}	
+  
 
   /**
    * Retrieve the Carbon object for the force end
