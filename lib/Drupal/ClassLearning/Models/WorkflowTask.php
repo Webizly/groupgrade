@@ -390,30 +390,29 @@ class WorkflowTask extends ModelBase {
   {
     if ($this->start == NULL)
       throw new ModelException('Start time for instance cannot be null.');
-	/*
+	
 	$asec = $this->assignmentSection()->first();
 	
+	// Does this assignment section have a listing in the table?
 	$result = db_select('pla_task_times','tt')
 	  ->fields('tt')
 	  ->condition('asec_id',$asec->asec_id,'=')
 	  ->execute()
 	  ->fetchAssoc();
 	 
-	// Nope, default behavior then. 
+	// Nope, default behavior then
 	if(count($result) == 0){
-	*/
     	$duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 2;
     	return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays($duration);
-		/*
 	}
 	
 	else{
 		// We found something, unserialize data.
 		$times = unserialize($result['data']);
 		foreach($times as $key => $value){
+			// The type will most likely have a _ in it.
+			$key = str_replace('_',' ',$key);
 			// Is this the right type?
-			//watchdog(WATCHDOG_INFO,'Type ' . $key);
-			//watchdog(WATCHDOG_INFO,'Duration ' . $value['duration']);
 			if($this->type != $key)
 			  continue;
 			else{
@@ -429,11 +428,10 @@ class WorkflowTask extends ModelBase {
 			  
 			  // Neither are set?!
 			  watchdog(WATCHDOG_INFO,"uh oh");
-			  throw new ModelException('Both duration and date are not set for ' . $this->type . ' task.');
+			  throw new ModelException('Neither duration and date are set for ' . $this->type . ' task.');
 			}
 		}
 	}
-		 */
 }	
   
 

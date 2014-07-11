@@ -361,8 +361,6 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
     else
       $start[$i] = (string) $start[$i];
 
-    if ($i == 'year' AND intval($start[$i]) == 0)
-      $start[$i] = '0000';
   endforeach;
 
   if ($form['start-now']['#checked'])
@@ -406,28 +404,24 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 		//if(intval($t) <= 0)
 		//  return drupal_set_message('Invalid duration specified for ' . $key,'error');
 		$task_expire[$key]['duration'] = $t;
-		drupal_set_message($key . ': ' . $t);
 	}
 	else{
 		// Date
+		$start = $form['task_expire'][$key][$key.'-date']['#value'];
 		foreach (['year', 'month', 'day', 'hour', 'minute'] as $i) :
-			$start = $form['task_expire'][$key][$key.'-date']['#value'];
 		    if ($start[$i] == '')
-		      $start[$i] = '00';
+		      return drupal_set_message("Invalid date setting for " . $key . " task",'error');
 		    elseif ((int) $start[$i] < 9)
 		      $start[$i] = '0'.intval($start[$i]);
 		    else
 		      $start[$i] = (string) $start[$i];
-		
-		    if ($i == 'year' AND intval($start[$i]) == 0)
-		      $start[$i] = '0000';
 			
-			$task_expire[$key]['date'] = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
-			drupal_set_message($task_expire[$key]['date']);
-			if($task_expire[$key]['date'] == '0000-00-00 00:00:00')
-			  return drupal_set_message(t('Expiration date is not set for ' . $key),'error');
+			if ($i == 'year' AND intval($start[$i]) == 0)
+      		  $start['year'] = (string) date('Y');
+			
 		endforeach;
 		
+		$task_expire[$key]['date'] = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
 	}
   }
 
