@@ -69,7 +69,7 @@ class TaskFactory {
         $t->status = 'not triggered';
         $t->start = NULL;
 
-        $t->settings = $this->tasks[$n];
+        $t->settings = $this->tasks[$name];
         $t->data = [];
 		
 		if(isset($task['criteria'])){

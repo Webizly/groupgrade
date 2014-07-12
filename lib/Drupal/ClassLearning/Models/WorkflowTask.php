@@ -154,6 +154,52 @@ class WorkflowTask extends ModelBase {
 
 	  // Searches for ALL task types that match a unique id and compares the status.
 	  // Very similar to condition above, just altered slightly to support more complicated, non-linear usecases.
+	  // TO DO - Clean this up later, optimization possible
+	  case 'reference all unique task status':
+		if (! isset($condition['task status']))
+          throw new ModelException('Condition not defined for "task status"', 500, null, $condition);
+
+        if (! isset($condition['task type']))
+          throw new ModelException('Condition not defined for "task type"', 500, null, $condition);
+        
+		if (! isset($condition['task reference id']))
+		  throw new ModelException('Condition not defined for "task reference id"', 500, null, $condition);
+		
+        // Query the other workflow tasks
+        $tasks = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+          ->whereType($condition['task type'])
+          ->get();
+
+		// If there are no tasks found, the conditions cannot be met
+        // They need to all meet a status to meet the conditions
+        if ($tasks == NULL)
+          return FALSE;
+
+		// Only care about the ones with the task reference id we're looking for
+		$t = array();
+		foreach($tasks as $task){
+			if($task->settings['task reference id'] == $condition['task reference id']){
+				$t[] = $task;
+			}
+		}
+
+        foreach ($t as $task) :
+          // Correct status
+          if ($task->status == $condition['task status'])
+		    // We found what we're looking for 
+            continue;
+			// Incorrect status
+			return FALSE;
+        endforeach;
+		
+		// True!
+		return TRUE;
+		
+	  break;
+
+	  // Searches for ALL task types that match a unique id and compares the status.
+	  // Very similar to condition above, just altered slightly to support more complicated, non-linear usecases.
+	  // TO DO - Needs optimization 
 	  case 'reference unique task status':
 		if (! isset($condition['task status']))
           throw new ModelException('Condition not defined for "task status"', 500, null, $condition);

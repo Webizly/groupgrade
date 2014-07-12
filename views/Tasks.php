@@ -542,10 +542,12 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $items['problem'] = [
     '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
   ];
-  $items['solution'] = [
-    '#markup' => '<h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
-  ];
-
+  
+  if(isset($items['solution'])){
+	  $items['solution'] = [
+	    '#markup' => '<h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
+	  ];
+  }
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
