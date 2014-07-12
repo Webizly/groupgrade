@@ -509,7 +509,7 @@ Thanks!',
 	        'count' => 2,
 	        'duration' => 3,
 	        'behavior' => 'grade solution',
-			'task reference id' = 'P1.1',
+			'task reference id' => 'P1.1',
 
 	        'trigger' => [
 	          [
@@ -605,10 +605,10 @@ Thanks!',
 	      // Dispute grades
 	      // This step gives the option to dispute the grade they have recieved on their
 	      // soln to yet-another-grader
-	      'dispute' => [
+	      'dispute 1' => [
 	        'duration' => 2,
-	        'user alias' => 'create solution',
-
+			'behavior' => 'dispute',
+			'reference task id' => 'P1.5',
 	        // Trigger this if one of the tasks "resolution grader" or
 	        // "grades ok" is complete.
 	        'trigger' => [
@@ -619,37 +619,34 @@ Thanks!',
 	          ],
 	        ],
 
-	        'instructions' => 'You have the option to dispute your grade. To do '
-	          .'so, you need to fully grade your own solution. Assign your own '
-	          .'score and justification for each part of the grade. You must also '
-	          .'explain why the other graders were wrong.',
+	        'instructions' => 'P1.5',
 	      ],
 
 	      // Resolve a dispute and end the workflow
 	      // Trigger only if the "dispute" task has a value of true
-	      'resolve dispute' => [
+	      'resolve dispute 1' => [
 	        'pool' => [
 	          'name' => 'instructor',
 	          'pull after' => false,
 	        ],
 
+			'behavior' => 'resolve dispute',
+			'reference task id' => 'P1.6',
 	        'duration' => 2,
 
 	        'trigger' => [
 	          [
-	            'type' => 'compare value of task',
+	            'type' => 'compare value of unique task',
 	            'task type' => 'dispute',
 	            'compare value' => true,
+	            'task reference id' => 'P1.5',
 	          ],
 	        ],
 
-	        'instructions' => 'The problem solver is disputing his or her grade. '
-	          .'You need to provide the final grade. Assign a final score with '
-	          .'justification for each part of the grade, and also please provide '
-	          .'an explanation.',
+	        'instructions' => 'P1.6',
 	      ],
 	    ];
-
+/*
 		  //-------------------------------------------------Problem 2 starts here-----------------------------------------------
 
 	      'create solution' => [
@@ -815,7 +812,7 @@ Thanks!',
 	          .'an explanation.',
 	      ],
 	    ];
-		
+		*/
 		
 		
   	
