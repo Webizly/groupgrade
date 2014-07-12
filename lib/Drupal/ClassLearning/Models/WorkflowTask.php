@@ -288,6 +288,52 @@ class WorkflowTask extends ModelBase {
         else
           return TRUE;
         break;
+		
+	  // Check if the value of a unique task meets an expected value
+      case 'compare value of unique task' :
+        if (! isset($condition['task type']))
+          throw new ModelException('Task type not defined for "compare value of task"', 500, null, $condition);
+        
+        if (! isset($condition['compare value']))
+          throw new ModelException('Compare value not defined for "compare value of task"', 500, null, $condition);
+        
+		if (! isset($condition['task reference id']))
+		  throw new ModelException('Condition not defined for "task reference id"', 500, null, $condition);
+		
+        // Query the other workflow tasks
+        $tasks = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+          ->whereType($condition['task type'])
+          ->get();
+		
+		// Tasks not found!
+        if ($tasks == NULL) return FALSE;
+		
+		$t = null;
+		//Most likely going to just return 1 result, so don't bother making an array;
+		foreach($tasks as $task){
+			if($task->settings['task reference id'] == $condition['task reference id'])
+			  $t = $task;
+		}
+
+		if(!isset($t))
+		  throw new ModelException('No task reference id found for "Compare Value of Unique Task"', 500, null, $condition);
+
+        // There is no value to be in range
+        if (! isset($t->data['value']))
+          return FALSE;
+        else
+          $value = $t->data['value'];
+
+        // This is a soft compare, not a compare of types
+        // Just of values. So passing these would pass:
+        // 
+        // 0 == NULL
+        // FALSE == NULL
+        if ($value !== $condition['compare value'])
+          return FALSE;
+        else
+          return TRUE;
+        break;
 
       // See if a certain time has elapsed since this task was triggered
       case 'time since trigger' :

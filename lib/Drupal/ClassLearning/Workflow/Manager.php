@@ -541,7 +541,7 @@ Thanks!',
 	          ],
 	        ],
 
-	        'reference task' => 'grade solution',
+	        'reference task' => 'P1.1',
 	      ],
 
 	      // Grades are fine, store them in the workflow
@@ -560,7 +560,9 @@ Thanks!',
 	        // Expire if grades are out of range
 	        'expire' => [
 	          [
-	            'type' => 'compare value of task',
+	          //-----------------------------------------------
+	            'type' => 'compare value of unique task',
+	          //-----------------------------------------------
 	            'task type' => 'resolve grades',
 	            'compare value' => false,
 	          ]
