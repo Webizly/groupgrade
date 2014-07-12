@@ -311,6 +311,8 @@ class WorkflowTask extends ModelBase {
 		$t = null;
 		//Most likely going to just return 1 result, so don't bother making an array;
 		foreach($tasks as $task){
+			if(!isset($task->settings['task reference id']))
+			  continue;
 			if($task->settings['task reference id'] == $condition['task reference id'])
 			  $t = $task;
 		}
@@ -355,14 +357,34 @@ class WorkflowTask extends ModelBase {
 
         foreach ($condition['task types'] as $type) :
           // Query the other workflow tasks
-          $task = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+          $tasks = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
             ->whereType($type)
-            ->first();
+            ->get();
+
+		  // If we found nothing, maybe a unique id was entered instead
+		  if(!isset($tasks)){
+		  	watchdog(WATCHDOG_INFO,"tasks variable is not null");
+			$t = Workflow::where('workflow_id', '=', $this->workflow_id)
+			  ->get();
+			
+			foreach($t as $tt){
+				if(isset($tt->settings['reference task id']))
+				  if($tt->settings['reference task id'] == $type)
+				    if($tt->status == $condition['task status'])
+					  return true;
+			}
+			
+			//If we didn't find anything, no point in going any farther
+			return false;
+		  }
 
           // Task found and status matched
           // Return it right here!
-          if ($task !== NULL AND $task->status == $condition['task status'])
-            return TRUE;
+          foreach($tasks as $task){
+	          if ($task !== NULL AND $task->status == $condition['task status'])
+	            return TRUE;
+          }
+		  
         endforeach;
 
         // Nothing found, so no good

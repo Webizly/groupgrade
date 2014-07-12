@@ -545,51 +545,57 @@ Thanks!',
 	      ],
 
 	      // Grades are fine, store them in the workflow
-	      'grades ok' => [
+	      'grades ok 1' => [
 	        'internal' => true,
+	        'behavior' => 'grades ok',
+	        'reference task id' => 'P1.3',
 	        'trigger' => [
 	          [
-	            'type' => 'compare value of task',
+	            'type' => 'compare value of unique task',
 	            'task type' => 'resolve grades',
 	            'compare value' => true,
+	            'task reference id' => 'P1.2',
 	          ]
 	        ],
 
-	        'reference task' => 'grade solution',
+	        'reference task' => 'P1.1',
 
 	        // Expire if grades are out of range
 	        'expire' => [
 	          [
-	          //-----------------------------------------------
 	            'type' => 'compare value of unique task',
-	          //-----------------------------------------------
 	            'task type' => 'resolve grades',
 	            'compare value' => false,
+	            'task reference id' => 'P1.2',
 	          ]
 	        ],
 	      ],
 
 	      // Grades are out of a range and we need a second grader
-	      'resolution grader' => [
+	      'resolution grader 1' => [
 	        'duration' => 3,
+	        'behavior' => 'resolution grader',
+	        'reference task id' => 'P1.4',
 	        'trigger' => [
 	          [
-	            'type' => 'compare value of task',
+	            'type' => 'compare value of unique task',
 	            'task type' => 'resolve grades',
 	            'compare value' => false,
+	            'task reference id' => 'P1.2',
 	          ]
 	        ],
 
 	        // Expire if grades are in range
 	        'expire' => [
 	          [
-	            'type' => 'compare value of task',
+	            'type' => 'compare value of unique task',
 	            'task type' => 'resolve grades',
 	            'compare value' => true,
+	            'task reference id' => 'P1.2',
 	          ]
 	        ],
 
-	        'reference task' => 'create solution',
+	        'reference task' => 'P1',
 	        'instructions' => 'Because the regular graders did give the same '
 	          .'grade, please resolve the grade disagreement. Assign your '
 	          .'own score and justification for each part of the grade, and also '
@@ -608,7 +614,7 @@ Thanks!',
 	        'trigger' => [
 	          [
 	            'type' => 'check tasks for status',
-	            'task types' => ['resolution grader', 'grades ok'],
+	            'task types' => ['P1.4', 'P1.3'],
 	            'task status' => 'complete'
 	          ],
 	        ],
