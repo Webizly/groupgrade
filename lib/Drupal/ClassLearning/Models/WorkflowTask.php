@@ -156,13 +156,13 @@ class WorkflowTask extends ModelBase {
 	  // Very similar to condition above, just altered slightly to support more complicated, non-linear usecases.
 	  case 'reference unique task status':
 		if (! isset($condition['task status']))
-          throw new ModelException('Condition not defined for "type of tasks status"', 500, null, $condition);
+          throw new ModelException('Condition not defined for "task status"', 500, null, $condition);
 
         if (! isset($condition['task type']))
-          throw new ModelException('Condition not defined for "type of tasks status"', 500, null, $condition);
+          throw new ModelException('Condition not defined for "task type"', 500, null, $condition);
         
 		if (! isset($condition['task reference id']))
-		  throw new ModelException('Task reference id is not set!', 500, null, $condition);
+		  throw new ModelException('Condition not defined for "task reference id"', 500, null, $condition);
 		
         // Query the other workflow tasks
         $tasks = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
