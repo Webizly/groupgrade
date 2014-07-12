@@ -432,6 +432,10 @@ class WorkflowTask extends ModelBase {
 			}
 		}
 	}
+	
+	// We still haven't returned anything? This is most likely a task that won't need a time restraint.
+	// Give it something generic.
+	return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays(2);
 }	
   
 
