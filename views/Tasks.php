@@ -1006,7 +1006,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
     $form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 
     if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
-      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > 50)
+      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $g['max'])
       return drupal_set_message(t('Invalid grade: '.$category . '-grade'),'error');
     else
       $gradeSum += $form[$category . '-grade']['#value'];

@@ -550,7 +550,14 @@ Thanks!',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
-			],	
+			  
+			  'correctness' => [
+			    'max' => 20,
+			    'description' => 'Judge how correct this answer is',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			],
 	
 	        'trigger' => [
 	          [
