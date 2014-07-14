@@ -739,7 +739,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
 	
   endforeach; endif;
 
-  // Dispute Grader
+  // Resolution Grader
   $resolutionGrader = Task::whereType('resolution grader')
     ->where('workflow_id', '=', $task->workflow_id)
     ->whereStatus('complete')
@@ -971,18 +971,47 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   $a = new Drupal\ClassLearning\Common\Accordion('resolve-dispute');
 
 
+  $graderCount = 1;
+  
   if (count($grades) > 0) : foreach ($grades as $grade) :
-
+    
+	$c = '';
     foreach ($grade->data['grades'] as $aspect => $g) :
-	  $c = '';
 		
       $c .= '<h4>'.t('Grade '.ucfirst($aspect)).': '.((isset($g['grade'])) ? $g['grade'] : '').'</h4>';
 
       if (isset($g['justification']))
         $c .= '<p>'.nl2br($g['justification']).'</p>';
 
-    $a->addGroup('Grader #'.$grade->task_id . ': ' . ucfirst($aspect), 'grade-'.$grade->task_id.'-'.$aspect, $c);
-  endforeach; endforeach; endif;
+    
+    endforeach;
+	 $a->addGroup('Grader #'.$graderCount, 'grade-'.$graderCount, $c);
+	 $graderCount++;
+  endforeach; endif;
+
+  // Resolution Grader
+  $resolutionGrader = Task::whereType('resolution grader')
+    ->where('workflow_id', '=', $task->workflow_id)
+    ->first();
+
+  if ($resolutionGrader) :
+    
+	$c = '';
+	
+    foreach($grades[0]->data['grades'] as $category => $g) :
+      $c .= '<h4>'.t('Grade '.ucfirst($category)).': '.(isset($resolutionGrader->data[$category . '-grade']) ? $resolutionGrader->data[$category . '-grade'] : '').'</h4>';
+
+      if (isset($resolutionGrader->data[$category]))
+        $c .= '<p>'.nl2br($resolutionGrader->data[$category]).'</p>';
+	endforeach;
+
+	  $c .= t('<h4>Justification</h4>' . (isset($resolutionGrader->data['comment']) ? $resolutionGrader->data['comment'] : '').'</h4>');
+
+    $a->addGroup('Resolution Grader', 'grade-'.$resolutionGrader->task_id, $c);
+  endif;
+
+  
+
 
   // Resolved Grade (automatically or via resolution grader)
   $c = '';
@@ -1007,7 +1036,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     $c .= '<h4>'.t('Explain fully why all prior graders were wrong, and your regrading is correct').':</h4>';
     $c .= '<p>'.nl2br($disputeTask->data['justification']).'</p>';
 
-    $a->addGroup('Dispute Grader #'.$disputeTask->task_id, 'grade-'.$disputeTask->task_id, $c);
+    $a->addGroup('Disputer', 'grade-'.$disputeTask->task_id, $c);
   endif;
 
   // Accordion
@@ -1015,25 +1044,53 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     '#markup' => $a.'<hr />',
   ];
 
+  $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
 
   foreach($grades as $grade){
-  	foreach($grade->data['grades'] as $content => $g){
-	  $items[$content . '-grade'] = [
+  	foreach($grade->data['grades'] as $category => $g){
+  		
+	  //ADDITIONAL INSTRUCTIONS
+	  if(isset($g['additional-instructions'])){
+	  	
+		$items[$category . '-title'] = [
+		  '#type' => 'item',
+		  '#markup' => '<strong><h2>' . ucfirst($category) . '</h2></strong>',
+		];
+		
+		$items[$category . '-ai-fieldset'] = [
+		  '#type' => 'fieldset',
+		  '#title' => 'How to Grade',
+		  '#collapsible' => true,
+		  '#collapsed' => true,
+		  '#prefix' => '<div style="margin-bottom:50px;">',
+		  '#suffix' => '</div>',
+		];
+		
+		$items[$category . '-ai-fieldset'][$category . '-additional-instructions'] = [
+		  '#type' => 'item',
+		  '#markup' => $g['additional-instructions'],
+		];
+		
+	  }	
+		
+	  $items[$category . '-grade'] = [
 	    '#type' => 'textfield',
-	    '#title' => ucfirst($content) . ' Grade (0-' . $g['max'] . ')',
+	    '#title' => ucfirst($category) . ' Grade (0-' . $g['max'] . ')',
 	    '#required' => true,
-	    '#default_value' => (isset($task->data[$content . '-grade'])) ? $task->data[$content . '-grade'] : '',
+	    '#default_value' => (isset($task->data[$category . '-grade'])) ? $task->data[$category . '-grade'] : '',
 	  ];
 	  
-	  $items[$content] = [
+	  $items[$category] = [
 	    '#type' => 'textarea',
-	    '#title' => ucfirst($content) . ' Justification',
+	    '#title' => ucfirst($category) . ' Justification',
 	    '#required' => true,
-	    '#default_value' => (isset($task->data[$content])) ? $task->data[$content] : '',
+	    '#default_value' => (isset($task->data[$category])) ? $task->data[$category] : '',
 	  ];
 	
 	}
   }
+  
+  $items[] = ['#markup' => '<h3>Summary</h3>',];
   
   $items['justification'] = [
 	    '#type' => 'textarea',
