@@ -719,17 +719,25 @@ function gg_task_dispute_form($form, &$form_state, $params)
     nl2br($params['solution']->data['solution'])
   ), true);
 
-  if (count($grades) > 0) : foreach ($grades as $grade) : foreach ($grade->data['grades'] as $category => $g) :
-    
-	  $c = '';
+  $graderCount = 1;
+
+  if (count($grades) > 0) : foreach ($grades as $grade) : 
+	
+	$c = '';
+	
+  	foreach ($grade->data['grades'] as $category => $g) :
 	
       $c .= '<h4>'.t('Grade '.ucfirst($category)).': '.((isset($g['grade'])) ? $g['grade'] : '').'</h4>';
 
       if (isset($g['justification']))
         $c .= '<p>'.nl2br($g['justification']).'</p>';
 
-    $a->addGroup('Grader #'.$grade->task_id . ': ' . ucfirst($category), 'grade-'.$grade->task_id.'-'.$category, $c);
-	endforeach; endforeach; endif;
+	endforeach; 
+	
+	$a->addGroup('Grader #'.$graderCount, 'grade-'.$graderCount, $c);
+	$graderCount++;
+	
+  endforeach; endif;
 
   // Dispute Grader
   $resolutionGrader = Task::whereType('resolution grader')
@@ -748,7 +756,9 @@ function gg_task_dispute_form($form, &$form_state, $params)
         $c .= '<p>'.nl2br($resolutionGrader->data[$category]).'</p>';
 	endforeach;
 
-    $a->addGroup('Resolution Grader #'.$resolutionGrader->task_id, 'grade-'.$resolutionGrader->task_id, $c);
+	  $c .= t('<h4>Justification</h4>' . (isset($resolutionGrader->data['comment']) ? $resolutionGrader->data['comment'] : '').'</h4>');
+
+    $a->addGroup('Resolution Grader', 'grade-'.$resolutionGrader->task_id, $c);
   endif;
 
   // Resolved Grade
@@ -775,24 +785,56 @@ function gg_task_dispute_form($form, &$form_state, $params)
     '#markup' => sprintf('<hr /><p>%s</p>', t('Complete the following only if you are going to dispute.'))
   ];
   
-  foreach ($grades as $grade) : foreach ($grade->data['grades'] as $aspect => $g) :
-    $items['proposed-'.$aspect.'-grade'] = [
+  foreach ($grades as $grade) : foreach ($grade->data['grades'] as $category => $g) :
+	
+	  //ADDITIONAL INSTRUCTIONS
+	  if(isset($g['additional-instructions'])){
+	  	
+		$items[$category . '-title'] = [
+		  '#type' => 'item',
+		  '#markup' => '<strong><h2>' . ucfirst($category) . '</h2></strong>',
+		];
+		
+		$items[$category . '-ai-fieldset'] = [
+		  '#type' => 'fieldset',
+		  '#title' => 'How to Grade',
+		  '#collapsible' => true,
+		  '#collapsed' => true,
+		  '#prefix' => '<div style="margin-bottom:50px;">',
+		  '#suffix' => '</div>',
+		];
+		
+		$items[$category . '-ai-fieldset'][$category . '-additional-instructions'] = [
+		  '#type' => 'item',
+		  '#markup' => $g['additional-instructions'],
+		];
+		
+	  }  
+	  
+    $items['proposed-'.$category.'-grade'] = [
       '#type' => 'textfield',
-      '#title' => 'Proposed '.ucfirst($aspect).' Grade (0-' . $g['max'] . ')',
-      '#default_value' => (isset($task->data['proposed-'.$aspect.'-grade'])) ? $task->data['proposed-'.$aspect.'-grade'] : '',
+      '#title' => 'Proposed '.ucfirst($category).' Grade (0-' . $g['max'] . ')',
+      '#default_value' => (isset($task->data['proposed-'.$category.'-grade'])) ? $task->data['proposed-'.$category.'-grade'] : '',
     ];
 
-    $items['proposed-'.$aspect] = [
+    $items['proposed-'.$category] = [
       '#type' => 'textarea',
-      '#title' => 'Proposed '.ucfirst($aspect).' Justification',
-      '#default_value' => (isset($task->data['proposed-'.$aspect])) ? $task->data['proposed-'.$aspect] : '',
+      '#title' => 'Proposed '.ucfirst($category).' Justification',
+      '#default_value' => (isset($task->data['proposed-'.$category])) ? $task->data['proposed-'.$category] : '',
     ];
   endforeach; endforeach;
+
+  $items[] = ['#markup' => '<h3>Justify your dispute</h3>'];
 
   $items['justification'] = [
     '#type' => 'textarea',
     '#title' => 'Explain fully why all prior graders were wrong, and your regrading is correct.',
     '#default_value' => (isset($task->data['justification'])) ? $task->data['justification'] : '',
+  ];
+
+  $items['no-dispute-two'] = [
+    '#type' => 'submit',
+    '#value' => 'Do Not Dispute',
   ];
 
   $items['dispute-save'] = [
@@ -805,10 +847,6 @@ function gg_task_dispute_form($form, &$form_state, $params)
     '#value' => 'Submit Dispute',
   ];
 
-  $items['no-dispute-two'] = [
-    '#type' => 'submit',
-    '#value' => 'Do Not Dispute',
-  ];
   return $items;
 }
 
@@ -1336,6 +1374,36 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     '#markup' => '<h4>Solution</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
 
+  $items[] = [
+    '#markup' => '<h4>Grades</h4>',
+  ];
+
+  $a = new Accordion('previous-graders');
+  $graderCount = 1;
+  // Previous grades
+  if (count($grades) > 0) : foreach ($grades as $grade) : 
+	  
+	  $c = '';
+	  foreach($grade->data['grades'] as $category => $g) :
+	
+	  
+	    $c .= sprintf('<h4>%s: %s</h4>', t(ucfirst($category) . ' Grade'), $g['grade']);
+	
+	    $c .= sprintf('<p><strong>%s</strong>: %s</p>', t(ucfirst($category)), nl2br($g['justification']));
+	
+		$c .= '<hr />';
+		
+	  endforeach;
+	  
+  $a->addGroup('Grader #' . $graderCount, 'grader-' . $graderCount, $c, false);
+  $graderCount++;
+  
+  endforeach; endif;
+
+  $items[] = [
+    '#markup' => $a . '<hr>',
+  ];
+
   if (! $params['edit']) :
 /* Old content
     $items['grade lb'] = [
@@ -1395,29 +1463,42 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
     return $items;
   endif;
 
+  $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
+
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
 
-  // Previous grades
-  if (count($grades) > 0) : foreach ($grades as $grade) : foreach($grade->data['grades'] as $category => $g) :
-    $items[] = [
-      '#markup' => sprintf('<h4>%s: %s</h4>', t(ucfirst($category) . ' Grade'), $g['grade'])
-    ];
-
-    $items[] = [
-      '#markup' => sprintf('<p><strong>%s</strong>: %s</p>', t(ucfirst($category)), nl2br($g['justification']))
-    ];
-
-
-    $items[] = [
-      '#markup' => '<hr />',
-    ];
-  endforeach; endforeach; endif;
+  
 
 
 foreach($grades as $grade) : foreach($grade->data['grades'] as $category => $g) :
+	
+	//ADDITIONAL INSTRUCTIONS
+	  if(isset($g['additional-instructions'])){
+	  	
+		$items[$category . '-title'] = [
+		  '#type' => 'item',
+		  '#markup' => '<strong><h2>' . ucfirst($category) . '</h2></strong>',
+		];
+		
+		$items[$category . '-ai-fieldset'] = [
+		  '#type' => 'fieldset',
+		  '#title' => 'How to Grade',
+		  '#collapsible' => true,
+		  '#collapsed' => true,
+		  '#prefix' => '<div style="margin-bottom:50px;">',
+		  '#suffix' => '</div>',
+		];
+		
+		$items[$category . '-ai-fieldset'][$category . '-additional-instructions'] = [
+		  '#type' => 'item',
+		  '#markup' => $g['additional-instructions'],
+		];
+		
+	  }
+	
 	$items[$category . '-grade'] = [
 	    '#type' => 'textfield',
 	    '#title' => $g['description'],
@@ -1434,6 +1515,7 @@ foreach($grades as $grade) : foreach($grade->data['grades'] as $category => $g) 
 	  ];
 endforeach; endforeach;
 
+  $items[] = ['#markup' => '<h2>Summary</h2>',];
 
   $items['comment'] = [
     '#type' => 'textarea',

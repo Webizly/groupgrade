@@ -576,7 +576,7 @@ Thanks!',
 				<p><strong>B Level (score = 34):</strong> Most of the factual information necessary for the answer is present. One or two terms may be left undefined or assumed to be understood by the reader. One or two facts of the case may be missing.</p>
 
 				<p><strong>C Level (score = 30):</strong> (any of the following) Some of the factual information is incorrect. Terms may be defined incorrectly or facts of the case are presented incorrectly. Details may be missing that are required for the reader to understand the proposed solution.</p>
-.
+
 				<p><strong>D Level (score = 24):</strong> Most of the factual information is inaccurate or missing.</p>
 
 				<p><strong>F Level (score = 0):</strong> No attempt is made to explain the terms or situation that is being discussed.</p>
@@ -601,7 +601,7 @@ Thanks!',
 				',
 			  ],
 			  
-			  'Writing_Rubric' => [
+			  'Writing' => [
 			    'max' => 20,
 			    'description' => 'Judge how well the response is written.',
 			    'grade' => 0,
@@ -705,10 +705,10 @@ Thanks!',
 	        ],
 	
 	        'reference task' => 'create solution',
-	        'instructions' => 'Because the regular graders did give the same '
+	        'instructions' => 'Because the regular graders did not give the same '
 	          .'grade, please resolve the grade disagreement. Assign your '
-	          .'own score and justification for each part of the grade, and also '
-	          .'please provide an explanation.',
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.',
 	      ],
 	
 	      // Dispute grades
