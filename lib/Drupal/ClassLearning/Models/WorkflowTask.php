@@ -222,7 +222,7 @@ class WorkflowTask extends ModelBase {
 
         foreach ($tasks as $task) :
           // Correct status
-          if ($task->status == $condition['task status'] && $task->settings['task reference id'] == $condition['task reference id'])
+          if ($task->status == $condition['task status'] && $task->settings['reference task id'] == $condition['task reference id'])
 		    // We found what we're looking for 
             return TRUE;
         endforeach;
@@ -311,14 +311,14 @@ class WorkflowTask extends ModelBase {
 		$t = null;
 		//Most likely going to just return 1 result, so don't bother making an array;
 		foreach($tasks as $task){
-			if(!isset($task->settings['task reference id']))
+			if(!isset($task->settings['reference task id']))
 			  continue;
-			if($task->settings['task reference id'] == $condition['task reference id'])
+			if($task->settings['reference task id'] == $condition['task reference id'])
 			  $t = $task;
 		}
 
 		if(!isset($t))
-		  throw new ModelException('No task reference id found for "Compare Value of Unique Task"', 500, null, $condition);
+		  throw new ModelException('No task reference id found for "Compare Value of Unique Task" (' . $this->type . ')', 500, null, $condition);
 
         // There is no value to be in range
         if (! isset($t->data['value']))
@@ -361,17 +361,26 @@ class WorkflowTask extends ModelBase {
             ->whereType($type)
             ->get();
 
+
 		  // If we found nothing, maybe a unique id was entered instead
-		  if(!isset($tasks)){
+		  if(count($tasks) == 0){
 		  	watchdog(WATCHDOG_INFO,"tasks variable is not null");
-			$t = Workflow::where('workflow_id', '=', $this->workflow_id)
+			watchdog(WATCHDOG_INFO,$condition['task status']);
+			$t = WorkflowTask::where('workflow_id', '=', $this->workflow_id)
+			  ->where('status', '=', $condition['task status'])
 			  ->get();
 			
 			foreach($t as $tt){
-				if(isset($tt->settings['reference task id']))
-				  if($tt->settings['reference task id'] == $type)
-				    if($tt->status == $condition['task status'])
+				if(isset($tt->settings['reference task id'])){
+				  watchdog(WATCHDOG_INFO,'Found a reference task id in ' . $tt->type);
+				  if($tt->settings['reference task id'] == $type){
+				  	watchdog(WATCHDOG_INFO,$tt->settings['reference task id'] . 'Reference task id is equal to type');
+				    if($tt->status == $condition['task status']){
+				      watchdog(WATCHDOG_INFO,'Statuses match');
 					  return true;
+					}
+				  }
+				}
 			}
 			
 			//If we didn't find anything, no point in going any farther

@@ -539,9 +539,36 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 	return $items;
   endif;
 
-  $items['problem'] = [
-    '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
-  ];
+
+  if(isset($problem->data['problem'])){
+	  $items['problem'] = [
+	    '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
+	  ];
+  }
+  
+  // If we can't find a problem, maybe we can find one using our reference id...
+  // Do we even have one?
+  if(isset($task->settings['reference task id'])){
+  	//Get the first 2 characters
+  	$rti = substr($task->settings['reference task id'],0,2);
+	if(substr($rti,0,1) == 'P'){
+		// This is most definitely a problem task
+		$rootNumber = substr($rti,1,1);
+		// Find the edit problem task that belongs to this sub workflow
+		$tasks = Task::where('workflow_id','=',$task->workflow_id)
+		  ->whereType('create problem')
+		  ->get();
+		foreach($tasks as $t){
+		  if(isset($t->settings['reference task id'])){
+		  	if(substr($t->settings['reference task id'],0,2) == 'P'.$rootNumber)
+			  $items['problem'] = [
+	    		'#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($t->data['problem']).'</p><hr />',
+	  		  ];
+		  }
+		}
+		
+	}
+  }
   
   if(isset($items['solution'])){
 	  $items['solution'] = [

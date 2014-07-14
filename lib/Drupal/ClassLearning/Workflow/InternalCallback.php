@@ -84,6 +84,27 @@ class InternalCallback {
       ->whereType($task->settings['reference task'])
       ->get();
 
+    if(!isset($tasks)){
+    	//Maybe we're actually referring to a unique id...
+    	$uniqueTasks = WorkflowTask::where('workflow_id','=',$task->workflow_id)
+		  ->get();
+		  
+		$t = array();  
+		  
+		foreach($uniqueTasks as $uT){
+			if(isset($uT->settings['reference task id'])){
+				if($uT->settings['reference task id'] == $task->settings['reference task id'])
+				  $t[] = $uT;
+			}
+		}
+		
+		if(isset($t))
+		  $tasks = $t;
+		else
+		  throw new CallbackException('Could not locate tasks using reference task');
+		
+    }
+
     $index = [];
 
     foreach ($tasks as $t){

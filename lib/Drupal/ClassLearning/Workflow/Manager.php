@@ -506,23 +506,32 @@ Thanks!',
 	      ],
 
 			'grade problem 1' => [
-	        'count' => 2,
-	        'duration' => 3,
-	        'behavior' => 'grade solution',
-			'task reference id' => 'P1.1',
-
-	        'trigger' => [
-	          [
-	            'type' => 'reference unique task status',
-	            'task type' => 'create problem',
-	            'task status' => 'complete',
-	            'task reference id' => 'P1',
-	          ],
+		        'count' => 2,
+		        'duration' => 3,
+		        'behavior' => 'grade solution',
+				'task reference id' => 'P1.1',
+	
+				'criteria' => [
+				  'correctness' => [
+				    'grade' => 0,
+				    'justification' => '',
+				    'max' => 100,
+				    'description' => 'Judge how correct the answer is',
+				  ],
+				],
+	
+		        'trigger' => [
+		          [
+		            'type' => 'reference unique task status',
+		            'task type' => 'create problem',
+		            'task status' => 'complete',
+		            'task reference id' => 'P1',
+		          ],
+		        ],
+	
+		        'reference task' => 'P1',
+		        'instructions' => 'P1.1',
 	        ],
-
-	        'reference task' => 'P1',
-	        'instructions' => 'P1.1',
-	      ],
 
 		  // Resolve the grades
 	      'resolve grades problem 1' => [
