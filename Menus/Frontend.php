@@ -12,6 +12,26 @@ return array(
     'access callback' => 'groupgrade_baseaccess',
   ),
 
+  'class/about' => array(
+    'title' => 'About CLASS',
+    'page callback' => 'groupgrade_about',
+    'file' => 'Admin.php', //Change later
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access callback' => true,
+  ),
+  
+  'class/about2' => array(
+    'title' => 'About CLASS',
+    'page callback' => 'groupgrade_about2',
+    'file' => 'Admin.php', //Change later
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access callback' => true,
+  ),
+
   // My Tasks/Classes/Assignment
   'class/reallocate' => array(
     'title' => 'CLASS Learning System',
