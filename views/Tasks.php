@@ -546,15 +546,41 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     '#markup' => '<h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
 
+  $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
+
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
 
-  $items[] = ['#markup' => sprintf('<h5>%s: %s</h5>', t('Current Task'), t($params['task']->humanTask()))];
   
   //Set up another for each loop, this time for fields
   foreach($task->data['grades'] as $category => $g){
+  	
+	  //ADDITIONAL INSTRUCTIONS
+	  if(isset($g['additional-instructions'])){
+	  	
+		$items[$category . '-title'] = [
+		  '#type' => 'item',
+		  '#markup' => '<strong><h2>' . ucfirst($category) . '</h2></strong>',
+		];
+		
+		$items[$category . '-ai-fieldset'] = [
+		  '#type' => 'fieldset',
+		  '#title' => 'How to Grade',
+		  '#collapsible' => true,
+		  '#collapsed' => true,
+		  '#prefix' => '<div style="margin-bottom:50px;">',
+		  '#suffix' => '</div>',
+		];
+		
+		$items[$category . '-ai-fieldset'][$category . '-additional-instructions'] = [
+		  '#type' => 'item',
+		  '#markup' => $g['additional-instructions'],
+		];
+		
+	  }
+	
 	  $items[$category . '-grade'] = [
 	    '#type' => 'textfield',
 	    '#title' => $g['description'],
@@ -568,6 +594,11 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 	    '#title' => 'Justify your grade',
 	    '#required' => true,
 	    '#default_value' => (isset($g['justification'])) ? $g['justification'] : '',
+	  ];
+	  
+	  $items[$category . '-end-divider'] = [
+	    '#type' => 'item',
+	    '#markup' => '<hr>',
 	  ];
 	
   }
