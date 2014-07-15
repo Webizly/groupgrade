@@ -148,6 +148,87 @@ function groupgrade_tasks_view_specific($specific = '') {
   return $return;
 }
 
+function groupgrade_tasks_view_lti($specific = '') {
+  global $user;
+  
+  $tasks = Task::queryByStatus($user->uid, $specific)->get();
+  $rows = [];
+  $return = '';
+
+  switch($specific)
+  {
+    case 'pending' :
+      $headers = ['Due Date', 'Type', 'Course', 'Assignment'];
+      
+      $return .= sprintf('<p>%s</p>', t('These are the pending tasks you need to do. Click on a due date to open the task.'));
+      if (count($tasks) > 0) : foreach($tasks as $task) :
+        $row_t = [];
+        $row_t[] = sprintf(
+          '<a href="%s">%s</a>',
+          url('class/task/'.$task->task_id), groupgrade_carbon_span($task->forceEndTime()) .
+            (($task->status == 'timed out') ? '(late)' : '')
+        );
+
+        $row_t[] = $task->humanTask();
+
+        $section = $task->section()->first();
+        $course = $section->course()->first();
+        $assignment = $task->assignment()->first();
+        $semester = $section->semester()->first();
+
+        $row_t[] = sprintf('%s &mdash; %s &mdash; %s', 
+          $course->course_name, 
+          $section->section_name,
+          $semester->semester_name
+        );
+
+        $row_t[] = $assignment->assignment_title;
+
+        $rows[] = $row_t;
+      endforeach; endif;
+      break;
+
+    // All/completed tasks
+    default :
+      $headers = array('Assignment', 'Task', 'Course', /*'Problem',*/ 'Date Completed');
+
+      if (count($tasks) > 0) : foreach($tasks as $task) :
+        $rowt = [];
+        $rowt[] = sprintf(
+          '<a href="%s">%s</a>',
+          url('class/task/'.$task->task_id), $task->assignment()->first()->assignment_title
+        ); 
+
+        $rowt[] = t(ucwords($task->type));
+
+        // Course information
+        $section = $task->section()->first();
+        $course = $section->course()->select('course_name')->first();
+        $semester = $section->semester()->select('semester_name')->first();
+
+        $rowt[] = sprintf('%s &mdash; %s &mdash; %s',
+          $course->course_name,
+          $section->section_name,
+          $semester->semester_name
+        );
+
+        $rowt[] = ($task->end == NULL) ? 'n/a' : gg_time_human($task->end);
+
+        $rows[] = $rowt;
+      endforeach; endif;
+      break;
+  }
+
+  $return .= theme('table', array(
+    'header' => $headers, 
+    'rows' => $rows,
+    'attributes' => ['width' => '100%'],
+    'empty' => 'No tasks found.',
+  ));
+
+  return $return;
+}
+
 function groupgrade_user_grades() {
   global $user;
   $return = '';
