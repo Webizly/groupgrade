@@ -209,6 +209,19 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 {
   drupal_set_title(t('Add "@assignment-title" to Section', ['@assignment-title' => Assignment::find($assignment)->assignment_title]));
 
+  //SELECT * FROM moodlelink2
+  $records = db_select('moodlelink2', 'ml2')
+  	->fields('ml2')
+    ->execute()
+    ->fetchAll();
+
+  //grabs each of the Moodle assignments from the moodlelink2 table, with the key as the assignment id and the title as the assignment title
+  foreach($records as $value){
+  	$options[$value->maid] = $value->matitle;
+  }
+  
+  #krumo($records);
+
   global $user;
   $sections_q = User::sectionsWithRole('instructor')
     ->join('course', 'course.course_id', '=', 'section.course_id')
@@ -335,6 +348,22 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#value' => $assignment
   );
 
+  $items['moodle'] = array(
+  	'#type' => 'checkbox',
+  	'#title' => t('Link Assignment to Moodle?'),
+  );
+  
+  $items['moodlelink'] = array(
+  	'#type' => 'select',
+  	'#title' => t('Select Moodle Assignment'),
+  	'#options' => $options,
+  	'#states' => array(
+  		'visible' => array(
+			':input[name = "moodle"]' => array('checked' => TRUE),
+		),
+	),
+  );
+
   $items['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Add Section'),
@@ -432,6 +461,81 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 	  ))
 	  ->execute();
 
+
+//get the current assignment section id
+  $class_assignment_section_id = AssignmentSection::orderBy('asec_id', 'DESC')->first();
+  krumo($class_assignment_section_id);
+  
+  //checks if the instructor wants to change Moodle assignment that is linked to CLASS assignment
+  if ($form['moodle']['#checked']) {
+  	//grabs the assignment id from the selected Moodle assignment
+  	$moodle_assignment_id = $form['moodlelink']['#value'];
+	
+	#krumo($moodle_assignment_id);
+	
+	//SELECT matitle FROM moodlelink2 where maid = $moodle_assignment_id
+	$moodle_assignment_title = db_select('moodlelink2', 'ml2')
+		->fields('ml2', array('matitle'))
+		->condition('maid', $moodle_assignment_id)
+		->execute()
+		->fetch();
+	
+	krumo($moodle_assignment_title);
+	
+	//gets the assignment id for the class assignment id
+	$class_assignment_id = $class_assignment_section_id->assignment_id;
+	
+	//SELECT assignment_title FROM pla_assignment where assignment_id = $class_assignment_id
+	$class_assignment_title = db_select('pla_assignment', 'pla_a')
+		->fields('pla_a', array('assignment_title'))
+		->condition('assignment_id', $class_assignment_id)
+		->execute()
+		->fetch(); 
+	
+	//gets the user id of the current user in Drupal
+  	$class_id = $user->uid;  
+	
+  	//SELECT * FROM moodlelink3 where maid = $moodle_assignment_id and aid = $class_assignment_id and uid = $class_id and asecid = $class_assignment_section_id
+  	$record = db_select('moodlelink3', 'ml3')
+  		->fields('ml3')
+		->condition('maid', $moodle_assignment_id)
+		->condition('aid', $class_assignment_id)
+		->condition('uid', $class_id)
+		->condition('asecid', $class_assignment_section_id->asec_id)
+    	->execute()
+    	->fetch();
+	
+	/*
+	 * $record = new array();
+	 * $record['maid'] = $moodle_assignment_id;
+	 * $abc = $record['maid'];
+	 */
+	
+	//if the record doesn't exist, add it to the table
+	if($record == false) {
+		$record = new StdClass();
+		$record->maid = $moodle_assignment_id;
+		$record->matitle = $moodle_assignment_title->matitle;
+		$record->aid = $class_assignment_id;
+		$record->atitle = $class_assignment_title->assignment_title;
+		$record->uid = $class_id;
+		$record->asecid = $class_assignment_section_id->asec_id;
+	}
+	
+	krumo($record);
+	
+	//INSERT/UPDATE into moodlelink3 ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid') VALUES ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid')
+	
+	$query = db_merge('moodlelink3')
+		->key(array('maid' => $record->maid))
+		->key(array('matitle' => $record->matitle))
+		->key(array('aid' => $record->aid))
+		->key(array('atitle' => $record->atitle))
+		->key(array('uid' => $record->uid))
+		->key(array('asecid' => $record->asecid))
+		->execute();
+  }
+
   return drupal_set_message(sprintf('Added assignment "%s" to section "%s"', $assignment->assignment_title, $sectionObject->section_name));
 }
 
@@ -440,6 +544,19 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
  */
 function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $section)
 {
+	
+	//SELECT * FROM moodlelink2
+  $records = db_select('moodlelink2', 'ml2')
+  	->fields('ml2')
+    ->execute()
+    ->fetchAll();
+  
+  //grabs each of the Moodle assignments from the moodlelink2 table, with the key as the assignment id and the title as the assignment title
+  foreach($records as $value){
+  	$options[$value->maid] = $value->matitle;
+  }
+  
+  #krumo($records);
   global $user;
   $section = AssignmentSection::find($section);
   if ($section == NULL) return drupal_not_found();
@@ -450,6 +567,22 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
   $items['m'] = array(
     '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment Management</a>',
   );
+
+/*$items['moodle'] = array(
+  	'#type' => 'checkbox',
+  	'#title' => t('Link Assignment to Moodle?'),
+  );
+  
+  $items['moodlelink'] = array(
+  	'#type' => 'select',
+  	'#title' => t('Select Moodle Assignment'),
+  	'#options' => $options,
+  	'#states' => array(
+  		'visible' => array(
+			':input[name = "moodle"]' => array('checked' => TRUE),
+		),
+	),
+  );*/
 
   $theSection = $section->section()->first();
   $course = $theSection->course()->first();
@@ -505,6 +638,80 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 
   $section->asec_start = sprintf('%d-%d-%d %d:%d:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
   $section->save();
+
+/*//get the current assignment section id
+  $class_assignment_section_id = $section->asec_id;
+  krumo($class_assignment_section_id);
+  
+  //checks if the instructor wants to change Moodle assignment that is linked to CLASS assignment
+  if ($form['moodle']['#checked']) {
+  	//grabs the assignment id from the selected Moodle assignment
+  	$moodle_assignment_id = $form['moodlelink']['#value'];
+	
+	#krumo($moodle_assignment_id);
+	
+	//SELECT matitle FROM moodlelink2 where maid = $moodle_assignment_id
+	$moodle_assignment_title = db_select('moodlelink2', 'ml2')
+		->fields('ml2', array('matitle'))
+		->condition('maid', $moodle_assignment_id)
+		->execute()
+		->fetch();
+	
+	krumo($moodle_assignment_title);
+	
+	//gets the assignment id for the class assignment id
+	$class_assignment_id = $class_assignment_section_id->assignment_id;
+	
+	//SELECT assignment_title FROM pla_assignment where assignment_id = $class_assignment_id
+	$class_assignment_title = db_select('pla_assignment', 'pla_a')
+		->fields('pla_a', array('assignment_title'))
+		->condition('assignment_id', $class_assignment_id)
+		->execute()
+		->fetch(); 
+	
+	//gets the user id of the current user in Drupal
+  	$class_id = $user->uid;  
+	
+  	//SELECT * FROM moodlelink3 where maid = $moodle_assignment_id and aid = $class_assignment_id and uid = $class_id and asecid = $class_assignment_section_id
+  	$record = db_select('moodlelink3', 'ml3')
+  		->fields('ml3')
+		->condition('maid', $moodle_assignment_id)
+		->condition('aid', $class_assignment_id)
+		->condition('uid', $class_id)
+		->condition('asecid', $class_assignment_section_id->asec_id)
+    	->execute()
+    	->fetch();
+	
+	/*
+	 * $record = new array();
+	 * $record['maid'] = $moodle_assignment_id;
+	 * $abc = $record['maid'];
+	 
+	
+	//if the record doesn't exist, add it to the table
+	if($record == false) {
+		$record = new StdClass();
+		$record->maid = $moodle_assignment_id;
+		$record->matitle = $moodle_assignment_title->matitle;
+		$record->aid = $class_assignment_id;
+		$record->atitle = $class_assignment_title->assignment_title;
+		$record->uid = $class_id;
+		$record->asecid = $class_assignment_section_id->asec_id;
+	}
+	
+	krumo($record);
+	
+	//INSERT/UPDATE into moodlelink3 ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid') VALUES ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid')
+	
+	$query = db_merge('moodlelink3')
+		->key(array('maid' => $record->maid))
+		->key(array('matitle' => $record->matitle))
+		->key(array('aid' => $record->aid))
+		->key(array('atitle' => $record->atitle))
+		->key(array('uid' => $record->uid))
+		->key(array('asecid' => $record->asecid))
+		->execute();
+  }*/
 
   return drupal_set_message(sprintf('Updated assignment section %d on section %d', $section->asec_id, $section->section_id));
 }

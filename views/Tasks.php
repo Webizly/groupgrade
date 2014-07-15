@@ -1,13 +1,72 @@
 <?php
 use Drupal\ClassLearning\Models\WorkflowTask as Task,
   Drupal\ClassLearning\Models\Workflow,
+  Drupal\ClassLearning\Models\Assignment,
+  Drupal\ClassLearning\Models\AssignmentSection,
   Drupal\ClassLearning\Common\Accordion;
 
 function groupgrade_tasks_dashboard() {
-  return groupgrade_tasks_view_specific('pending');
+  if(isset($_SESSION['lti_tool_provider_context_info']['resource_link_title'])){
+    return groupgrade_tasks_view_specific('pending');
+  } else {
+    return groupgrade_tasks_view_lti('pending');
+  }
 }
 
+function groupgrade_tasks_get_moodle_id () {
+	//used for the Drupal user	
+	global $user;
+	
+	//gets the user id from Moodle and store it into a variable
+	$moodle_id = $_SESSION['lti_tool_provider_context_info']['user_id'];
+	
+	//SELECT uid, mid FROM moodlelink WHERE mid = $moodle_id
+	$query = db_select('moodlelink', 'ml')
+		->fields('ml', array('uid', 'mid'))
+		->condition('mid', $moodle_id);
+	$record = $query->execute()->fetch();
+	
+	//if the user has never logged into CLASS from Moodle, it adds Drupal user ID and Moodle user ID to the table
+	$moodle_id = $_SESSION['lti_tool_provider_context_info']['user_id'];
+  		if ($record == FALSE) {
+			$record = new StdClass();
+			$record->uid = $user->uid;
+			$record->mid = $moodle_id;
+		}
+  		//INSERT/UPDATE into moodlelink ('uid, 'mid') VALUES ('uid', 'mid')
+		$query = db_merge('moodlelink')
+			->key(array('uid' => $record->uid))
+			->key(array('mid' => $record->mid))
+			->fields((array) $record)
+			->execute();
+}
 
+function groupgrade_tasks_get_moodle_assignment_record () {
+	//gets the assignment id from Moodle and stores it into a variable
+	$moodle_assignment_id = $_SESSION['lti_tool_provider_context_info']['resource_link_id'];
+	//SELECT maid, matitle FROM moodlelink2 WHERE maid = $moodle_assignment_id
+	$query = db_select('moodlelink2', 'ml2')
+		->fields('ml2', array('maid', 'matitle'))
+		->condition('maid', $moodle_assignment_id);
+	$record = $query->execute()->fetch();
+	
+	//gets the assignment id and assignment title from Moodle and stores it into a variable
+	$moodle_assignment_id = $_SESSION['lti_tool_provider_context_info']['resource_link_id'];
+	$moodle_assignment_title = $_SESSION['lti_tool_provider_context_info']['resource_link_title'];
+	
+	//if the record doesn't exist, add it to the table
+	if ($record == FALSE) {
+  		$record = new StdClass();
+		$record->maid = $moodle_assignment_id;
+		$record->matitle = $moodle_assignment_title;
+  	}
+  		//INSERT/UPDATE into moodlelink2 ('maid, 'matitle') VALUES ('maid', 'matitle')
+		$query = db_merge('moodlelink2')
+			->key(array('maid' => $record->maid))
+			->key(array('matitle' => $record->matitle))
+			->fields((array) $record)
+			->execute();
+}
 
 function groupgrade_tasks_view_specific($specific = '') {
   global $user;
@@ -500,6 +559,87 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
 
   if (! $save)
     return drupal_goto('class');
+  
+/*
+  global $user;	
+  $task = $form_state['build_info']['args'][0]['task'];
+
+  if (! $form_state['build_info']['args'][0]['edit'])
+    return drupal_not_found();
+  
+  $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
+  $task->setDataAttribute(['solution' =>  $form['body']['#value']]);
+  if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'completed';
+  $task->save();
+
+  //gets the task id of the user
+  $class_task_id = $task->task_id;
+  
+  krumo($class_task_id);
+  
+  //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
+  $class_workflow_id = db_select('pla_task', 'pla_t')
+	->fields('pla_t', array('workflow_id'))
+	->condition('task_id', $class_task_id)
+	->execute()
+	->fetch();
+  
+  krumo($class_workflow_id->workflow_id);
+  
+ //SELECT assignment_id FROM pla_workflow WHERE workflow id = $class_workflow_id
+  $class_assignment_section_id = db_select('pla_workflow', 'pla_w')
+  	->fields('pla_w', array('assignment_id'))
+	->condition('workflow_id', $class_workflow_id->workflow_id)
+	->execute()
+	->fetch();
+  
+  krumo($class_assignment_section_id->assignment_id);
+  
+  //SELECT atitle FROM moodlelink3 WHERE asecid = $class_assignment_section_id
+  $class_assignment_title = db_select('moodlelink3', 'ml3')
+  	->fields('ml3', array('atitle'))
+	->condition('asecid', $class_assignment_section_id->assignment_id)
+	->execute()
+	->fetch();
+  
+  krumo($class_assignment_title->atitle);
+  
+  $class_id = $user->uid;
+  	
+  //SELECT * FROM moodlelink4 WHERE workflowid = $class_workflow_id AND uid = $class_id
+  $record = db_select('moodlelink4', 'ml4')
+	->fields('ml4')
+	->condition('workflowid', $class_workflow_id->workflow_id)
+	->condition('uid', $class_id)
+	->execute()
+	->fetch();
+	
+  //if the record doesn't exist, add it to the table
+  if ($record == FALSE) {
+  	$record = new StdClass();
+	$record->workflowid = $class_workflow_id->workflow_id;
+	$record->uid = $class_id;
+	$record->asecid = $class_assignment_section_id->assignment_id;
+	$record->atitle = $class_assignment_title->atitle;
+  }
+	
+  //INSERT/UPDATE into moodlelink4 ('workflowid, 'uid', 'asecid', 'atitle') VALUES ('workflowid', 'uid', 'asecid', 'atitle')
+  $query = db_merge('moodlelink4')
+	->key(array('workflowid' => $record->workflowid))
+	->key(array('uid' => $record->uid))
+	->key(array('asecid' => $record->asecid))
+	->key(array('atitle' => $record->atitle))
+	->fields((array) $record)
+	->execute();
+
+  if (! $save)
+    $task->complete();
+  
+  drupal_set_message(sprintf(t('Solution').' %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'completed.'));
+
+  if (! $save)
+    return drupal_goto('class');
+*/
 }
 
 /**
@@ -915,6 +1055,98 @@ function gg_task_dispute_form_submit($form, &$form_state)
     $task->complete();
     drupal_set_message(t('Your decision to not dispute has been submitted.'));
   endif;
+  
+/*$class_task_id = $task->task_id;
+  krumo($class_task_id);
+  
+  //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
+  $class_workflow_id = db_select('pla_task', 'pla_t')
+	->fields('pla_t', array('workflow_id'))
+	->condition('task_id', $class_task_id)
+	->execute()
+	->fetch();
+
+  krumo($class_workflow_id->workflow_id);
+  	
+  //SELECT uid, asecid FROM moodlelink4 WHERE workflowid = $class_workflow_id->workflow_id
+  $class_id = db_select('moodlelink4', 'ml4')
+	->fields('ml4', array('uid', 'asecid'))
+	->condition('workflowid', $class_workflow_id->workflow_id)
+	->execute()
+	->fetch();
+  
+  krumo($class_id->uid);
+  krumo($class_id->asecid);
+  
+  $grade = Workflow::where('workflow_id','=',$class_workflow_id->workflow_id)
+    ->first();
+	
+  krumo($grade->data['grade']);
+  
+  //SELECT maid FROM moodlelink3 WHERE asecid = $class_id->asecid
+  $moodle_assignment_id = db_select('moodlelink3', 'ml3')
+  	->fields('ml3', array('maid'))
+	->condition('asecid', $class_id->asecid)
+	->execute()
+	->fetch();
+  
+  krumo($moodle_assignment_id->maid);
+  	
+  //SELECT mid FROM moodlelink WHERE uid = $class_id->uid
+  $moodle_id = db_select('moodlelink', 'ml')
+  	->fields('ml', array('mid'))
+	->condition('uid', $class_id->uid)
+	->execute()
+	->fetch();
+  
+  krumo($moodle_id->mid);
+  
+  /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
+   *WHERE lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"] = $moodle_assignment_id->maid 
+   *AND lti_tool_provider_outcomes_result_sourcedid["data"]["userid"] = $moodle_id->mid
+   
+  
+  $record = db_select('lti_tool_provider_outcomes', 'lti')
+  	->fields('lti')
+	->execute()
+	->fetch();
+  
+  krumo(str_split($record->lti_tool_provider_outcomes_result_sourcedid, 100));
+  drupal_set_message($record->lti_tool_provider_outcomes_result_sourcedid);
+  
+  $data = unserialize($record->lti_tool_provider_outcomes_result_sourcedid);
+  krumo($data);
+  drupal_set_message($data);
+  
+  $record = db_select('lti_tool_provider_outcomes', 'lti')
+  	->fields('lti', array('lti_tool_provider_outcomes_score'))
+	->condition('lti_tool_provider_outcomes_result_sourcedid{"data":{"instanceid":}}', $moodle_assignment_id->maid)
+	->condition('lti_tool_provider_outcomes_result_sourcedid{"data":{"userid":}}', $moodle_id->mid)
+	->execute()
+	->fetch();
+	
+	krumo($record);
+	
+	//if the record doesn't exist, add it to the table
+	if($record == false) {
+		$record = array();
+		$record->lti_tool_provider_outcomes_result_sourcedid['data']['instanceid'] = $moodle_assignment_id->maid;
+		$record->lti_tool_provider_outcomes_result_sourcedid['data']['userid'] = $moodle_id->mid;
+		$record->lti_tool_provider_outcomes_score = $grade->data['grade'];
+	}
+	
+	krumo($record);
+	
+	/*INSERT/UPDATE into lti_tool_provider_outcomes ('lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"], lti_tool_provider_outcomes_result_sourcedid["data"]["userid"], lti_tool_provider_outcomes_score) 
+	* VALUES ('lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"], lti_tool_provider_outcomes_result_sourcedid["data"]["userid"], lti_tool_provider_outcomes_score)
+	
+	
+	$query = db_merge('lti_tool_provider_outcomes')
+		->key(array('lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"]' => $record->lti_tool_provider_outcomes_result_sourcedid['data']['instanceid']))
+		->key(array('lti_tool_provider_outcomes_result_sourcedid["data"]["userid"]' => $record->lti_tool_provider_outcomes_result_sourcedid['data']['userid']))
+		->key(array('lti_tool_provider_outcomes_score' => $record->lti_tool_provider_outcomes_score))
+		->execute();*/
+  
 }
 
 
@@ -1164,6 +1396,98 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 
     return drupal_goto('class');
   endif;
+  
+  /*$class_task_id = $task->task_id;
+  krumo($class_task_id);
+  
+  //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
+  $class_workflow_id = db_select('pla_task', 'pla_t')
+	->fields('pla_t', array('workflow_id'))
+	->condition('task_id', $class_task_id)
+	->execute()
+	->fetch();
+
+  krumo($class_workflow_id->workflow_id);
+  	
+  //SELECT uid, asecid FROM moodlelink4 WHERE workflowid = $class_workflow_id->workflow_id
+  $class_id = db_select('moodlelink4', 'ml4')
+	->fields('ml4', array('uid', 'asecid'))
+	->condition('workflowid', $class_workflow_id->workflow_id)
+	->execute()
+	->fetch();
+  
+  krumo($class_id->uid);
+  krumo($class_id->asecid);
+  
+  $grade = Workflow::where('workflow_id','=',$class_workflow_id->workflow_id)
+    ->first();
+	
+  krumo($grade->data['grade']);
+  
+  //SELECT maid FROM moodlelink3 WHERE asecid = $class_id->asecid
+  $moodle_assignment_id = db_select('moodlelink3', 'ml3')
+  	->fields('ml3', array('maid'))
+	->condition('asecid', $class_id->asecid)
+	->execute()
+	->fetch();
+  
+  krumo($moodle_assignment_id->maid);
+  	
+  //SELECT mid FROM moodlelink WHERE uid = $class_id->uid
+  $moodle_id = db_select('moodlelink', 'ml')
+  	->fields('ml', array('mid'))
+	->condition('uid', $class_id->uid)
+	->execute()
+	->fetch();
+  
+  krumo($moodle_id->mid);
+  
+  /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
+   *WHERE lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"] = $moodle_assignment_id->maid 
+   *AND lti_tool_provider_outcomes_result_sourcedid["data"]["userid"] = $moodle_id->mid
+   
+  
+  $record = db_select('lti_tool_provider_outcomes', 'lti')
+  	->fields('lti')
+	->execute()
+	->fetch();
+  
+  krumo(str_split($record->lti_tool_provider_outcomes_result_sourcedid, 100));
+  drupal_set_message($record->lti_tool_provider_outcomes_result_sourcedid);
+  
+  $data = unserialize($record->lti_tool_provider_outcomes_result_sourcedid);
+  krumo($data);
+  drupal_set_message($data);
+  
+  $record = db_select('lti_tool_provider_outcomes', 'lti')
+  	->fields('lti', array('lti_tool_provider_outcomes_score'))
+	->condition('lti_tool_provider_outcomes_result_sourcedid{"data":{"instanceid":}}', $moodle_assignment_id->maid)
+	->condition('lti_tool_provider_outcomes_result_sourcedid{"data":{"userid":}}', $moodle_id->mid)
+	->execute()
+	->fetch();
+	
+	krumo($record);
+	
+	//if the record doesn't exist, add it to the table
+	if($record == false) {
+		$record = array();
+		$record->lti_tool_provider_outcomes_result_sourcedid['data']['instanceid'] = $moodle_assignment_id->maid;
+		$record->lti_tool_provider_outcomes_result_sourcedid['data']['userid'] = $moodle_id->mid;
+		$record->lti_tool_provider_outcomes_score = $grade->data['grade'];
+	}
+	
+	krumo($record);
+	
+	/*INSERT/UPDATE into lti_tool_provider_outcomes ('lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"], lti_tool_provider_outcomes_result_sourcedid["data"]["userid"], lti_tool_provider_outcomes_score) 
+	* VALUES ('lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"], lti_tool_provider_outcomes_result_sourcedid["data"]["userid"], lti_tool_provider_outcomes_score)
+	
+	
+	$query = db_merge('lti_tool_provider_outcomes')
+		->key(array('lti_tool_provider_outcomes_result_sourcedid["data"]["instanceid"]' => $record->lti_tool_provider_outcomes_result_sourcedid['data']['instanceid']))
+		->key(array('lti_tool_provider_outcomes_result_sourcedid["data"]["userid"]' => $record->lti_tool_provider_outcomes_result_sourcedid['data']['userid']))
+		->key(array('lti_tool_provider_outcomes_score' => $record->lti_tool_provider_outcomes_score))
+		->execute();*/
+  
 }
 
 /*
