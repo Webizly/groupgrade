@@ -555,8 +555,10 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
     ->fetchAll();
   
   //grabs each of the Moodle assignments from the moodlelink2 table, with the key as the assignment id and the title as the assignment title
-  foreach($records as $value){
-  	$options[$value->maid] = $value->matitle;
+  if($records != false){
+	  foreach($records as $value){
+	  	$options[$value->maid] = $value->matitle;
+	  }
   }
   
   #krumo($records);
