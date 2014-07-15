@@ -348,21 +348,24 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#value' => $assignment
   );
 
-  $items['moodle'] = array(
-  	'#type' => 'checkbox',
-  	'#title' => t('Link Assignment to Moodle?'),
-  );
-  
-  $items['moodlelink'] = array(
-  	'#type' => 'select',
-  	'#title' => t('Select Moodle Assignment'),
-  	'#options' => $options,
-  	'#states' => array(
-  		'visible' => array(
-			':input[name = "moodle"]' => array('checked' => TRUE),
+  if(isset($options)){
+
+	  $items['moodle'] = array(
+	  	'#type' => 'checkbox',
+	  	'#title' => t('Link Assignment to Moodle?'),
+	  );
+	  
+	  $items['moodlelink'] = array(
+	  	'#type' => 'select',
+	  	'#title' => t('Select Moodle Assignment'),
+	  	'#options' => $options,
+	  	'#states' => array(
+	  		'visible' => array(
+				':input[name = "moodle"]' => array('checked' => TRUE),
+			),
 		),
-	),
-  );
+	  );
+  }
 
   $items['submit'] = array(
     '#type' => 'submit',

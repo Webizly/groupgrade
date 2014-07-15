@@ -401,7 +401,7 @@ class WorkflowTask extends ModelBase {
 	  ->fetchAssoc();
 	 
 	// Nope, default behavior then
-	if(count($result) == 0){
+	if($result == false){
     	$duration = (isset($this->settings['duration'])) ? $this->settings['duration'] : 2;
     	return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays($duration);
 	}
