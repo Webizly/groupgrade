@@ -96,7 +96,7 @@ function groupgrade_about()
             The instructor can add additional steps to match specific assignments, exams or projects.
             </p>
             <p>
-			For more details <a href="localhost:8080/class/class/about2">click here</a>.
+			For more details <a href="http://ec2-54-81-177-27.compute-1.amazonaws.com/class/about2">click here</a>.
 			</p>
   ';
 }
@@ -132,7 +132,7 @@ function groupgrade_about2()
 		<h3>
             Collaborative Learning Through Assessment (CLASS) &ndash; Goals and Further Details
         </h3>
-		<p> <a href="localhost:8080/class/class/about">(return to About CLASS  overview page)</a>
+		<p> <a href="http://ec2-54-81-177-27.compute-1.amazonaws.com/class/about">(return to About CLASS  overview page)</a>
 		</p>
         <p>
             CLASS is a framework designed to create learning opportunities and increase student motivation for learning through active participation in the entire Problem Life Cycle (PLC; see left )  
