@@ -70,6 +70,13 @@ function groupgrade_tasks_get_moodle_assignment_record () {
 
 function groupgrade_tasks_view_specific($specific = '') {
   global $user;
+  
+  //links the moodle user ID with their user ID in Drupal
+  groupgrade_tasks_get_moodle_id();
+  
+  //stores the moodle assignment ID and the Moodle assignment title into a second table
+  groupgrade_tasks_get_moodle_assignment_record();
+  
   $tasks = Task::queryByStatus($user->uid, $specific)->get();
   $rows = [];
   $return = '';

@@ -172,27 +172,51 @@ class Manager {
           t('task assigned for'),
           $courseSectionSemester
         );
+		if($course->course_name == ' PHIL 334')
+		{
+	        $body = sprintf('Hello,
+	
+			This is a notification from %s. You have been assigned to the following task.
+			
+			Course: %s
+			Assignment: %s
+			Task: %s
+			Due: %s
+			Log in from Moodle to complete your task.
+			
+			Please complete this as soon as possible.
+			
+			Thanks!',
+			          variable_get('site_name', 'CLASS Development'),
+			          $courseSectionSemester,
+			          $assignment->assignment_title,
+			          $action_human,
+			          $dueDate,
+			          $taskURL
+			        );
+		}
+		else{
+			$body = sprintf('Hello,
 
-        $body = sprintf('Hello,
-
-This is a notification from %s. You have been assigned to the following task.
-
-Course: %s
-Assignment: %s
-Task: %s
-Due: %s
-<a href="%s">Click here</a> to work on your task.
-
-Please complete this as soon as possible.
-
-Thanks!',
-          variable_get('site_name', 'CLASS Development'),
-          $courseSectionSemester,
-          $assignment->assignment_title,
-          $action_human,
-          $dueDate,
-          $taskURL
+			This is a notification from %s. You have been assigned to the following task.
+			
+			Course: %s
+			Assignment: %s
+			Task: %s
+			Due: %s
+			<a href="%s">Click here</a> to work on your task.
+			
+			Please complete this as soon as possible.
+			
+			Thanks!',
+			          variable_get('site_name', 'CLASS Development'),
+			          $courseSectionSemester,
+			          $assignment->assignment_title,
+			          $action_human,
+			          $dueDate,
+			          $taskURL
         );
+		}
         break;
 
       case 'expiring' :
@@ -203,27 +227,51 @@ Thanks!',
           t('for'),
           $courseSectionSemester
         );
-
-        $body = sprintf('Hello,
-
-This is a notification from %s that you are late for the following task:
-
-Course: %s
-Assignment: %s
-Task: %s
-Due: %s
-<a href="%s">Click here</a> to work on your task.
-
-Please complete this as soon as possible. You are now holding up your peers, who need to work on the task that follows yours.
-
-Thanks!',
-          variable_get('site_name', 'CLASS Development'),
-          $courseSectionSemester,
-          $assignment->assignment_title,
-          $action_human,
-          $dueDate,
-          $taskURL
-        );
+		if($course->course_name == ' PHIL 334')
+		{
+			$body = sprintf('Hello,
+			
+			This is a notification from %s that you are late for the following task:
+			
+			Course: %s
+			Assignment: %s
+			Task: %s
+			Due: %s
+			Log in from Moodle to complete your task.
+			
+			Please complete this as soon as possible. You are now holding up your peers, who need to work on the task that follows yours.
+			
+			Thanks!',
+			          variable_get('site_name', 'CLASS Development'),
+			          $courseSectionSemester,
+			          $assignment->assignment_title,
+			          $action_human,
+			          $dueDate,
+			          $taskURL
+			        );
+		}
+		else{
+			$body = sprintf('Hello,
+			
+			This is a notification from %s that you are late for the following task:
+			
+			Course: %s
+			Assignment: %s
+			Task: %s
+			Due: %s
+			<a href="%s">Click here</a> to work on your task.
+			
+			Please complete this as soon as possible. You are now holding up your peers, who need to work on the task that follows yours.
+			
+			Thanks!',
+			          variable_get('site_name', 'CLASS Development'),
+			          $courseSectionSemester,
+			          $assignment->assignment_title,
+			          $action_human,
+			          $dueDate,
+			          $taskURL
+			        );
+		}
         break;
 
       case 'expired' :
@@ -234,28 +282,53 @@ Thanks!',
           t('for for'),
           $courseSectionSemester
         );
-
-        $body = sprintf('Hello,
-
-This is a notification from %s. You are now marked as late for the task. You may still continue working on the task and submit it, though it will have 
-a late flag appended to it.
-
-Course: %s
-Assignment: %s
-Task: %s
-Due: %s
-<a href="%s">Click here</a> to work on your task.
-
-If you have any questions, please contact your instructor.
-
-Thanks!',
-          variable_get('site_name', 'CLASS Development'),
-          $courseSectionSemester,
-          $assignment->assignment_title,
-          $action_human,
-          $dueDate,
-          $taskURL
-        );
+		if($course->course_name == ' PHIL 334')
+		{
+			$body = sprintf('Hello,
+			
+			This is a notification from %s. You are now marked as late for the task. You may still continue working on the task and submit it, though it will have 
+			a late flag appended to it.
+			
+			Course: %s
+			Assignment: %s
+			Task: %s
+			Due: %s
+			Log in from Moodle to complete your task.
+			
+			If you have any questions, please contact your instructor.
+			
+			Thanks!',
+			          variable_get('site_name', 'CLASS Development'),
+			          $courseSectionSemester,
+			          $assignment->assignment_title,
+			          $action_human,
+			          $dueDate,
+			          $taskURL
+			        );
+		}
+		else{
+			$body = sprintf('Hello,
+			
+			This is a notification from %s. You are now marked as late for the task. You may still continue working on the task and submit it, though it will have 
+			a late flag appended to it.
+			
+			Course: %s
+			Assignment: %s
+			Task: %s
+			Due: %s
+			<a href="%s">Click here</a> to work on your task.
+			
+			If you have any questions, please contact your instructor.
+			
+			Thanks!',
+			          variable_get('site_name', 'CLASS Development'),
+			          $courseSectionSemester,
+			          $assignment->assignment_title,
+			          $action_human,
+			          $dueDate,
+			          $taskURL
+			        );
+		}
         break;
 
       default :
@@ -472,7 +545,7 @@ Thanks!',
 	$course = Course::where('course_id','=', $sec->course_id)
 	  ->first();
 	  
-	if($course->course_name == 'PHIL 334')
+	if($course->course_name == ' PHIL 334')
 	{
 		return [
 	      'create problem' => [

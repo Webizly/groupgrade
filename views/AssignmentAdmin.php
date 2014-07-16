@@ -205,8 +205,7 @@ function groupgrade_edit_assignment_submit($form, &$form_state)
 /**
  * Add a section to an assignment
  */
-function groupgrade_add_assignment_section($form, &$form_state, $assignment)
-{
+function groupgrade_add_assignment_section($form, &$form_state, $assignment) {
   drupal_set_title(t('Add "@assignment-title" to Section', ['@assignment-title' => Assignment::find($assignment)->assignment_title]));
 
   //SELECT * FROM moodlelink2
@@ -348,24 +347,22 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
     '#value' => $assignment
   );
 
-  if(isset($options)){
-
-	  $items['moodle'] = array(
-	  	'#type' => 'checkbox',
-	  	'#title' => t('Link Assignment to Moodle?'),
-	  );
+  $items['moodle'] = array(
+ 	 '#type' => 'checkbox',
+  	 '#title' => t('Link Assignment to Moodle?'),
+  );
 	  
-	  $items['moodlelink'] = array(
-	  	'#type' => 'select',
-	  	'#title' => t('Select Moodle Assignment'),
-	  	'#options' => $options,
-	  	'#states' => array(
-	  		'visible' => array(
-				':input[name = "moodle"]' => array('checked' => TRUE),
-			),
+  $items['moodlelink'] = array(
+	  '#type' => 'select',
+	  '#title' => t('Select Moodle Assignment'),
+	  '#options' => $options,
+	  '#states' => array(
+	  	'visible' => array(
+			':input[name = "moodle"]' => array('checked' => TRUE),
 		),
-	  );
-  }
+	),
+  );
+
 
   $items['submit'] = array(
     '#type' => 'submit',
@@ -376,8 +373,9 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment)
 }
 
 
-function groupgrade_add_assignment_section_submit($form, &$form_state)
-{
+function groupgrade_add_assignment_section_submit($form, &$form_state) {
+	
+  global $user;	
   $section = $form['section']['#value'];
   $start = $form['start-date']['#value'];
 
@@ -464,10 +462,9 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 	  ))
 	  ->execute();
 
-
 //get the current assignment section id
   $class_assignment_section_id = AssignmentSection::orderBy('asec_id', 'DESC')->first();
-  krumo($class_assignment_section_id);
+  #krumo($class_assignment_section_id);
   
   //checks if the instructor wants to change Moodle assignment that is linked to CLASS assignment
   if ($form['moodle']['#checked']) {
@@ -483,7 +480,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 		->execute()
 		->fetch();
 	
-	krumo($moodle_assignment_title);
+	#krumo($moodle_assignment_title);
 	
 	//gets the assignment id for the class assignment id
 	$class_assignment_id = $class_assignment_section_id->assignment_id;
@@ -525,7 +522,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state)
 		$record->asecid = $class_assignment_section_id->asec_id;
 	}
 	
-	krumo($record);
+	#krumo($record);
 	
 	//INSERT/UPDATE into moodlelink3 ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid') VALUES ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid')
 	
