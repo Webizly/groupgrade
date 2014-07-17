@@ -1043,12 +1043,14 @@ function gg_task_dispute_form($form, &$form_state, $params)
       '#type' => 'textfield',
       '#title' => 'Proposed '.ucfirst($category).' Grade (0-' . $g['max'] . ')',
       '#default_value' => (isset($task->data['proposed-'.$category.'-grade'])) ? $task->data['proposed-'.$category.'-grade'] : '',
+      '#required' => true,
     ];
 
     $items['proposed-'.$category] = [
       '#type' => 'textarea',
       '#title' => 'Proposed '.ucfirst($category).' Justification',
       '#default_value' => (isset($task->data['proposed-'.$category])) ? $task->data['proposed-'.$category] : '',
+      '#required' => true,
     ];
   endforeach; endforeach;
 
@@ -1098,8 +1100,8 @@ function gg_task_dispute_form_submit($form, &$form_state)
   $task->setData('value', $dispute);
 
   if ($dispute) :
-    foreach ($grade->data['grades'] as $aspect => $junk) :
-      if (empty($form['proposed-'.$aspect.'-grade']['#value']) OR empty($form['proposed-'.$aspect]['#value']))
+    foreach ($grade->data['grades'] as $aspect => $g) :
+      if ($form['proposed-'.$aspect.'-grade']['#value'] < 0 || $form['proposed-'.$aspect.'-grade']['#value'] > $g['max'])
         return drupal_set_message(t('You didn\'t submit the '.$aspect.' justification and/or the propsed '.$aspect.' grade.'), 'error');
 
       // Save the fields
