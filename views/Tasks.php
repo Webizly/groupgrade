@@ -854,6 +854,8 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   // For each grade category...
   
   foreach ($task->data['grades'] as $category => $grade) :
+	if(is_numeric($form[$category . '-grade']['#value']) == false)
+	  return drupal_set_message(t('Please only input number grades.'), 'error');
   	$form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 	
 	// Is this bad data?
@@ -1043,14 +1045,12 @@ function gg_task_dispute_form($form, &$form_state, $params)
       '#type' => 'textfield',
       '#title' => 'Proposed '.ucfirst($category).' Grade (0-' . $g['max'] . ')',
       '#default_value' => (isset($task->data['proposed-'.$category.'-grade'])) ? $task->data['proposed-'.$category.'-grade'] : '',
-      '#required' => true,
     ];
 
     $items['proposed-'.$category] = [
       '#type' => 'textarea',
       '#title' => 'Proposed '.ucfirst($category).' Justification',
       '#default_value' => (isset($task->data['proposed-'.$category])) ? $task->data['proposed-'.$category] : '',
-      '#required' => true,
     ];
   endforeach; endforeach;
 
@@ -1101,8 +1101,14 @@ function gg_task_dispute_form_submit($form, &$form_state)
 
   if ($dispute) :
     foreach ($grade->data['grades'] as $aspect => $g) :
-      if ($form['proposed-'.$aspect.'-grade']['#value'] < 0 || $form['proposed-'.$aspect.'-grade']['#value'] > $g['max'])
-        return drupal_set_message(t('You didn\'t submit the '.$aspect.' justification and/or the propsed '.$aspect.' grade.'), 'error');
+	
+    // Is anything empty?
+    if ($form['proposed-'.$aspect.'-grade']['#value'] == '' || $form['proposed-'.$aspect]['#value'] == '')
+		return drupal_set_message(t('Please fill in all fields if you wish to dispute your grade.'), 'error');
+	
+      if ($form['proposed-'.$aspect.'-grade']['#value'] < 0 || $form['proposed-'.$aspect.'-grade']['#value'] > $g['max']
+	  || is_numeric($form['proposed-'.$aspect.'-grade']['#value']) == false)
+        return drupal_set_message(t('Incorrect value inserted for ' . $aspect . ' grade.'), 'error');
 
       // Save the fields
       $form['proposed-'.$aspect.'-grade']['#value'] = (int) $form['proposed-'.$aspect.'-grade']['#value'];
@@ -1121,7 +1127,7 @@ function gg_task_dispute_form_submit($form, &$form_state)
     endforeach;
 
     // Overall Justice.
-    if (empty($form['justification']['#value']))
+    if ($form['justification']['#value'] == '')
       return drupal_set_message(t('You didn\'t pass the justification.'), 'error');
     else
       $task->setData('justification', trim($form['justification']['#value']));
@@ -1454,7 +1460,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
     $form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 
     if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
-      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $g['max'])
+      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $g['max']
+	  OR is_numeric($form[$category . '-grade']['#value']) == false)
       return drupal_set_message(t('Invalid grade: '.$category . '-grade'),'error');
     else
       $gradeSum += $form[$category . '-grade']['#value'];
@@ -1757,14 +1764,13 @@ function gg_view_workflow($workflow_id, $admin = false)
 
   // Wrap it all inside an accordion
   $a = new Accordion('workflow-'.$workflow->workflow_id);
-
+  $graderCount = 0;
   if (count($tasks) > 0) : foreach ($tasks as $task) :
     if (! $admin AND $task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
       continue;
 
     // Options passed to the accordion
     $options = [];
-
     $panelContents = '';
 
     // Add user information if they're an admin
@@ -1793,7 +1799,58 @@ function gg_view_workflow($workflow_id, $admin = false)
       $panelContents .= sprintf('<p><em>%s</em></p>', t('You performed this task!'));
     // Determine the panel contents
     if (in_array($task->status, ['triggered', 'complete', 'started']))
-      $panelContents .= groupgrade_view_task($task, 'overview', $admin);
+      {
+      	//$panelContents .= groupgrade_view_task($task, 'overview', $admin);
+      	// We don't want to print out EXACTLY what appears on the view task screen all the time.
+      	
+      	switch($task->type){
+			case 'create problem' : {
+				$panelContents .= "<h4>Problem: </h4>";
+				$panelContents .= $task->data['problem'];
+				$panelContents .= "<hr><h4>Instructions: </h4>";
+				$panelContents .= $task->settings['instructions'];
+				break;
+			}
+			
+			case 'edit problem' : {
+				$panelContents .= "<h4>Edited Problem: </h4>";
+				$panelContents .= $task->data['problem'];
+				$panelContents .= "<hr><h4>Comments: </h4>";
+				$panelContents .= $task->data['comment'];
+				$panelContents .= "<hr><h4>Instructions: </h4>";
+				$panelContents .= $task->settings['instructions'];
+				break;
+			}
+			
+			case 'create solution' : {
+				$panelContents .= "<h4>Solution: </h4>";
+				$panelContents .= $task->data['solution'];
+				$panelContents .= "<hr><h4>Instructions: </h4>";
+				$panelContents .= $task->settings['instructions'];
+				break;
+			}
+			
+			case 'grade solution' : {
+				foreach($task->data['grades'] as $category => $g){
+					$panelContents .= "<h4>" . ucfirst($category) . "</h4>";
+					$panelContents .= "<strong>Grade: </strong>" . $g['grade'] . "<br>";
+					$panelContents .= "<strong>Justification: </strong>" . $g['justification'] . "<br>";
+					if(isset($g['additional-instructions'])){
+						$panelContents .= "<strong>Additional Instructions: </strong>" . $g['additional-instructions'] . "<br>";
+					}
+					$panelContents .= "<hr>";
+				}
+				$panelContents .= "<h4>Instructions: </h4>";
+				$panelContents .= $task->settings['instructions'];
+				$graderCount++;
+				break;
+			}
+			
+			case 'resolution grader' : {
+			}
+			
+      	}
+      }
     elseif ($task->status == 'not triggered')
       $panelContents .= sprintf('<div class="alert">%s</div>', t('Task not triggered.'));
     elseif ($task->status == 'expired')
@@ -1801,7 +1858,12 @@ function gg_view_workflow($workflow_id, $admin = false)
     elseif ($task->status == 'timed out')
       $panelContents .= sprintf('<div class="alert">%s</div>', t('Task timed out (failed to submit).'));
 
-    $a->addGroup(t(ucwords($task->type)), $workflow->workflow_id.'-'.$task->task_id, $panelContents, false, $options);
+    if($task->type == 'grade solution')
+    	$displayGrader = ' ' . $graderCount;
+	else
+		$displayGrader = '';
+
+    $a->addGroup(t(ucwords($task->type) . $displayGrader), $workflow->workflow_id.'-'.$task->task_id, $panelContents, false, $options);
   endforeach; endif;
 
   // Append the accordions
@@ -2033,7 +2095,10 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   $total = 0;
   
   foreach($grades[0]->data['grades'] as $category => $g) :
+	  
 	  $score = $form[$category . '-grade']['#value'];
+	  if(is_numeric($score) == FALSE)
+	    return drupal_set_message(t('Invalid grade: ' . $score),'error');
 	  if($score < 0 || $score > $g['max']){
 	    return drupal_set_message(t('Invalid grade: ' . $score),'error');
 	  }
