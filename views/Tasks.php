@@ -2145,13 +2145,13 @@ function gg_reassign_task_submit($form, &$form_state)
 function groupgrade_reassign_to_contig() {
   $pool = $removePool = [];
   foreach ([
-    'omf3', 'dkp35', 'eak8', 'dcs24', 'dbh2', 'jrb42', 'eos2', 'amr48', 'mr429', 'mm57'
+    'ydm2', 'krt6', 'vg88', 'md287', 'jmm63', 'jn72', 'mhs38', 'pp389', 'em65', 'gks25','ep39'
   ] as $u)
     $pool[] =  user_load_by_name($u);
 
   // Let's find the people we're going to remove
   foreach ([
-    'aza4', 'cjr29', 'fj37', 'sp279', 'fp38', 'gp88', 'sb455', 'jrm57', 'jcm38', 'pmv9', 'mc374', 'nac4', 'mlk6', 'ajp47', 'dbp35', 'scf22', 'dka8'
+    'arp53', 'rhm9', 'aay5', 'oa45', 'clm2', 'spw5', 'itp3', 'ms695', 'rap48'
   ] as $u)
     $removePool[] = user_load_by_name($u);
 
@@ -2161,7 +2161,7 @@ function groupgrade_reassign_to_contig() {
 
     $tasks = Task::where('user_id', $removeUser->uid)
       ->groupBy('workflow_id')
-      ->whereIn('status', ['not triggered', 'triggered', 'started', 'timed out'])
+      ->whereIn('status', ['not triggered', 'triggered', 'started', 'timed out','expired'])
       ->get();
 
     // They're not assigned any tasks that we're going to change
@@ -2173,6 +2173,12 @@ function groupgrade_reassign_to_contig() {
     // Go though all assigned tasks
     foreach ($tasks as $task)
     {
+    
+	  $a = $task->assignment()->first();
+	
+	  if($a->assignment_id != 68)
+	    continue;	
+		
       echo "Removing task ".$task->id.PHP_EOL;
       $foundUser = false;
       $i = 0;
@@ -2195,6 +2201,40 @@ function groupgrade_reassign_to_contig() {
 
       // Now that we've found the user, let's reassign it
       // We're going to reassign all tasks assigned to this user in the workflow
+      
+      // Before anything, let's update the user history field.
+      $update = null;
+	  if($task->user_history == ''){
+	  	$update = array();
+		$ar = array();
+		$ar[] = $removeUser->uid;
+		$ar[] = $removeUser->name;
+		$ar[] = Carbon\Carbon::now()->toDateTimeString();
+		$update[] = $ar;
+		$task->user_history = json_encode($update);
+	  }
+	  else{
+	  	$update = json_decode($task->user_history,true);
+		$ar = array();
+		$ar[] = $removeUser->uid;
+		$ar[] = $removeUser->name;
+		$ar[] = Carbon\Carbon::now()->toDateTimeString();
+		$update[] = $ar;
+		$task->user_history = json_encode($update);
+	  }
+      
+      Task::where('user_id', $removeUser->uid)
+        ->where('workflow_id', $task->workflow_id)
+        ->whereIn('status', ['triggered', 'started', 'timed out', 'expired'])
+        ->update([
+          'user_id' => $reassignUser->uid,
+          'status' => 'triggered',
+          'start' => Carbon\Carbon::now()->toDateTimeString(),
+          'user_history' => $task->user_history,
+         // 'force_end' => $this->timeoutTime()->toDateTimeString()
+        ]);
+      
+      /*
       Task::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
         ->whereIn('status', ['triggered', 'started', 'timed out'])
@@ -2204,13 +2244,14 @@ function groupgrade_reassign_to_contig() {
           'start' => Carbon\Carbon::now()->toDateTimeString(),
          // 'force_end' => $this->timeoutTime()->toDateTimeString()
         ]);
-
+	  */
         // Different for non-triggered already
         Task::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
         ->where('status', 'not triggered')
         ->update([
           'user_id' => $reassignUser->uid,
+          'user_history' => $task->user_history,
         ]);
     }
   endforeach; endif;
