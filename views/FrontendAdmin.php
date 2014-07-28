@@ -164,6 +164,14 @@ function groupgrade_view_reports($section_id){
 				}
 			}
 			
+			// Now that we have every task from all workflows, print out tasks completed
+			$return .= "<td>";
+			foreach($normalTasks as $task){
+				
+				$return .= $task->type . "<br>";
+			}
+			$return .= "</td>";
+			
 			$return .= "</tr>";
 		}
 		
