@@ -627,7 +627,7 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_view_user',
+    'page callback' => 'groupgrade_view_reports',
     'page arguments' => array(2),
 
     'access arguments' => array('instructor', 2),

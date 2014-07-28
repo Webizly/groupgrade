@@ -4,6 +4,7 @@ use Drupal\ClassLearning\Models\User,
   Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Semester,
   Drupal\ClassLearning\Models\AssignmentSection,
+  Drupal\ClassLearning\Models\Assignment,
   Drupal\ClassLearning\Models\WorkflowTask,
   Drupal\ClassLearning\Models\Workflow;
 
@@ -100,6 +101,40 @@ function groupgrade_view_user($section_id) {
   $return .= drupal_render($form);
 
   return $return;
+}
+
+function groupgrade_view_reports($section_id){
+	
+	$return = '';
+	$return .= '<h2>Student Reports</h2>';
+	
+	// Get all assignment section objects
+	$asecs = AssignmentSection::where('section_id','=',$section_id)
+	  ->get();
+	
+	$section = Section::where('section_id','=',$section_id)
+	  ->first();
+	
+	// Get all the students
+	  
+	$students = array();  
+	  
+	$section_users = $section->students()->get();
+	if(count($section_users) > 0) { foreach($section_users as $i){
+		$students[] = user_load($i->user_id);
+	}
+	}
+	else{
+		$return .= "No students found.";
+		return $return;
+	}
+	
+	//For each assignment section object...
+	foreach($asecs as $asec){
+		
+	}
+	
+	return $return;
 }
 
 function groupgrade_view_assignments($id) {
