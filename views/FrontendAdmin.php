@@ -106,7 +106,7 @@ function groupgrade_view_user($section_id) {
 function groupgrade_view_reports($section_id){
 	
 	$return = '';
-	$return .= '<h2>Student Reports</h2>';
+	$return .= '<h1>Student Reports</h1><br>';
 	
 	// Get all assignment section objects
 	$asecs = AssignmentSection::where('section_id','=',$section_id)
@@ -131,7 +131,43 @@ function groupgrade_view_reports($section_id){
 	
 	//For each assignment section object...
 	foreach($asecs as $asec){
+		$assignment = Assignment::where('assignment_id','=',$asec->assignment_id)
+		  ->first();
 		
+		$workflows = Workflow::where('assignment_id','=',$asec->asec_id)
+		  ->get();
+		  
+		$return .= "<h3>" . $assignment->assignment_title . "</h3>";
+		
+		//For each student...
+		$return .= "<table><tr><th>UCID</th><th>Name</th><th>Tasks Completed</th><th>Extra Credit Completed</th></tr>";
+		foreach($students as $student){
+			
+			$return .= "<tr>";
+			$return .= "<td>" . $student->name . "</td>";
+			$return .= "<td>" . ggPrettyName($student) . "</td>";
+			
+			// Get EVERY task done by this student. Oh boy.
+			$normalTasks = array();
+			$extraTasks = array();
+			
+			foreach($workflows as $workflow){
+				$tasks = WorkflowTask::where('workflow_id','=',$workflow->workflow_id)
+				  ->where('user_id','=',$student->uid)
+				  ->get();
+				  
+				foreach($tasks as $task){
+					if($task->user_history == null)
+					  $normalTasks[] = $task;
+					else
+					  $extraTasks[] = $task;
+				}
+			}
+			
+			$return .= "</tr>";
+		}
+		
+		$return .= "</table>";
 	}
 	
 	return $return;
