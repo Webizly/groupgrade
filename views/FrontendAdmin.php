@@ -6,7 +6,8 @@ use Drupal\ClassLearning\Models\User,
   Drupal\ClassLearning\Models\AssignmentSection,
   Drupal\ClassLearning\Models\Assignment,
   Drupal\ClassLearning\Models\WorkflowTask,
-  Drupal\ClassLearning\Models\Workflow;
+  Drupal\ClassLearning\Models\Workflow,
+  Drupal\ClassLearning\Workflow\Manager;
 
 /**
  * @file
@@ -157,6 +158,8 @@ function groupgrade_view_reports($section_id){
 				  ->get();
 				  
 				foreach($tasks as $task){
+					if($task->status != 'complete')
+					  continue;
 					if($task->user_history == null)
 					  $normalTasks[] = $task;
 					else
@@ -168,11 +171,23 @@ function groupgrade_view_reports($section_id){
 			$return .= "<td>";
 			foreach($normalTasks as $task){
 				
-				$return .= $task->type . "<br>";
+				$return .= "<a href=" . url('class/task/' . $task->task_id) . ">" . Manager::humanTaskName($task->type) . "</a><br>";
+			}
+			$return .= "</td>";
+			
+			// Finally, print out extra credit tasks
+			$return .= "<td>";
+			foreach($extraTasks as $task){
+				
+				$return .= "<a href=" . url('class/task/' . $task->task_id) . ">" . Manager::humanTaskName($task->type) . "</a><br>";
 			}
 			$return .= "</td>";
 			
 			$return .= "</tr>";
+			
+			unset($normalTasks);
+			unset($extraTasks);
+			
 		}
 		
 		$return .= "</table>";
