@@ -404,7 +404,7 @@ return array(
     'weight' => 2,
   ),
 */
-
+/*
   // For Instructors AND Administrators
   'class/instructor/assignments/%/allocation' => array(
     'type' => MENU_LOCAL_TASK,
@@ -418,17 +418,18 @@ return array(
     'access arguments' => array('section-instructor'),
     'weight' => 3,
   ),
-  
+*/
   // For Administrators ONLY
   'class/instructor/assignments/%/administrator-allocation' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Administrator Allocation View',
+    'title' => 'Allocation View',
     'page callback' => 'groupgrade_view_allocation',
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page arguments' => array(3,true),
-    'access arguments' => array('access administration pages'),
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
     'weight' => 5,
   ),
   

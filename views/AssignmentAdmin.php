@@ -789,7 +789,7 @@ function groupgrade_view_allocation($assignment,$view_names){
   
   $return .= "<h2>Legend</h2>";
   $return .= "<table><tr>";
-  $return .= "<th style='background:#FFFFFF'>In Progress</th><th style='background:#B4F0BB'>Complete</th><th style='background:#FCC7C7'>Late</th><th style='background:#E8E8E8'>Inactive</th>";
+  $return .= "<th style='background:#FFFFFF'>In Progress</th><th style='background:#B4F0BB'>Complete</th><th style='background:#FCC7C7'>Late</th><th style='background:#F5F598'>Not Needed</th><th style='background:#E8E8E8'>Inactive</th>";
   $return .= "</tr></table><br>";
   
   // We have assignment given to us. We need to find the workflows through assignment section!
@@ -879,7 +879,7 @@ function groupgrade_view_allocation($assignment,$view_names){
 				case 'complete': $color = "#B4F0BB"; $hide = false; break;
 				case 'not triggered': $color = "#E8E8E8"; break;
 				case 'timed out': $color = "#FCC7C7"; break;
-				case 'expired': $color = "#FCC7C7"; break;
+				case 'expired': $color = "#F5F598"; break;
 				default: $color = "#FFFFFF"; break;
 			}
 			
