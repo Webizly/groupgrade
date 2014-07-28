@@ -7,9 +7,9 @@ use Drupal\ClassLearning\Models\WorkflowTask as Task,
 
 function groupgrade_tasks_dashboard() {
   if(isset($_SESSION['lti_tool_provider_context_info']['resource_link_title'])){
-    return groupgrade_tasks_view_specific('pending');
-  } else {
     return groupgrade_tasks_view_lti('pending');
+  } else {
+    return groupgrade_tasks_view_specific('pending');
   }
 }
 
@@ -68,7 +68,7 @@ function groupgrade_tasks_get_moodle_assignment_record () {
 			->execute();
 }
 
-function groupgrade_tasks_view_specific($specific = '') {
+function groupgrade_tasks_view_lti($specific = '') {
   global $user;
   
   //links the moodle user ID with their user ID in Drupal
@@ -155,7 +155,7 @@ function groupgrade_tasks_view_specific($specific = '') {
   return $return;
 }
 
-function groupgrade_tasks_view_lti($specific = '') {
+function groupgrade_tasks_view_specific($specific = '') {
   global $user;
   
   $tasks = Task::queryByStatus($user->uid, $specific)->get();
@@ -1457,11 +1457,12 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   $gradeSum = 0;
 
   foreach ($grade->data['grades'] as $category => $g) :
+	if(is_numeric($form[$category . '-grade']['#value']) == false)
+	  return drupal_set_message(t('Please enter only numerical grades.'),'error');
     $form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 
     if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
-      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $g['max']
-	  OR is_numeric($form[$category . '-grade']['#value']) == false)
+      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $g['max'])
       return drupal_set_message(t('Invalid grade: '.$category . '-grade'),'error');
     else
       $gradeSum += $form[$category . '-grade']['#value'];
@@ -1765,7 +1766,12 @@ function gg_view_workflow($workflow_id, $admin = false)
   // Wrap it all inside an accordion
   $a = new Accordion('workflow-'.$workflow->workflow_id);
   $graderCount = 0;
-  if (count($tasks) > 0) : foreach ($tasks as $task) :
+  if (count($tasks) > 0) :
+	
+	$manualForm = drupal_get_form('gg_manual_reassign', $section, $students);
+    $return .= drupal_render($manualForm);
+	
+	foreach ($tasks as $task) :
     if (! $admin AND $task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
       continue;
 
@@ -2198,8 +2204,107 @@ function gg_reassign_task_submit($form, &$form_state)
   if ($user == $task->user_id)
     return drupal_set_message(t('You cannot reassign the same user to the task.'), 'error');
 
+  $update = null;
+  if($task->user_history == '')
+	$update = array();
+  else
+  	$update = json_decode($task->user_history,true);
+  
+    $user_object = user_load($task->user_id);
+  
+	$ar = array();
+	$ar[] = $user_object->uid;
+	$ar[] = $user_object->name;
+	$ar[] = Carbon\Carbon::now()->toDateTimeString();
+	$update[] = $ar;
+	$task->user_history = json_encode($update);
+
   $task->user_id = $user;
   $task->trigger(true);
+
+  return drupal_set_message('User reassigned and task re-triggered.');
+}
+
+function gg_manual_reassign($form, &$form_state, $section, $students)
+{
+  $items = $index = [];
+
+  if (count($students) > 0) : foreach($students as $student) :
+    $user = user_load($student->user_id);
+    if (! $user) continue;
+
+    $index[$student->user_id] = ggPrettyName($user);
+  endforeach; endif;
+
+  $items['task'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Manually Reassign Task',
+    '#description' => 'Please enter task id',
+  );
+
+  $items['user'] = array(
+     '#type' => 'select',
+     '#title' => t('Reassign Task to User'),
+     '#options' => $index,
+ );
+
+  $items['section'] = array(
+    '#value' => $section->section_id,
+    '#type' => 'hidden'
+  );
+  
+  $items['forcetrigger'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Force Trigger',
+  );
+
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Reassign Task (Will re-start the task)',
+  ];
+
+  $items[] = [
+    '#markup' => '<hr />'
+  ];
+
+  return $items;
+}
+
+function gg_manual_reassign_submit($form, &$form_state)
+{
+  $task_id = $form['task']['#value'];
+
+  $task = Task::where('task_id','=',$task_id)
+    ->first();
+  
+  $section = $form_state['build_info']['args'][0];
+
+  $user = (int) $form['user']['#value'];
+
+  if ($user == $task->user_id)
+    return drupal_set_message(t('You cannot reassign the same user to the task.'), 'error');
+
+  $update = null;
+  if($task->user_history == '')
+	$update = array();
+  else
+  	$update = json_decode($task->user_history,true);
+  
+    $user_object = user_load($task->user_id);
+  
+	$ar = array();
+	$ar[] = $user_object->uid;
+	$ar[] = $user_object->name;
+	$ar[] = Carbon\Carbon::now()->toDateTimeString();
+	$update[] = $ar;
+	$task->user_history = json_encode($update);
+
+  $task->user_id = $user;
+  
+  if($form['forcetrigger']['#value'] == 1)
+    $task->trigger(true);
+  else
+  	$task->save();
 
   return drupal_set_message('User reassigned and task re-triggered.');
 }

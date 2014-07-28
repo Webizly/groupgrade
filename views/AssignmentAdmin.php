@@ -884,9 +884,9 @@ function groupgrade_view_allocation($assignment,$view_names){
 			}
 			
 			if(!$hide)
-			  $r['print'] = "<a href=" . url('class/task/' . $task['task_id']) . ">" . $printuser . "</a>";
+			  $r['print'] = "<a href=" . url('class/task/' . $task['task_id']) . ">" . $printuser . "<br>(" . $task['task_id'] . ")</a>";
 			else
-			  $r['print'] = $printuser;
+			  $r['print'] = $printuser . "<br>(" . $task['task_id'] . ")";
 			$r['color'] = $color;
 			$results[] = $r;
 			
