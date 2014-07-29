@@ -148,7 +148,7 @@ function groupgrade_view_reports($section_id){
 			$return .= "<td>" . $student->name . "</td>";
 			$return .= "<td>" . ggPrettyName($student) . "</td>";
 			
-			// Get EVERY task done by this student. Oh boy.
+			// Get EVERY task done by this student.
 			$normalTasks = array();
 			$extraTasks = array();
 			
@@ -170,7 +170,6 @@ function groupgrade_view_reports($section_id){
 			// Now that we have every task from all workflows, print out tasks completed
 			$return .= "<td>";
 			foreach($normalTasks as $task){
-				
 				$return .= "<a href=" . url('class/task/' . $task->task_id) . ">" . Manager::humanTaskName($task->type) . "</a><br>";
 			}
 			$return .= "</td>";

@@ -12,7 +12,7 @@ return array(
     'access callback' => 'groupgrade_baseaccess',
   ),
 
-  'about' => array(
+  'class/about' => array(
     'title' => 'About CLASS',
     'page callback' => 'groupgrade_about',
     'file' => 'Admin.php', //Change later
