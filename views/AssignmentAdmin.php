@@ -434,8 +434,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state) {
 		//if(intval($t) <= 0)
 		//  return drupal_set_message('Invalid duration specified for ' . $key,'error');
 		$task_expire[$key]['duration'] = $t;
-	}
-	else{
+	} else {
 		// Date
 		$start = $form['task_expire'][$key][$key.'-date']['#value'];
 		foreach (['year', 'month', 'day', 'hour', 'minute'] as $i) :
@@ -623,6 +622,22 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
     '#value' => $section->asec_id
   );
 
+  $items['moodle'] = array(
+  	'#type' => 'checkbox',
+  	'#title' => t('Link Assignment to Moodle?'),
+  );
+  
+  $items['moodlelink'] = array(
+  	'#type' => 'select',
+  	'#title' => t('Select Moodle Assignment'),
+  	'#options' => $options,
+  	'#states' => array(
+  		'visible' => array(
+			':input[name = "moodle"]' => array('checked' => TRUE),
+		),
+	),
+  );
+  
   $items['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Change Assignment Details'),
@@ -632,6 +647,7 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
 
 function groupgrade_edit_assignment_section_submit($form, &$form_state)
 {
+  global $user;
   $section = (int) $form['asec_id']['#value'];
   $start = $form['start-date']['#value'];
 
@@ -641,9 +657,9 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
   $section->asec_start = sprintf('%d-%d-%d %d:%d:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
   $section->save();
 
-/*//get the current assignment section id
+  //get the current assignment section id
   $class_assignment_section_id = $section->asec_id;
-  krumo($class_assignment_section_id);
+  #krumo($class_assignment_section_id->asec_id);
   
   //checks if the instructor wants to change Moodle assignment that is linked to CLASS assignment
   if ($form['moodle']['#checked']) {
@@ -659,17 +675,24 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 		->execute()
 		->fetch();
 	
-	krumo($moodle_assignment_title);
+	#krumo($moodle_assignment_title->matitle);
 	
-	//gets the assignment id for the class assignment id
-	$class_assignment_id = $class_assignment_section_id->assignment_id;
+	//SELECT assignment_id FROM pla_assignment_section WHERE asec_id = $class_assignment_section_id
+	$class_assignment_id = db_select('pla_assignment_section', 'pla_a_s')
+		->fields('pla_a_s', array('assignment_id'))
+		->condition('asec_id', $class_assignment_section_id)
+		->execute()
+		->fetch(); 
 	
 	//SELECT assignment_title FROM pla_assignment where assignment_id = $class_assignment_id
 	$class_assignment_title = db_select('pla_assignment', 'pla_a')
 		->fields('pla_a', array('assignment_title'))
-		->condition('assignment_id', $class_assignment_id)
+		->condition('assignment_id', $class_assignment_id->assignment_id)
 		->execute()
 		->fetch(); 
+	
+	#krumo($class_assignment_id);
+	#krumo($class_assignment_title);
 	
 	//gets the user id of the current user in Drupal
   	$class_id = $user->uid;  
@@ -677,10 +700,7 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
   	//SELECT * FROM moodlelink3 where maid = $moodle_assignment_id and aid = $class_assignment_id and uid = $class_id and asecid = $class_assignment_section_id
   	$record = db_select('moodlelink3', 'ml3')
   		->fields('ml3')
-		->condition('maid', $moodle_assignment_id)
-		->condition('aid', $class_assignment_id)
-		->condition('uid', $class_id)
-		->condition('asecid', $class_assignment_section_id->asec_id)
+		->condition('asecid', $class_assignment_section_id)
     	->execute()
     	->fetch();
 	
@@ -688,20 +708,19 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 	 * $record = new array();
 	 * $record['maid'] = $moodle_assignment_id;
 	 * $abc = $record['maid'];
-	 
+	 */
 	
 	//if the record doesn't exist, add it to the table
 	if($record == false) {
 		$record = new StdClass();
 		$record->maid = $moodle_assignment_id;
 		$record->matitle = $moodle_assignment_title->matitle;
-		$record->aid = $class_assignment_id;
+		$record->aid = $class_assignment_id->assignment_id;
 		$record->atitle = $class_assignment_title->assignment_title;
 		$record->uid = $class_id;
-		$record->asecid = $class_assignment_section_id->asec_id;
-	}
+		$record->asecid = $class_assignment_section_id;
 	
-	krumo($record);
+	#krumo($record);
 	
 	//INSERT/UPDATE into moodlelink3 ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid') VALUES ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid')
 	
@@ -713,7 +732,19 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 		->key(array('uid' => $record->uid))
 		->key(array('asecid' => $record->asecid))
 		->execute();
-  }*/
+  	} else {
+  		$query = db_update('moodlelink3')
+		->fields(array(
+		'maid' => $moodle_assignment_id,
+		'matitle' => $moodle_assignment_title->matitle,
+		'aid' => $class_assignment_id->assignment_id,
+	    'atitle' => $class_assignment_title->assignment_title,
+		'uid' => $class_id,
+		'asecid' => $class_assignment_section_id))
+		->condition('asecid', $class_assignment_section_id)
+		->execute();
+	}
+  }
 
   return drupal_set_message(sprintf('Updated assignment section %d on section %d', $section->asec_id, $section->section_id));
 }
