@@ -552,6 +552,21 @@ return array(
     'weight' => 2,
   ),
 
+  'class/instructor/%/reports' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Reports',
+    
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_reports',
+    'page arguments' => array(2),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
+  ),
+
   'class/instructor/%/swap-status/%' => array(
     'type' => MENU_CALLBACK,
     'title' => 'Users',
@@ -583,6 +598,7 @@ return array(
   ),
 
   // View Section Assignments
+  /*
   'class/instructor/%/assignment/%' => array(
     'title' => 'View Assignment',
 
@@ -617,7 +633,7 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 2,
   ),
-
+  
    // View a workflow inside of an assignment
    'class/instructor/%/assignment/%/%' => array(
     'title' => 'View Workflow',
@@ -632,19 +648,93 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ),
+ */
+ //Operations
+ 'class/instructor/%/assignment/%' => array(
+    'title' => 'Operations',
 
-   'class/instructor/%/reports' => array(
-    'type' => MENU_LOCAL_TASK,
-    'title' => 'Reports',
-    
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_view_reports',
-    'page arguments' => array(2),
+    'page callback' => 'groupgrade_view_assignment',
+    'page arguments' => array(2, 4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ),
+
+  'class/instructor/%/assignment/%/operations' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Operations',
+    'weight' => 1,
+  ),
+  
+  //Operations -> Edit start date
+  'class/instructor/%/assignment/%/operations/edit-start-date' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Edit Start Date',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_function1',
+    //'page arguments' => array(),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
+ 
+ //Operations -> Remove
+ //Code goes here
+ 
+ //View + Reassign
+ 'class/instructor/%/assignment/%/view-reassign' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View and Reassign',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_function2',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
+  ),
+  
+  //Reports
+ 'class/instructor/%/assignment/%/reports' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Reports',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_function3',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 4,
+  ),
+  
+  //Reports
+ 'class/instructor/%/assignment/%/moodle' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Moodle Integration',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_function4',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 5,
+  ),
+ 
 );

@@ -430,3 +430,19 @@ function groupgrade_frontend_swap_status($section, $user)
 
   return drupal_goto('class/instructor/'.$section.'/users');
 }
+
+function groupgrade_fake_function1(){
+	return '1';
+}
+
+function groupgrade_fake_function2(){
+	return '2';
+}
+
+function groupgrade_fake_function3(){
+	return '3';
+}
+
+function groupgrade_fake_function4(){
+	return '4';
+}
