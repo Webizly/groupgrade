@@ -755,24 +755,40 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 /**
  * Remove a section from an assignment
  */
-function groupgrade_remove_assignment_section($form, &$form_state, $assignment, $section)
+function groupgrade_remove_assignment_section($form, &$form_state, $section)
 {
   global $user;
   $section = AssignmentSection::find($section);
   if ($section == NULL) return drupal_not_found();
 
   $items = array();
-  $items['m'] = array(
-    '#markup' => '<p><a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment</a></p>',
-  );
+  
+  $theSection = $section->section()->first();
+  $course = $theSection->course()->first();
+  $semester = $theSection->semester()->first();
 
+  // Information about this course
+  $items[] = [
+    '#markup' => sprintf('<p><strong>%s</strong>: %s &mdash; %s &mdash; %s</p>',
+      t('Course'),
+      $course->course_name,
+      $theSection->section_name,
+      $semester->semester_name
+    )
+  ];
+  
+  /*
+  $items['m'] = array(
+    '#markup' => '<p><a href="'.url('class/instructor/assignments/' . $section->assignment_id).'">Back to Assignment</a></p>',
+  );
+  */
   $items[] = [
     '#markup' => '<p>Are you <strong>sure</strong> you want to remove this assignment from the section? It is irreversible!</p>'
   ];
 
   $items['assignment_id'] = array(
     '#type' => 'hidden',
-    '#value' => $assignment
+    '#value' => $section->assignment_id
   );
 
   $items['asec_id'] = array(
@@ -784,6 +800,7 @@ function groupgrade_remove_assignment_section($form, &$form_state, $assignment, 
     '#type' => 'submit',
     '#value' => t('Remove Assignment from Section'),
   );
+  
   return $items;
 }
 
@@ -827,7 +844,7 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
   $return .= "</tr></table><br>";
   
   // We have assignment given to us. We need to find the workflows through assignment section!
-  if($asec_view == false){
+  if($asec_view == null){
     $asecs = AssignmentSection::where('assignment_id', '=', $assignment)
       ->get();
   }
@@ -845,6 +862,9 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
   $rows = array();
   
   foreach($asecs as $asec) :
+  
+  if($asec_view != null)
+    $assignment = $asec->assignment_id;
   
   	  unset($rows);
   

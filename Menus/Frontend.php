@@ -702,11 +702,11 @@ return array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Remove',
 
-    'file' => 'FrontendAdmin.php',
+    'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_functionB',
-    //'page arguments' => array(),
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_remove_assignment_section', 4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
@@ -721,12 +721,27 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_function2',
-    //'page arguments' => array(2, 4),
+    'page callback' => 'groupgrade_view_assignment',
+    'page arguments' => array(2, 4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
     'weight' => 2,
+  ),
+ 
+ // View a workflow inside of an assignment
+   'class/instructor/%/assignment/%/%' => array(
+    'title' => 'View Workflow',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_view_assignmentworkflow',
+    'page arguments' => array(2, 4, 5),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
   ),
   
  //All Problem Sets tab
@@ -744,8 +759,8 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_functionA',
-    //'page arguments' => array(2, 4),
+    'page callback' => 'groupgrade_view_timedout',
+    'page arguments' => array(2, 4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
