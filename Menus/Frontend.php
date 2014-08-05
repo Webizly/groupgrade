@@ -792,6 +792,22 @@ return array(
     'weight' => 4,
   ), 
   
+  //View and Reassign -> Remove and Reassign
+ 'class/instructor/%/assignment/%/view-reassign/remove-reassign' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Remove And Reassign',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_functionA',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 5,
+  ), 
+  
  /*
  //View + Reassign -> All Problem Set
  'class/instructor/%/assignment/%/view-reassign/all' => array(
