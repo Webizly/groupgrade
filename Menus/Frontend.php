@@ -772,11 +772,11 @@ return array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'View Task Table (Anonymous)',
 
-    'file' => 'FrontendAdmin.php',
+    'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_functionA',
-    //'page arguments' => array(2, 4),
+    'page callback' => 'groupgrade_view_allocation',
+    'page arguments' => array(0, false, 4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
@@ -788,11 +788,11 @@ return array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'View Task Table',
 
-    'file' => 'FrontendAdmin.php',
+    'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_functionA',
-    //'page arguments' => array(2, 4),
+    'page callback' => 'groupgrade_view_allocation',
+    'page arguments' => array(0, true, 4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
@@ -807,7 +807,7 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_functionA',
+    'page callback' => 'groupgrade_remove_reassign',
     //'page arguments' => array(2, 4),
 
     'access arguments' => array('instructor', 2),

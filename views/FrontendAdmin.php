@@ -431,6 +431,10 @@ function groupgrade_frontend_swap_status($section, $user)
   return drupal_goto('class/instructor/'.$section.'/users');
 }
 
+function groupgrade_remove_reassign(){
+	return 'Work In Progress';
+}
+
 function groupgrade_fake_function1(){
 	return '1';
 }
