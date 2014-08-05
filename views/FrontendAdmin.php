@@ -104,17 +104,20 @@ function groupgrade_view_user($section_id) {
   return $return;
 }
 
-function groupgrade_view_reports($section_id){
+function groupgrade_view_reports($asec_id){
 	
 	$return = '';
-	$return .= '<h1>Student Reports</h1><br>';
+	$return .= '<h1>Completed Tasks and Grades</h1><br>';
 	
 	// Get all assignment section objects
-	$asecs = AssignmentSection::where('section_id','=',$section_id)
-	  ->get();
-	
-	$section = Section::where('section_id','=',$section_id)
+	$asec = AssignmentSection::where('asec_id','=',$asec_id)
 	  ->first();
+	
+	$section = Section::where('section_id','=',$asec->section_id)
+	  ->first();
+	
+	if($section == null)
+	  return drupal_not_found();
 	
 	// Get all the students
 	  
@@ -131,7 +134,7 @@ function groupgrade_view_reports($section_id){
 	}
 	
 	//For each assignment section object...
-	foreach($asecs as $asec){
+	
 		$assignment = Assignment::where('assignment_id','=',$asec->assignment_id)
 		  ->first();
 		
@@ -190,7 +193,7 @@ function groupgrade_view_reports($section_id){
 		}
 		
 		$return .= "</table>";
-	}
+	
 	
 	return $return;
 }

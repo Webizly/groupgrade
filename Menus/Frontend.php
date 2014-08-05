@@ -842,8 +842,8 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_function3',
-    //'page arguments' => array(2, 4),
+    'page callback' => 'groupgrade_view_reports',
+    'page arguments' => array(4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
