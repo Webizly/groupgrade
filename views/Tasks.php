@@ -2327,6 +2327,77 @@ function gg_manual_reassign_submit($form, &$form_state)
   return drupal_set_message('User reassigned and task re-triggered.');
 }
 
+function groupgrade_retrigger_task_form($form, &$form_state, $task_id, $asec){
+	
+	drupal_set_title('Re-Open Task');
+	
+	$task = Task::where('task_id','=',$task_id)
+	  ->first();
+	
+	// Print task details
+	
+	$items['details'] = array(
+	  '#markup' => '
+	  Task ID : '.$task->task_id.'<br>
+	  Task Type : '.$task->type.'<br>
+	  Task Status : '.$task->status.'<br>
+	  ',
+	);
+	
+	$items['task'] = array(
+	  '#type' => 'hidden',
+	  '#value' => $task_id,
+	);
+	
+	$items['asec'] = array(
+	  '#type' => 'hidden',
+	  '#value' => $asec,
+	);
+
+	$items['warning'] = array(
+	 '#markup' => '<br>Re-opening this task will reset its status so that it may be worked on again.
+	   The user responsible for this task will be alerted.<br><br> 
+	  Are you sure you wish to re-open this task?<br><br>',
+	);
+	
+	$items['yes'] = array(
+	 '#type' => 'submit',
+	 '#value' => 'Yes',
+	);
+	
+	$items['no'] = array(
+	 '#type' => 'submit',
+	 '#value' => 'No',
+	);
+	
+	return $items;
+}
+
+function groupgrade_retrigger_task_form_submit($form, &$form_state){
+	
+	if($form_state['clicked_button']['#value'] == 'Yes')
+	  $retrigger = true;
+	else
+	  $retrigger = false;
+	
+	if($retrigger){
+		$task_id = $form['task']['#value'];
+		$task = Task::where('task_id','=',$task_id)
+		  ->first();
+		  
+		$task->trigger(true);
+		$task->save();
+		
+		drupal_set_message("Task " . $task_id . "has been re-opened for the user.");
+	}
+	else{
+		drupal_set_message("Task not re-opened.");
+	}
+	
+	$asec = $form['asec']['#value'];
+	
+	drupal_goto('class/instructor/assignments/' . $asec . '/administrator-allocation');
+}
 /**
  * Reassign to Contingency Tasks
  */

@@ -419,7 +419,7 @@ return array(
     'weight' => 3,
   ),
 */
-  // For Administrators ONLY
+  // For Administrators ONLY (Temporarily for instructors too)
   'class/instructor/assignments/%/administrator-allocation' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Allocation View',
@@ -428,6 +428,19 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page arguments' => array(3,true),
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+    'weight' => 5,
+  ),
+  
+  'class/instructor/assignments/%/administrator-allocation/retrigger/%' => array(
+    'title' => 'Re-Open Task',
+    
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+	'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_retrigger_task_form',6,3),
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
     'weight' => 5,

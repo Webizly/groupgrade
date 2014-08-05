@@ -809,7 +809,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
   return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
 }
 
-function groupgrade_view_allocation($assignment,$view_names){
+function groupgrade_view_allocation($assignment,$view_names = false,$asec_view = null){
   // Workflow's assignment_id is for assignment section, not assignment!
   
   drupal_set_title("View Allocation");
@@ -824,9 +824,14 @@ function groupgrade_view_allocation($assignment,$view_names){
   $return .= "</tr></table><br>";
   
   // We have assignment given to us. We need to find the workflows through assignment section!
-  
-  $asecs = AssignmentSection::where('assignment_id', '=', $assignment)
-    ->get();
+  if($asec_view == false){
+    $asecs = AssignmentSection::where('assignment_id', '=', $assignment)
+      ->get();
+  }
+  else {
+    $asecs = AssignmentSection::where('asec_id', '=', $asec_view)
+      ->get();
+  }
   
   // Our array that keeps users confidential
   $replacement = array();
@@ -859,7 +864,7 @@ function groupgrade_view_allocation($assignment,$view_names){
 		$i = 0;
 		$results = array();
 		
-		foreach($tasks as $yawn => $task) :
+		foreach($tasks as $task) :
 	
 		  $printuser = '';
 		  if(!isset($task['user_id'])){
@@ -914,6 +919,13 @@ function groupgrade_view_allocation($assignment,$view_names){
 				default: $color = "#FFFFFF"; break;
 			}
 			
+			if($task['status'] == 'complete')
+			  $r['retrigger'] = "<br><br><a href=" . url('class/instructor/assignments/' . $assignment . '/administrator-allocation/retrigger/' . $task['task_id']) . ">" . 'Re-Open</a>';
+			else
+			  $r['retrigger'] = null;
+			
+			$r['type'] = $task['type'];
+			$r['task_id'] = $task['task_id'];
 			if(!$hide)
 			  $r['print'] = "<a href=" . url('class/task/' . $task['task_id']) . ">" . $printuser . "<br>(" . $task['task_id'] . ")</a>";
 			else
@@ -929,17 +941,18 @@ function groupgrade_view_allocation($assignment,$view_names){
 	  endforeach;
 	
 	  $return .= "<table><tr>";
-	  
+	  /*
 	  foreach($headers as $header => $head){
 	  	$return .= "<th>" . $head . "</th></span>";
 	  }
-	  
+	  */
 	  $return .= "</tr>";
 	  
-	  foreach($rows as $garbage => $row){
+	  foreach($rows as $row){
 	  	$return .= "<tr>";
-		foreach($row as $moregarbage => $data){
-		  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['print'] . "</td>";
+		foreach($row as $data){
+		  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['type'] . "<br>" . $data['print']
+		  . ((isset($data['retrigger'])) ? $data['retrigger'] : '') . '</td>';
 		}
 		$return .= "</tr>";
 	  }
