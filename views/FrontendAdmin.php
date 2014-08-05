@@ -446,3 +446,11 @@ function groupgrade_fake_function3(){
 function groupgrade_fake_function4(){
 	return '4';
 }
+
+function groupgrade_fake_functionA(){
+	return 'A';
+}
+
+function groupgrade_fake_functionB(){
+	return 'B';
+}

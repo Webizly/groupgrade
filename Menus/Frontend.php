@@ -651,34 +651,34 @@ return array(
  */
  //Operations
  'class/instructor/%/assignment/%' => array(
-    'title' => 'Operations',
-
-    'file' => 'FrontendAdmin.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-    'page callback' => 'groupgrade_view_assignment',
-    'page arguments' => array(2, 4),
-
-    'access arguments' => array('instructor', 2),
-    'access callback' => 'gg_has_role_in_section',
-    'weight' => 3,
-  ),
-
-  'class/instructor/%/assignment/%/operations' => array(
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'Operations',
-    'weight' => 1,
-  ),
-  
-  //Operations -> Edit start date
-  'class/instructor/%/assignment/%/operations/edit-start-date' => array(
-    'type' => MENU_LOCAL_TASK,
-    'title' => 'Edit Start Date',
+    'title' => 'Assignment Properties',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page callback' => 'groupgrade_fake_function1',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
+  ),
+  
+  'class/instructor/%/assignment/%/operations' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Operations',
+    'weight' => 1,
+  ),
+ 
+ //Operations -> Edit start date
+  'class/instructor/%/assignment/%/operations/edit' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Edit Start Date',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_functionA',
     //'page arguments' => array(),
 
     'access arguments' => array('instructor', 2),
@@ -687,7 +687,20 @@ return array(
   ),
  
  //Operations -> Remove
- //Code goes here
+ 'class/instructor/%/assignment/%/operations/remove' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Remove',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_functionB',
+    //'page arguments' => array(),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
  
  //View + Reassign
  'class/instructor/%/assignment/%/view-reassign' => array(
