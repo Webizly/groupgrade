@@ -654,11 +654,11 @@ return array(
  'class/instructor/%/assignment/%' => array(
     'title' => 'Assignment Properties',
 
-    'file' => 'FrontendAdmin.php',
+    'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_function1',
-    //'page arguments' => array(2, 4),
+    'page callback' => 'drupal_get_form', //drupal_get_form',
+    'page arguments' => array('groupgrade_edit_assignment_section', 4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
@@ -713,14 +713,6 @@ return array(
     'weight' => 2,
   ),
   
- /*
- //View + Reassign tab
-  'class/instructor/%/assignment/%/view-reassign' => array(
-    'type' => MENU_LOCAL_TASK,
-    'title' => 'View And Reassign',
-    'weight' => 1,
-  ),
- */
   //View + Reassign -> All Problem Sets
  'class/instructor/%/assignment/%/view-reassign' => array(
     'type' => MENU_LOCAL_TASK,

@@ -541,7 +541,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state) {
 /**
  * Edit a section on an assignment
  */
-function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $section)
+function groupgrade_edit_assignment_section($form, &$form_state, $asec)
 {
 	
 	//SELECT * FROM moodlelink2
@@ -559,8 +559,11 @@ function groupgrade_edit_assignment_section($form, &$form_state, $assignment, $s
   
   #krumo($records);
   global $user;
-  $section = AssignmentSection::find($section);
+  $section = AssignmentSection::find($asec);
   if ($section == NULL) return drupal_not_found();
+
+  
+  $assignment = $section->assignment_id;
 
   drupal_set_title(sprintf('%s%s', t('Assignment Details for Section #'), $section->section_id));
 
