@@ -827,7 +827,31 @@ return array(
     'weight' => 4,
   ),
   
-  //Reports
+  //Reports -> Student Completed Tasks
+ 'class/instructor/%/assignment/%/reports/completed' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Student Completed Tasks',
+    'weight' => 1,
+  ),
+  
+  /*
+  //Reports -> Dummy!
+ 'class/instructor/%/assignment/%/reports/dummy' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Dummy!',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_function4',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
+  */
+  //Moodle Integration
  'class/instructor/%/assignment/%/moodle' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Moodle Integration',
