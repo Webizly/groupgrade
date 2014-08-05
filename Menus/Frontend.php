@@ -649,7 +649,8 @@ return array(
     'weight' => 3,
   ),
  */
- //Operations
+ 
+ //Operations -> Edit start date
  'class/instructor/%/assignment/%' => array(
     'title' => 'Assignment Properties',
 
@@ -664,12 +665,21 @@ return array(
     'weight' => 3,
   ),
   
+  //Operations tab
   'class/instructor/%/assignment/%/operations' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'title' => 'Operations',
     'weight' => 1,
   ),
  
+ //Operations -> Edit Start Date tab
+  'class/instructor/%/assignment/%/operations/edit' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Edit Start Date',
+    'weight' => 1,
+  ),
+ 
+ /*
  //Operations -> Edit start date
   'class/instructor/%/assignment/%/operations/edit' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -685,6 +695,7 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 2,
   ),
+ */
  
  //Operations -> Remove
  'class/instructor/%/assignment/%/operations/remove' => array(
@@ -701,11 +712,91 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 2,
   ),
- 
- //View + Reassign
+  
+ /*
+ //View + Reassign tab
+  'class/instructor/%/assignment/%/view-reassign' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View And Reassign',
+    'weight' => 1,
+  ),
+ */
+  //View + Reassign -> All Problem Sets
  'class/instructor/%/assignment/%/view-reassign' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'View and Reassign',
+    'title' => 'View And Reassign',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_function2',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
+  
+ //All Problem Sets tab
+  'class/instructor/%/assignment/%/view-reassign/all' => array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'All Problem Sets',
+    'weight' => 1,
+  ),
+  
+ //View + Reassign -> Late Problem Sets
+ 'class/instructor/%/assignment/%/view-reassign/late' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Late Problem Sets',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_functionA',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 2,
+  ),
+  
+  //View and Reassign -> View Task Table (Anonymous)
+ 'class/instructor/%/assignment/%/view-reassign/table_anonymous' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Task Table (Anonymous)',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_functionA',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 3,
+  ), 
+  
+  //View and Reassign -> View Task Table
+ 'class/instructor/%/assignment/%/view-reassign/table' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'View Task Table',
+
+    'file' => 'FrontendAdmin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'page callback' => 'groupgrade_fake_functionA',
+    //'page arguments' => array(2, 4),
+
+    'access arguments' => array('instructor', 2),
+    'access callback' => 'gg_has_role_in_section',
+    'weight' => 4,
+  ), 
+  
+ /*
+ //View + Reassign -> All Problem Set
+ 'class/instructor/%/assignment/%/view-reassign/all' => array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'All Problem Sets',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -718,6 +809,8 @@ return array(
     'weight' => 3,
   ),
   
+ 
+  */
   //Reports
  'class/instructor/%/assignment/%/reports' => array(
     'type' => MENU_LOCAL_TASK,
