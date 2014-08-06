@@ -943,7 +943,8 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 			}
 			
 			if($task['status'] == 'complete')
-			  $r['retrigger'] = "<br><br><a href=" . url('class/instructor/assignments/' . $assignment . '/administrator-allocation/retrigger/' . $task['task_id']) . ">" . 'Re-Open</a>';
+			  $r['retrigger'] = "<br><br><a href=" . url(current_path() . '/' . $task['task_id']) . ">" . 'Re-Open</a>';
+			  //$r['retrigger'] = "<br><br><a href=" . url('class/instructor/assignments/' . $assignment . '/administrator-allocation/retrigger/' . $task['task_id']) . ">" . 'Re-Open</a>';
 			else
 			  $r['retrigger'] = null;
 			

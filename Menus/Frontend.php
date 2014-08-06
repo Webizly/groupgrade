@@ -420,6 +420,7 @@ return array(
   ),
 */
   // For Administrators ONLY (Temporarily for instructors too)
+  /*
   'class/instructor/assignments/%/administrator-allocation' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Allocation View',
@@ -432,19 +433,7 @@ return array(
     'access arguments' => array('section-instructor'),
     'weight' => 5,
   ),
-  
-  'class/instructor/assignments/%/administrator-allocation/retrigger/%' => array(
-    'title' => 'Re-Open Task',
-    
-    'file' => 'Tasks.php',
-    'file path' => drupal_get_path('module', 'groupgrade').'/views',
-
-	'page callback' => 'drupal_get_form',
-    'page arguments' => array('groupgrade_retrigger_task_form',6,3),
-    'access callback' => 'gg_has_acl_role',
-    'access arguments' => array('section-instructor'),
-    'weight' => 5,
-  ),
+  */
   
   /**
    * ===============================
@@ -782,6 +771,34 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 3,
   ), 
+  
+  'class/instructor/%/assignment/%/view-reassign/table_anonymous/%' => array(
+    'title' => 'Re-Open Task',
+    
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+	'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_retrigger_task_form',7,4),
+    
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+    'weight' => 5,
+  ),
+  
+  'class/instructor/%/assignment/%/view-reassign/table/%' => array(
+    'title' => 'Re-Open Task',
+    
+    'file' => 'Tasks.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+	'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_retrigger_task_form',7,4),
+    
+    'access callback' => 'gg_has_acl_role',
+    'access arguments' => array('section-instructor'),
+    'weight' => 5,
+  ),
   
   //View and Reassign -> View Task Table
  'class/instructor/%/assignment/%/view-reassign/table' => array(

@@ -2388,7 +2388,7 @@ function groupgrade_retrigger_task_form_submit($form, &$form_state){
 		$task->trigger(true);
 		$task->save();
 		
-		drupal_set_message("Task " . $task_id . "has been re-opened for the user.");
+		drupal_set_message("Task " . $task_id . " has been re-opened for the user.");
 	}
 	else{
 		drupal_set_message("Task not re-opened.");
@@ -2396,7 +2396,7 @@ function groupgrade_retrigger_task_form_submit($form, &$form_state){
 	
 	$asec = $form['asec']['#value'];
 	
-	drupal_goto('class/instructor/assignments/' . $asec . '/administrator-allocation');
+	//drupal_goto('class/instructor/assignments/' . $asec . '/administrator-allocation');
 }
 /**
  * Reassign to Contingency Tasks
