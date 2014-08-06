@@ -492,27 +492,56 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
 	$replaceArray = explode(' ', $replace);
 	
 	$asec = $form['asec']['#value'];
+	$asec = AssignmentSection::find($asec);
+	$students = $asec->section()->first()->students()->get();
+	if($students == FALSE){
+		drupal_set_message("No students found in this section.");
+		return drupal_not_found();
+	}
+	$studentIDs = array();
+	foreach($students as $student){
+		$studentIDs[] = $student->user_id;
+	}
+	//$students = $section->students()->get();
+	//echo print_r($students,1);
 	
 	//Below is a copy of the groupgrade_reassign_to_contig function.
 	//It has been edited to work with this function.
 	
 	$pool = $removePool = [];
-  foreach ([
-    'ydm2', 'krt6', 'vg88', 'md287', 'jmm63', 'jn72', 'mhs38', 'pp389', 'em65', 'gks25','ep39'
-  ] as $u)
-    $pool[] =  user_load_by_name($u);
+  foreach ($replaceArray as $u){
+  	$add = user_load_by_name($u);
+		if(!$add){
+			drupal_set_message('User ' . $u . ' not found.','error');
+			return drupal_not_found();
+		}
+    $pool[] =  $add;
+  }
+
+  //Make sure everyone in $pool is in the section
+  foreach($pool as $p){
+  	drupal_set_message($p->uid);
+  	if(!in_array($p->uid,$studentIDs)){
+  		drupal_set_message($p->name . " is not enrolled in this class.",'error');
+		return drupal_not_found();
+  	}
+  }
 
   // Let's find the people we're going to remove
-  foreach ([
-    'arp53', 'rhm9', 'aay5', 'oa45', 'clm2', 'spw5', 'itp3', 'ms695', 'rap48'
-  ] as $u)
-    $removePool[] = user_load_by_name($u);
+  foreach ($removeArray as $u){
+  	$remove = user_load_by_name($u);
+	  if(!$remove){
+			drupal_set_message('User ' . $u . ' not found.','error');
+			return drupal_not_found();
+		}
+    $removePool[] = $remove;
+  }
 
   // Get all of their tasks and reassign them randomly
   if ($removePool) : foreach ($removePool as $removeUser) :
     echo "Removing tasks for ".$removeUser->name.PHP_EOL;
 
-    $tasks = Task::where('user_id', $removeUser->uid)
+    $tasks = WorkflowTask::where('user_id', $removeUser->uid)
       ->groupBy('workflow_id')
       ->whereIn('status', ['not triggered', 'triggered', 'started', 'timed out','expired'])
       ->get();
@@ -527,11 +556,12 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
     foreach ($tasks as $task)
     {
     
-	  $a = $task->assignment()->first();
-	
-	  if($a->assignment_id != 68)
+	  
+	  $a = $task->assignmentSection()->first();
+	  //echo $a->asec_id . '-' . $asec->asec_id;
+	  if($a->asec_id != $asec->asec_id)
 	    continue;	
-		
+	
       echo "Removing task ".$task->id.PHP_EOL;
       $foundUser = false;
       $i = 0;
@@ -545,7 +575,7 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
         $reassignUser = $pool[array_rand($pool)];
 
         // Let's check if the user we found is in the workflow
-        if (Task::where('workflow_id', $task->workflow_id)
+        if (WorkflowTask::where('workflow_id', $task->workflow_id)
           ->where('user_id', $reassignUser->uid)
           ->count() == 0)
           // They're not in the workflow!
@@ -557,26 +587,19 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
       
       // Before anything, let's update the user history field.
       $update = null;
-	  if($task->user_history == ''){
+	  if($task->user_history == '')
 	  	$update = array();
-		$ar = array();
-		$ar[] = $removeUser->uid;
-		$ar[] = $removeUser->name;
-		$ar[] = Carbon\Carbon::now()->toDateTimeString();
-		$update[] = $ar;
-		$task->user_history = json_encode($update);
-	  }
-	  else{
+	  else
 	  	$update = json_decode($task->user_history,true);
-		$ar = array();
-		$ar[] = $removeUser->uid;
-		$ar[] = $removeUser->name;
-		$ar[] = Carbon\Carbon::now()->toDateTimeString();
-		$update[] = $ar;
-		$task->user_history = json_encode($update);
-	  }
       
-      Task::where('user_id', $removeUser->uid)
+	  $ar = array();
+	  $ar[] = $removeUser->uid;
+	  $ar[] = $removeUser->name;
+	  $ar[] = Carbon\Carbon::now()->toDateTimeString();
+	  $update[] = $ar;
+	  $task->user_history = json_encode($update);
+	  
+      WorkflowTask::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
         ->whereIn('status', ['triggered', 'started', 'timed out', 'expired'])
         ->update([
@@ -599,7 +622,7 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
         ]);
 	  */
         // Different for non-triggered already
-        Task::where('user_id', $removeUser->uid)
+        WorkflowTask::where('user_id', $removeUser->uid)
         ->where('workflow_id', $task->workflow_id)
         ->where('status', 'not triggered')
         ->update([
@@ -610,6 +633,7 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
   endforeach; endif;
   echo PHP_EOL.PHP_EOL."DONE!!!!";
   exit;
-	
+
+  drupal_set_message("Finished. Check the task table to ensure users have been replaced with no issues.");
 	
 }
