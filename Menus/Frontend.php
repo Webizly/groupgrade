@@ -824,8 +824,8 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_remove_reassign',
-    //'page arguments' => array(2, 4),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('groupgrade_remove_reassign_form',4),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',

@@ -434,30 +434,182 @@ function groupgrade_frontend_swap_status($section, $user)
   return drupal_goto('class/instructor/'.$section.'/users');
 }
 
-function groupgrade_remove_reassign(){
-	return 'Work In Progress';
+function groupgrade_remove_reassign_form($form, &$form_state, $asec_id){
+	
+	$items = array();
+	
+	$asec = AssignmentSection::where('asec_id','=',$asec_id)
+	  ->first();
+	  
+	if($asec == null)
+	  return drupal_not_found();
+	
+	$items['removeLabel'] = array(
+	  '#type' => 'item',
+	  '#markup' => '<h3>Students to be Removed</h3>
+	  <p><strong>Please enter the students you wish to be removed from this assignment.</strong></p>
+	  <p>Enter user IDs as seen in the task table, separated by spaces.</p>',
+	);
+	
+	$items['remove'] = array(
+	  '#type' => 'textfield',
+	);
+	
+	$items['separator'] = array( '#markup' => '<hr>', );
+	
+	$items['replaceLabel'] = array(
+	  '#type' => 'item',
+	  '#markup' => '<h3>Replacement Students</h3>
+	  <p><strong>Please enter the students you wish to have replace the removed students.</strong></p>
+	  <p>Enter user IDs as seen in the task table, separated by spaces.</p>',
+	);
+	
+	$items['replace'] = array(
+	  '#type' => 'textfield',
+	);
+	
+	$items['separator2'] = array( '#markup' => '<hr><br>', );
+	
+	$items['asec'] = array(
+	  '#type' => 'hidden',
+	  '#value' => $asec_id,
+	);
+	
+	$items['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => 'Submit',
+	);
+	
+	return $items;
 }
 
-function groupgrade_fake_function1(){
-	return '1';
-}
+function groupgrade_remove_reassign_form_submit($form, &$form_state){
+	
+	$remove = $form['remove']['#value'];
+	$replace = $form['replace']['#value'];
+	
+	$removeArray = explode(' ', $remove);
+	$replaceArray = explode(' ', $replace);
+	
+	$asec = $form['asec']['#value'];
+	
+	//Below is a copy of the groupgrade_reassign_to_contig function.
+	//It has been edited to work with this function.
+	
+	$pool = $removePool = [];
+  foreach ([
+    'ydm2', 'krt6', 'vg88', 'md287', 'jmm63', 'jn72', 'mhs38', 'pp389', 'em65', 'gks25','ep39'
+  ] as $u)
+    $pool[] =  user_load_by_name($u);
 
-function groupgrade_fake_function2(){
-	return '2';
-}
+  // Let's find the people we're going to remove
+  foreach ([
+    'arp53', 'rhm9', 'aay5', 'oa45', 'clm2', 'spw5', 'itp3', 'ms695', 'rap48'
+  ] as $u)
+    $removePool[] = user_load_by_name($u);
 
-function groupgrade_fake_function3(){
-	return '3';
-}
+  // Get all of their tasks and reassign them randomly
+  if ($removePool) : foreach ($removePool as $removeUser) :
+    echo "Removing tasks for ".$removeUser->name.PHP_EOL;
 
-function groupgrade_fake_function4(){
-	return '4';
-}
+    $tasks = Task::where('user_id', $removeUser->uid)
+      ->groupBy('workflow_id')
+      ->whereIn('status', ['not triggered', 'triggered', 'started', 'timed out','expired'])
+      ->get();
 
-function groupgrade_fake_functionA(){
-	return 'A';
-}
+    // They're not assigned any tasks that we're going to change
+    if (count($tasks) == 0) :
+      echo "No tasks to remove!".PHP_EOL;
+      continue;
+    endif;
 
-function groupgrade_fake_functionB(){
-	return 'B';
+    // Go though all assigned tasks
+    foreach ($tasks as $task)
+    {
+    
+	  $a = $task->assignment()->first();
+	
+	  if($a->assignment_id != 68)
+	    continue;	
+		
+      echo "Removing task ".$task->id.PHP_EOL;
+      $foundUser = false;
+      $i = 0;
+      while (! $foundUser) {
+        $i++;
+
+        // We cannot continue since we've gone through all the users
+        if ($i > count($pool))
+          throw new \Exception('Contingency exception: cannot assign user due to unavailable users.');
+
+        $reassignUser = $pool[array_rand($pool)];
+
+        // Let's check if the user we found is in the workflow
+        if (Task::where('workflow_id', $task->workflow_id)
+          ->where('user_id', $reassignUser->uid)
+          ->count() == 0)
+          // They're not in the workflow!
+          $foundUser = TRUE;
+      }
+
+      // Now that we've found the user, let's reassign it
+      // We're going to reassign all tasks assigned to this user in the workflow
+      
+      // Before anything, let's update the user history field.
+      $update = null;
+	  if($task->user_history == ''){
+	  	$update = array();
+		$ar = array();
+		$ar[] = $removeUser->uid;
+		$ar[] = $removeUser->name;
+		$ar[] = Carbon\Carbon::now()->toDateTimeString();
+		$update[] = $ar;
+		$task->user_history = json_encode($update);
+	  }
+	  else{
+	  	$update = json_decode($task->user_history,true);
+		$ar = array();
+		$ar[] = $removeUser->uid;
+		$ar[] = $removeUser->name;
+		$ar[] = Carbon\Carbon::now()->toDateTimeString();
+		$update[] = $ar;
+		$task->user_history = json_encode($update);
+	  }
+      
+      Task::where('user_id', $removeUser->uid)
+        ->where('workflow_id', $task->workflow_id)
+        ->whereIn('status', ['triggered', 'started', 'timed out', 'expired'])
+        ->update([
+          'user_id' => $reassignUser->uid,
+          'status' => 'triggered',
+          'start' => Carbon\Carbon::now()->toDateTimeString(),
+          'user_history' => $task->user_history,
+         // 'force_end' => $this->timeoutTime()->toDateTimeString()
+        ]);
+      
+      /*
+      Task::where('user_id', $removeUser->uid)
+        ->where('workflow_id', $task->workflow_id)
+        ->whereIn('status', ['triggered', 'started', 'timed out'])
+        ->update([
+          'user_id' => $reassignUser->uid,
+          'status' => 'triggered',
+          'start' => Carbon\Carbon::now()->toDateTimeString(),
+         // 'force_end' => $this->timeoutTime()->toDateTimeString()
+        ]);
+	  */
+        // Different for non-triggered already
+        Task::where('user_id', $removeUser->uid)
+        ->where('workflow_id', $task->workflow_id)
+        ->where('status', 'not triggered')
+        ->update([
+          'user_id' => $reassignUser->uid,
+          'user_history' => $task->user_history,
+        ]);
+    }
+  endforeach; endif;
+  echo PHP_EOL.PHP_EOL."DONE!!!!";
+  exit;
+	
+	
 }
