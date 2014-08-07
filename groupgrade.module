@@ -540,6 +540,10 @@ function groupgrade_cron() {
 
   }
 
+function groupgrade_menu_alter(&$items) {
+  $items['user/password']['access callback'] = FALSE;
+}
+
 if (! function_exists('shuffle_assoc')) :
   /**
    * Shuffle an array while maintaining keys
