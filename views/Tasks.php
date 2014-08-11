@@ -222,7 +222,10 @@ function groupgrade_tasks_view_specific($specific = '') {
             (($task->status == 'timed out') ? '(late)' : '')
         );
 
-        $row_t[] = $task->humanTask();
+        if($task->user_history == null)
+		  $row_t[] = $task->humanTask();
+		else
+		  $row_t[] = $task->humanTask() . ' (Extra Credit)';
 
         $section = $task->section()->first();
         $course = $section->course()->first();
@@ -252,7 +255,12 @@ function groupgrade_tasks_view_specific($specific = '') {
           url('class/task/'.$task->task_id), $task->assignment()->first()->assignment_title
         ); 
 
-        $rowt[] = t(ucwords($task->type));
+		if($task->user_history == null)
+		  $rowt[] = $task->humanTask();
+		else
+		  $rowt[] = $task->humanTask() . ' (Extra Credit)';
+
+        //$rowt[] = t(ucwords($task->type));
 
         // Course information
         $section = $task->section()->first();
