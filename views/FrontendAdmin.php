@@ -173,7 +173,13 @@ function groupgrade_view_reports($asec_id){
 			// Now that we have every task from all workflows, print out tasks completed
 			$return .= "<td>";
 			foreach($normalTasks as $task){
-				$return .= "<a href=" . url('class/task/' . $task->task_id) . ">" . Manager::humanTaskName($task->type) . "</a><br>";
+				$return .= "<a href=" . url('class/task/' . $task->task_id) . ">" . Manager::humanTaskName($task->type);
+				  if($task->type == 'create solution'){
+				  	$wf = $task->workflow()->first();
+				  	if(isset($wf->data['grade']))
+				      $return .= '(' . $wf->data['grade'] . ')';
+				  }
+				$return .= "</a><br>";
 			}
 			$return .= "</td>";
 			
@@ -181,7 +187,13 @@ function groupgrade_view_reports($asec_id){
 			$return .= "<td>";
 			foreach($extraTasks as $task){
 				
-				$return .= "<a href=" . url('class/task/' . $task->task_id) . ">" . Manager::humanTaskName($task->type) . "</a><br>";
+				$return .= "<a href=" . url('class/task/' . $task->task_id) . ">" . Manager::humanTaskName($task->type);
+				  if($task->type == 'create solution'){
+				  	$wf = $task->workflow()->first();
+				  	if(isset($wf->data['grade']))
+				      $return .= '(' . $wf->data['grade'] . ')';
+				  }
+				$return .= "</a><br>";
 			}
 			$return .= "</td>";
 			
