@@ -1,4 +1,115 @@
 <?php
+
+function groupgrade_home(){
+	return '
+  <head>
+  <style type="text/css">
+        #div-image {
+            float: right;
+            border: 2px double maroon;
+			padding-left: 10px;
+			margin-top: 10px;
+			margin-right: 10px;
+			margin-left: 10px;
+            }
+
+		   
+		li.blue {
+			color:blue;
+			margin-left: 40px;
+			margin-bottom: 10px;
+			font-weight: bold;
+			}
+		li.black {
+			color:black;
+			margin-left: 40px;
+			margin-bottom: 10px;
+			font-weight: bold;
+			}
+		li.orange {
+			color:orange;
+			margin-left: 40px;
+			margin-bottom: 10px;
+			font-weight: bold;
+			}
+		li.purple {
+			color: purple;
+			margin-left: 40px;
+			margin-bottom: 10px;
+			font-weight: bold;
+			}
+		li.green {
+			color: green;
+			margin-left: 40px;
+			margin-bottom: 10px;
+			font-weight: bold;
+			}
+	
+    </style>
+    </head>
+    
+    <body>
+    
+	<h1>Welcome to CLASS!</h1><hr>
+	
+    <div id="div-image">
+        <p>
+        '//<img src="sites/default/files/pictures/process-by-user.jpg">
+        .'
+        <img src="http://web.njit.edu/~bieber/outgoing/process-by-user.jpg">
+        </p>
+    </div>
+    <div id="div-text">
+    </div>
+		<h3>
+            Collaborative Learning Through Assessment (CLASS)
+        </h3>
+        <p>
+            Traditionally, students only solve problems.   In the CLASS system, students learn so much more by engaging with most stages of an assignment (see right).  
+        </p>
+        <p>
+            Students not only solve problems, but also create them, grade solutions from fellow students and optionally can dispute their grades.  
+        </p>
+        <p>
+            Here\'s the process you\'ll follow.  Everything shows as anonymous:
+        </p>
+        <p>
+            <ul>
+				<li class = "blue">
+					Each student creates a problem according to the instructions
+				</li>	
+				<li class = "black">
+					The instructor optionally edits the problem to ensure quality
+				</li>	
+				<li class = "orange">
+					Another student solves the problem
+				</li>		
+				<li class = "blue">
+					Two students grade the solution, including the problem creator
+				</li>	
+				<li class = "green">	
+					If the graders disagree, another student resolves the grade
+				</li>
+				<li class = "orange">
+					Optionally, the problem solver can dispute the grade
+				</li>
+				<li class = "black">
+					The instructor resolves any disputes
+				</li>
+				<li class = "purple">
+					Students can see everything their peers have done anonymously
+				</li>
+            </ul>
+            </p>
+            <p>
+            The instructor can add additional steps to match specific assignments, exams or projects.
+            </p>
+            <p>
+			For more details <a href=' . url('about2') . '>click here</a>.
+			</p>
+  ';
+}
+
 function groupgrade_admin_dash()
 {
   return ''; 
@@ -96,7 +207,7 @@ function groupgrade_about()
             The instructor can add additional steps to match specific assignments, exams or projects.
             </p>
             <p>
-			For more details <a href="http://ec2-54-81-177-27.compute-1.amazonaws.com/class/about2">click here</a>.
+			For more details <a href=' . url('about2') . '>click here</a>.
 			</p>
   ';
 }
@@ -132,7 +243,7 @@ function groupgrade_about2()
 		<h3>
             Collaborative Learning Through Assessment (CLASS) &ndash; Goals and Further Details
         </h3>
-		<p> <a href="http://ec2-54-81-177-27.compute-1.amazonaws.com/class/about">(return to About CLASS  overview page)</a>
+		<p> <a href=' . url('home') . '>(return to About CLASS  overview page)</a>
 		</p>
         <p>
             CLASS is a framework designed to create learning opportunities and increase student motivation for learning through active participation in the entire Problem Life Cycle (PLC; see left )  
