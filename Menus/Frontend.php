@@ -41,6 +41,17 @@ return array(
     'access callback' => true,
   ),
 
+  'taskactivity' => array(
+    'title' => 'Task Activity Form',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('task_activity_form'),
+    'file' => 'Admin.php', //Change later
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access callback' => true,
+  ),
+
   // My Tasks/Classes/Assignment
   'class/reallocate' => array(
     'title' => 'CLASS Learning System',
@@ -908,7 +919,7 @@ return array(
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-    'page callback' => 'groupgrade_fake_function4',
+    'page callback' => 'groupgrade_moodle',
     //'page arguments' => array(2, 4),
 
     'access arguments' => array('instructor', 2),

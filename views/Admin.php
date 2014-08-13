@@ -264,3 +264,178 @@ function groupgrade_about2()
     </body>
     ';
 }
+
+function task_activity_form($form, &$form_state){
+	
+	$items['title'] = array(
+	  '#markup' => '<p>Use this form to add fake task activity instances</p>',
+	);
+	
+	$items['type'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Type',
+	);
+	
+	$items['name'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Name',
+	);
+	
+	$items['due_date_duration'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Due Date Duration',
+	  '#default_value' => 3,
+	);
+	
+	$items['at_duration_end'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'At Duration End',
+	  '#default_value' => 'late',
+	);
+	
+	$items['what_if_late'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'What if Late?',
+	  '#default_value' => 'keep',
+	);
+	
+	//Display name?
+	
+	$items['description'] = array(
+	  '#type' => 'textarea',
+	  '#title' => 'Description',
+	);
+	
+	//How should I set up assignee constraints?
+	
+	$items['function_type'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Function type',
+	  '#default_value' => 'display',
+	);
+	
+	$items['instructions'] = array(
+	  '#type' => 'textarea',
+	  '#title' => 'Instructions',
+	);
+	
+	$items['rubric'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Rubric',
+	);
+	
+	//Allow edit + comment?
+	
+	//Alow comment only?
+	
+	//Allow revisions?
+	
+	//Allow grade?
+	
+	$items['number_of_participants'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Number of Participants?',
+	);
+	
+	//Trigger Resolution Threshold?
+	
+	//Allow Dispute?
+	
+	//Leads to new problem?
+	
+	//Leads to new solution?
+	
+	$items['visual_id'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Visual ID',
+	);
+	
+	//ID?
+	
+	//WA ID?
+	
+	//A ID?
+	
+	//Version History?
+	
+	//Refers to which task? Should this be put here?
+	
+	//Trigger condition?
+	
+	//Next Task?
+	
+	$items['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => 'Submit',
+	);
+	
+	return $items;
+}
+
+function task_activity_form_submit($form, &$form_state){
+	
+	$due = array();
+	
+	$due['type'] = 'duration';
+	$due['value'] = $form['due_date_duration']['#value'];
+	
+	$aconstr = array();
+	$aconstr['role'] = 'student';
+	$aconstr['title'] = 'individual';
+	$aconstr['constraints'] = null;
+	
+	$rubric = array();
+	$rubric[] = array(
+	  'criteria' => 'Completeness',
+	  'instructions' => 'Do this!',
+	  'default value' => '???',
+	  'value' => 'points',
+	);
+	
+	$rubric[] = array(
+	  'criteria' => 'Correctness',
+	  'instructions' => 'Do this now!',
+	  'default value' => '???',
+	  'value' => 'points',
+	);
+	
+	$resolution = array();
+	$resolution['amount'] = 15;
+	$resolution['type'] = 'points';
+	
+	$ta = db_insert('pla_task_activity')
+	  ->fields(array(
+	    'TA_type' => $form['type']['#value'],
+	    'TA_name' => $form['name']['#value'],
+	    'TA_due' => json_encode($due),
+		'TA_start_time' => '2014-12-25 00:00:01',
+		'TA_at_duration_end' => $form['at_duration_end']['#value'],
+		'TA_what_if_late' => $form['what_if_late']['#value'],
+		'TA_display_name' => 'Dummy!',
+		'TA_description' => $form['description']['#value'],
+		'TA_one_or_separate' => 1,
+		'TA_assignee_constraints' => json_encode($aconstr),
+		'TA_function_type' => $form['function_type']['#value'],
+		'TA_instructions' => $form['instructions']['#value'],
+		'TA_rubric' => json_encode($rubric),
+		'TA_allow_edit_and_comment' => 'comment only',
+		'TA_allow_revisions' => 0,
+		'TA_allow_grade' => 1,
+		'TA_number_participants' => 2,
+		'TA_trigger_resolution_threshold' => json_encode($resolution),
+		'TA_allow_dispute' => 1,
+		'TA_leads_to_new_problem' => 0,
+		'TA_leads_to_new_solution' => 0,
+		'TA_WA_id' => -1,
+		'TA_A_id' => -1,
+		'TA_version_history' => -1,
+		'TA_refers_to_which_task' => -1,
+		'TA_trigger_condition' => 'Do later!',
+		'TA_next_task' => '???',
+		'TA_task_id' => 0,
+	  ))
+	  ->execute();
+	
+	drupal_set_message("Task Activity created");
+	
+}
