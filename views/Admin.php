@@ -364,6 +364,11 @@ function task_activity_form($form, &$form_state){
 	
 	//Next Task?
 	
+	$items['task_id'] = array(
+	  '#type' => 'textfield',
+	  '#title' => 'Task ID',
+	);
+	
 	$items['submit'] = array(
 	  '#type' => 'submit',
 	  '#value' => 'Submit',
@@ -403,6 +408,13 @@ function task_activity_form_submit($form, &$form_state){
 	$resolution['amount'] = 15;
 	$resolution['type'] = 'points';
 	
+	$trigger = array();
+	$trigger[] = array(
+	  'task' => 'P1',
+	  'status' => 'complete',
+	);
+	
+	
 	$ta = db_insert('pla_task_activity')
 	  ->fields(array(
 	    'TA_type' => $form['type']['#value'],
@@ -432,7 +444,7 @@ function task_activity_form_submit($form, &$form_state){
 		'TA_refers_to_which_task' => -1,
 		'TA_trigger_condition' => 'Do later!',
 		'TA_next_task' => '???',
-		'TA_task_id' => 0,
+		'TA_task_id' => $form['task_id']['#value'],
 	  ))
 	  ->execute();
 	
