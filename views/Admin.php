@@ -442,7 +442,7 @@ function task_activity_form_submit($form, &$form_state){
 		'TA_A_id' => -1,
 		'TA_version_history' => -1,
 		'TA_refers_to_which_task' => -1,
-		'TA_trigger_condition' => 'Do later!',
+		'TA_trigger_condition' => json_encode($trigger),
 		'TA_next_task' => '???',
 		'TA_task_id' => $form['task_id']['#value'],
 	  ))
