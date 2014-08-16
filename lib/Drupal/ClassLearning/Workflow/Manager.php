@@ -111,6 +111,7 @@ class Manager {
    */
   public static function notifyUser($event, &$task)
   {
+  	return true;
     global $base_url;
 
     // Nobody to notify

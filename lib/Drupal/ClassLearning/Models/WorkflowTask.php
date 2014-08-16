@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
   Drupal\ClassLearning\Exception as ModelException,
   Carbon\Carbon,
   Drupal\ClassLearning\Workflow\Manager as WorkflowManager,
+  Drupal\ClassLearning\Models\TaskActivity,
   Drupal\ClassLearning\Workflow\InternalCallback;
 
 
@@ -32,10 +33,19 @@ class WorkflowTask extends ModelBase {
    */
   public function getTriggerConditions()
   {
-    if (! isset($this->settings['trigger']))
-      return NULL;
-
-    return $this->settings['trigger'];
+  	//Comment out this section for testing
+    //if (! isset($this->settings['trigger']))
+      //return NULL;
+	// Does a task activity exist for this task?
+	  
+	if($this->ta_id != null){
+		$ta = TaskActivity::where('TA_id','=',$this->ta_id)
+		  ->first();
+		  
+		return json_decode($ta->TA_trigger_condition,1);
+	}
+	else
+    	return $this->settings['trigger'];
   }
 
   /**
@@ -77,15 +87,76 @@ class WorkflowTask extends ModelBase {
       return TRUE;
 
     $conditions = $this->getTriggerConditions();
-
-    if ($conditions == NULL) return FALSE;
-
-    foreach ($conditions as $condition) {
-      if (! $this->conditionMet($condition))
-        return FALSE;
-    }
-
-    return TRUE;
+	
+	if($this->ta_id == null){
+	    if ($conditions == NULL) return FALSE;
+	
+	    foreach ($conditions as $condition) {
+	      if (! $this->conditionMet($condition))
+	        return FALSE;
+	    }
+	}
+	
+	
+	//How trigger conditions will be handled
+	/*
+	 * Iterate through conditions array.
+	 * Each index of the array will contain another array.
+	 * These inner arrays will also have arrays.
+	 * Check if all of the innermost arrays are true.
+	 * If they are, then trigger.
+	 * If not, go to next innermost array and check.
+	 * This simulates an AND clause.
+	 * If all innermost arrays fail, go out and check for another array inside conditions
+	 * This simualtes an OR clause.
+	 */
+	 
+	 foreach($conditions as $condition){
+	 	$return = true;
+	 	foreach($condition as $c){
+	 		//If we can make it to the end without hitting a false statement, we will trigger.
+				$visual_id = $c['visual_id'];
+				$status = $c['status'];
+				
+				//For all tasks in THIS WORKFLOW...
+				$tasks = WorkflowTask::where('workflow_id','=',$this->workflow_id)
+				  ->get();
+				
+				$no_visual_id = true;
+				  
+				foreach($tasks as $task){
+					$my_ta = TaskActivity::where('TA_id','=',$task->ta_id)
+					  ->first();
+					
+					if(!isset($my_ta)){
+						watchdog(WATCHDOG_INFO,"Could not find TA. (" . $task->task_id . ')');
+						continue;
+					}
+					
+					if(isset($my_ta->TA_visual_id))
+					  watchdog(WATCHDOG_INFO,$my_ta->TA_visual_id);
+					
+					if($my_ta->TA_visual_id == $visual_id){
+						watchdog(WATCHDOG_INFO,'Found something...');
+						$no_visual_id = false;
+						if($task->status != $status)
+						{
+						  
+						  $return = false;
+						}
+					}
+				}
+				
+				if($no_visual_id == true)
+				  $return = false;
+			
+	 	}
+		if($return)
+			  return true;
+	 }
+	
+	watchdog(WATCHDOG_INFO,'Returned false!'); 
+    return false;
   }
 
   /**
@@ -427,7 +498,6 @@ class WorkflowTask extends ModelBase {
 			  }
 			  
 			  // Neither are set?!
-			  watchdog(WATCHDOG_INFO,"uh oh");
 			  throw new ModelException('Neither duration and date are set for ' . $this->type . ' task.');
 			}
 		}

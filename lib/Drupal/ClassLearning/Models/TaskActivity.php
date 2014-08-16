@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 
 class TaskActivity extends ModelBase {
   protected $primaryKey = 'TA_id';
-  protected $table = 'task_assignment';
+  protected $table = 'task_activity';
   public $timestamps = false;
 
   public function task()

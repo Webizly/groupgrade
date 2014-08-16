@@ -410,8 +410,10 @@ function task_activity_form_submit($form, &$form_state){
 	
 	$trigger = array();
 	$trigger[] = array(
-	  'task' => 'P1',
-	  'status' => 'complete',
+	  array(
+	    'visual_id' => 'P1',
+	    'status' => 'complete',
+	  ),
 	);
 	
 	
@@ -444,7 +446,7 @@ function task_activity_form_submit($form, &$form_state){
 		'TA_refers_to_which_task' => -1,
 		'TA_trigger_condition' => json_encode($trigger),
 		'TA_next_task' => '???',
-		'TA_task_id' => $form['task_id']['#value'],
+		'TA_visual_id' => $form['visual_id']['#value'],
 	  ))
 	  ->execute();
 	
