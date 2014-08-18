@@ -408,14 +408,15 @@ function task_activity_form_submit($form, &$form_state){
 	$resolution['amount'] = 15;
 	$resolution['type'] = 'points';
 	
+	
 	$trigger = array();
 	$trigger[] = array(
 	  array(
-	    'visual_id' => 'P1',
+	    'visual_id' => 'P1.5',
 	    'status' => 'complete',
+	    'value' => false,
 	  ),
 	);
-	
 	
 	$ta = db_insert('pla_task_activity')
 	  ->fields(array(

@@ -117,6 +117,9 @@ class WorkflowTask extends ModelBase {
 	 		//If we can make it to the end without hitting a false statement, we will trigger.
 				$visual_id = $c['visual_id'];
 				$status = $c['status'];
+				if(isset($c['value'])){
+					$value = $c['value'];
+				}
 				
 				//For all tasks in THIS WORKFLOW...
 				$tasks = WorkflowTask::where('workflow_id','=',$this->workflow_id)
@@ -141,8 +144,13 @@ class WorkflowTask extends ModelBase {
 						$no_visual_id = false;
 						if($task->status != $status)
 						{
-						  
-						  $return = false;
+						  if(isset($value)){
+						  	$data = $this->getDataAttribute($this->data);
+						  	if($data['value'] != $value)
+							$return = false;
+						  }
+						  else
+						    $return = false;
 						}
 					}
 				}
