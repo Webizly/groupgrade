@@ -395,6 +395,14 @@ class WorkflowTask extends ModelBase {
     $this->status = 'triggered';
     $this->start = Carbon::now()->toDateTimeString();
     $this->force_end = $this->timeoutTime()->toDateTimeString();
+	
+	$my_ta = $this->taskActivity();
+	
+	if(isset($my_ta)){
+		$my_ta->TA_start_time = $this->start;
+		$my_ta->save();
+	}
+	
     $this->save();
 
     // Notify user
