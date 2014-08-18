@@ -421,16 +421,13 @@ class WorkflowTask extends ModelBase {
     // Notify user
     WorkflowManager::notifyUser('expired', $this);
 
-	//Is this a dispute? If so, set it to complete.
-	if($this->type == 'dispute'){
-		//Not disputing!
-		$this->setData('value', false);
-		$this->save();
-		$this->complete();
+	$my_ta = $this->taskActivity();
+	
+	if(isset($my_ta)){
+		$this->status = $my_ta->TA_at_duration_end;
 	}
-	else
-		//If not, just save.
-    	$this->save();
+	
+    $this->save();
   }
 
   /**
@@ -441,6 +438,7 @@ class WorkflowTask extends ModelBase {
     // Update the status
     $this->status = 'expired';
     $this->end = Carbon::now()->toDateTimeString();
+	
     $this->save();
   }
 
