@@ -668,4 +668,9 @@ class WorkflowTask extends ModelBase {
   {
     return $this->assignmentSection()->first()->assignment();
   }
+  
+  public function taskActivity(){
+  	return TaskActiviy::where('TA_id','=',$this->ta_id)
+	  ->first();
+  }
 }

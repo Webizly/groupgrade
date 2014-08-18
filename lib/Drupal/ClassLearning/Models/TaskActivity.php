@@ -9,10 +9,12 @@ class TaskActivity extends ModelBase {
   protected $table = 'task_activity';
   public $timestamps = false;
 
-  public function task()
+  public function getTask()
   {
-    return WorkflowTask::where('task_id','=',$this->task_id)
+    return WorkflowTask::where('ta_id','=',$this->ta_id)
 	  ->first();
   }
+  
+  
   
 }
