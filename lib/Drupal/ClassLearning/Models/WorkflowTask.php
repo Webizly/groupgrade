@@ -433,6 +433,8 @@ class WorkflowTask extends ModelBase {
 	
 	if(isset($my_ta)){
 		$this->status = $my_ta->TA_at_duration_end;
+		
+		//TA_what_if_late
 	}
 	
     $this->save();
@@ -475,6 +477,25 @@ class WorkflowTask extends ModelBase {
   {
     if ($this->start == NULL)
       throw new ModelException('Start time for instance cannot be null.');
+	
+	//Hopefully, this task will have a task activity
+	$my_ta = $this->taskActivity();
+	
+	if(isset($my_ta)){
+	  $due = json_decode($my_ta->TA_due,1);
+	  
+	  if($due['type'] == 'duration'){
+	  	return Carbon::createFromFormat(MYSQL_DATETIME, $my_ta->TA_start_time)->addDays($due['value']);
+	  }
+	  else if($due['type'] == 'date'){
+	  	return Carbon::createFromFormat(MYSQL_DATETIME, $due['value']);
+	  }
+	  
+	}
+	else{
+	
+	//Old tasks that are not using task activities. This will be deleted later,
+	//but keep this stuff for now.
 	
 	$asec = $this->assignmentSection()->first();
 	
@@ -520,6 +541,9 @@ class WorkflowTask extends ModelBase {
 	// We still haven't returned anything? This is most likely a task that won't need a time restraint.
 	// Give it something generic.
 	return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays(2);
+	 
+	}
+	
 }	
   
 

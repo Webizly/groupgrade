@@ -381,8 +381,9 @@ function task_activity_form_submit($form, &$form_state){
 	
 	$due = array();
 	
-	$due['type'] = 'duration';
-	$due['value'] = $form['due_date_duration']['#value'];
+	$due['type'] = 'date';
+	//$due['value'] = $form['due_date_duration']['#value'];
+	$due['value'] = '2019-12-25 00:00:01';
 	
 	$aconstr = array();
 	$aconstr['role'] = 'student';
