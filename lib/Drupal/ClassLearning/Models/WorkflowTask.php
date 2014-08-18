@@ -670,7 +670,7 @@ class WorkflowTask extends ModelBase {
   }
   
   public function taskActivity(){
-  	return TaskActiviy::where('TA_id','=',$this->ta_id)
+  	return TaskActivity::where('TA_id','=',$this->ta_id)
 	  ->first();
   }
 }

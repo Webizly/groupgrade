@@ -3,6 +3,7 @@ use Drupal\ClassLearning\Models\WorkflowTask as Task,
   Drupal\ClassLearning\Models\Workflow,
   Drupal\ClassLearning\Models\Assignment,
   Drupal\ClassLearning\Models\AssignmentSection,
+  Drupal\ClassLearning\Models\TaskActivity,
   Drupal\ClassLearning\Common\Accordion;
 
 function groupgrade_tasks_dashboard() {
@@ -487,10 +488,19 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     return $items;
   endif;
 
-  if (isset($params['task']->settings['instructions']))
+  $my_ta = $params['task']->taskActivity();
+  
+  if(!isset($my_ta)){
+  	if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+  }
+  else{
+  	$items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($my_ta->TA_instructions))
+    ];
+  }
 
   $items['body'] = [
     '#type' => 'textarea',
@@ -575,10 +585,19 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     return $items;
   endif;
 
-  if (isset($params['task']->settings['instructions']))
+  $my_ta = $params['task']->taskActivity();
+  
+  if(!isset($my_ta)){
+  	if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+  }
+  else{
+  	$items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($my_ta->TA_instructions))
+    ];
+  }
 
   $items['body'] = [
     '#type' => 'textarea',
@@ -656,10 +675,19 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     return $items;
   endif;
 
-  if (isset($params['task']->settings['instructions']))
+  $my_ta = $params['task']->taskActivity();
+  
+  if(!isset($my_ta)){
+  	if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+  }
+  else{
+  	$items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($my_ta->TA_instructions))
+    ];
+  }
 
   $items[] = ['#markup' => sprintf('<p><strong>%s</strong></p>', t('Create Solution'))];
 
@@ -810,10 +838,19 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
 
-  if (isset($params['task']->settings['instructions']))
+  $my_ta = $params['task']->taskActivity();
+  
+  if(!isset($my_ta)){
+  	if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+  }
+  else{
+  	$items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($my_ta->TA_instructions))
+    ];
+  }
 
   
   //Set up another for each loop, this time for fields
@@ -1035,10 +1072,19 @@ function gg_task_dispute_form($form, &$form_state, $params)
   $items[] = ['#markup' => $a];
   $items[] = ['#markup' => sprintf('<h5>%s</h5>', t('Current Task: Decide Whether to Dispute'))];
 
-  if (isset($params['task']->settings['instructions']))
+  $my_ta = $params['task']->taskActivity();
+  
+  if(!isset($my_ta)){
+  	if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+  }
+  else{
+  	$items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($my_ta->TA_instructions))
+    ];
+  }
 
   $items['no-dispute'] = [
     '#type' => 'submit',
@@ -1310,10 +1356,19 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     return $items;
   endif;
 
-  if (isset($params['task']->settings['instructions']))
+  $my_ta = $params['task']->taskActivity();
+  
+  if(!isset($my_ta)){
+  	if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+  }
+  else{
+  	$items[] = [
+      '#markup' => sprintf('<p>%s</p>', t($my_ta->TA_instructions))
+    ];
+  }
 
   $items[] = [
     '#markup' => '<h4>'.t('Problem').':</h4>'

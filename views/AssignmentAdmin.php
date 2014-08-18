@@ -832,6 +832,9 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
 function groupgrade_view_allocation($assignment,$view_names = false,$asec_view = null){
   // Workflow's assignment_id is for assignment section, not assignment!
   
+  $abc = WorkflowTask::where('task_id','=','99999')
+    ->first();
+  
   drupal_set_title("View Allocation");
 
   $return = '';
