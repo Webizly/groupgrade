@@ -1,4 +1,4 @@
-<?php
+msy<?php
 
 function groupgrade_home(){
 	return '
@@ -413,9 +413,7 @@ function task_activity_form_submit($form, &$form_state){
 	$trigger = array();
 	$trigger[] = array(
 	  array(
-	    'visual_id' => 'P1.5',
-	    'status' => 'complete',
-	    'value' => false,
+	    'first' => true,
 	  ),
 	);
 	

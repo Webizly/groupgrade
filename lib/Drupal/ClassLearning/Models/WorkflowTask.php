@@ -114,7 +114,11 @@ class WorkflowTask extends ModelBase {
 	 foreach($conditions as $condition){
 	 	$return = true;
 	 	foreach($condition as $c){
-	 		//If we can make it to the end without hitting a false statement, we will trigger.
+	 			//Check for the 'first' value.
+	 			if(isset($c['first']))
+				  return true;
+			
+	 			//If we can make it to the end without hitting a false statement, we will trigger.
 				$visual_id = $c['visual_id'];
 				$status = $c['status'];
 				if(isset($c['value'])){
