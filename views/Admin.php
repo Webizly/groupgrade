@@ -290,7 +290,7 @@ function task_activity_form($form, &$form_state){
 	$items['at_duration_end'] = array(
 	  '#type' => 'textfield',
 	  '#title' => 'At Duration End',
-	  '#default_value' => 'late',
+	  '#default_value' => 'timed out',
 	);
 	
 	$items['what_if_late'] = array(
@@ -386,9 +386,15 @@ function task_activity_form_submit($form, &$form_state){
 	$due['value'] = '2019-12-25 00:00:01';
 	
 	$aconstr = array();
-	$aconstr['role'] = 'student';
+	$aconstr['role'] = 'instructor';
 	$aconstr['title'] = 'individual';
-	$aconstr['constraints'] = null;
+	$aconstr['constraints'] = null;//array(
+	  //'same as' => 'S1',
+	  //'not' => array(
+	  //  'P1',
+	  //),
+	  //'new to subwf' => true,
+	//);
 	
 	$rubric = array();
 	$rubric[] = array(
@@ -413,7 +419,9 @@ function task_activity_form_submit($form, &$form_state){
 	$trigger = array();
 	$trigger[] = array(
 	  array(
-	    'first' => true,
+	    'visual_id' => 'S1.6',
+	    'status' => 'complete',
+	    'value' => true,
 	  ),
 	);
 	

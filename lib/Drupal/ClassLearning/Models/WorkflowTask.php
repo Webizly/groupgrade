@@ -95,8 +95,9 @@ class WorkflowTask extends ModelBase {
 	      if (! $this->conditionMet($condition))
 	        return FALSE;
 	    }
+		
+		return true;
 	}
-	
 	
 	//How trigger conditions will be handled
 	/*
@@ -149,7 +150,11 @@ class WorkflowTask extends ModelBase {
 						if($task->status != $status)
 						{
 						  if(isset($value)){
-						  	$data = $this->getDataAttribute($this->data);
+						  	  if(!isset($task->data['value'])){
+						  	  	$return = false;
+								continue;
+						  	  }
+						  	$data = $task->data;
 						  	if($data['value'] != $value)
 							$return = false;
 						  }

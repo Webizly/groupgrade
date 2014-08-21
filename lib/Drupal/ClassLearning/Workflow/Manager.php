@@ -1093,7 +1093,9 @@ class Manager {
 	            'type' => 'first task trigger',
 	          ]
 	        ],
-
+			
+			'ta' => 19,
+			
 	        'user alias' => 'grade solution',
 
 	        'instructions' => 'Read the assignment instructions and enter '
@@ -1118,6 +1120,8 @@ class Manager {
 	          ],
 	        ],
 
+			'ta' => 20,
+
 	        'reference task' => 'create problem',
 	        'instructions' => 'Rephrase the problem (if necessary) so it is '
 	          .'appropriate to the assignment and clear to the person solving '
@@ -1139,16 +1143,19 @@ class Manager {
 
 	        'user alias' => 'dispute',
 
+			'ta' => 21,
+
 	        'reference task' => 'edit problem',
 	        'instructions' => 'Solve the problem as fully and as clearly as you '
 	          .'can. Explain your reasoning (if necessary).',
 	      ],
 
 	      'grade solution' => [
-	        'count' => 2,
 	        'duration' => 3,
 	        'user alias' => 'create problem',
 	        
+			'ta' => 22,
+			
 			'criteria' => [
 			  'correctness' => [
 			    'grade' => 0,
@@ -1157,6 +1164,51 @@ class Manager {
 			    'description' => 'How correct is this answer?',
 			  ],
 			],
+			
+			
+
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+
+	        'reference task' => 'create solution',
+	        'instructions' => 'Grade the solution to the specific problem shown '
+	          .'above. (There are several different problems so be sure to read '
+	          .'the one being solved here.) Each grade has several parts. Give '
+	          .'a score and an explanation of that score for each part of the '
+	          .'grade. Your explanation should be detailed, and several sentences '
+	          .'long.',
+	      ],
+	      
+		  'grade solution2' => [
+		    'behavior' => 'grade solution',
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	        
+			'ta' => 23,
+			
+			'criteria' => [
+			  'correctness' => [
+			    'grade' => 0,
+			    'justification' => 0,
+			    'max' => 100,
+			    'description' => 'How correct is this answer?',
+			  ],
+			],
+			
+			
 
 	        // This configuration variable defines if the role of the grade solution
 	        // should take over multiple instances of the task instance.
@@ -1187,6 +1239,8 @@ class Manager {
 	      'resolve grades' => [
 	        'internal' => true,
 
+			'ta' => 24,
+
 	        // Default value
 	        'value' => true,
 
@@ -1205,6 +1259,9 @@ class Manager {
 	      // Grades are fine, store them in the workflow
 	      'grades ok' => [
 	        'internal' => true,
+	        
+			'ta' => 25,
+			
 	        'trigger' => [
 	          [
 	            'type' => 'compare value of task',
@@ -1228,6 +1285,9 @@ class Manager {
 	      // Grades are out of a range and we need a second grader
 	      'resolution grader' => [
 	        'duration' => 3,
+	        
+			'ta' => 26,
+			
 	        'trigger' => [
 	          [
 	            'type' => 'compare value of task',
@@ -1256,6 +1316,9 @@ class Manager {
 	      // This step gives the option to dispute the grade they have recieved on their
 	      // soln to yet-another-grader
 	      'dispute' => [
+	      
+		  'ta' => 27,
+		  
 	        'duration' => 2,
 	        'user alias' => 'create solution',
 
@@ -1278,6 +1341,9 @@ class Manager {
 	      // Resolve a dispute and end the workflow
 	      // Trigger only if the "dispute" task has a value of true
 	      'resolve dispute' => [
+	      
+		  'ta' => 28,
+		  
 	        'pool' => [
 	          'name' => 'instructor',
 	          'pull after' => false,
