@@ -137,15 +137,10 @@ class WorkflowTask extends ModelBase {
 					  ->first();
 					
 					if(!isset($my_ta)){
-						watchdog(WATCHDOG_INFO,"Could not find TA. (" . $task->task_id . ')');
 						continue;
 					}
 					
-					if(isset($my_ta->TA_visual_id))
-					  watchdog(WATCHDOG_INFO,$my_ta->TA_visual_id);
-					
 					if($my_ta->TA_visual_id == $visual_id){
-						watchdog(WATCHDOG_INFO,'Found something...');
 						$no_visual_id = false;
 						if($task->status != $status)
 						{
@@ -172,7 +167,6 @@ class WorkflowTask extends ModelBase {
 			  return true;
 	 }
 	
-	watchdog(WATCHDOG_INFO,'Returned false!'); 
     return false;
   }
 

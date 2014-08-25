@@ -9,6 +9,7 @@
 namespace Drupal\ClassLearning\Workflow;
 
 use Drupal\ClassLearning\Exception as AllocatorException,
+  Drupal\ClassLearning\Drupal\TaskActivity,
   Drupal\ClassLearning\Models\WorkflowTask;
 
 /**
@@ -149,6 +150,71 @@ class Allocator {
    * 
    * @return void
    */
+   
+  public function runAssignmentTA()
+  {
+     if (count($this->roles) == 0)
+      throw new AllocatorException('Roles are not defined for allocation.');
+
+    if (count($this->pools) == 0)
+      throw new AllocatorException('Pools are not defined for allocation.');
+    
+    // Reset it
+    $this->resetWorkflows();
+
+    if (count($this->workflows) == 0)
+      throw new AllocatorException('No workflows to allocate to.');
+
+    $randomizedPool = null;
+
+    // Now let's find the assignes
+    foreach($this->roles as $role_id => $role_data) :
+      $rolePool = $this->getPool($role_data['rules']['pool']['name'])->all();
+      // Let's keep this very random
+      if(!isset($randomizedPool)) :
+        $randomizedPool = shuffle_alloc($rolePool);
+		//shuffle($randomizedPool); Destroys keys!
+	  endif;
+
+      // Add it to a queue
+      // If this isn't an instructor pool, add our randomized pool. Otherwise add the rolePool.
+      if($role_data['rules']['pool']['name'] != 'instructor')
+        $this->roles_queue[$role_id] = $randomizedPool;
+      else
+        $this->roles_queue[$role_id] = $rolePool;
+    endforeach;
+    
+    $workflowCount = -1;
+    // Go though the workflows
+    $original_queue = $this->roles_queue;
+    foreach($this->workflows as $workflow_id => $workflow) :
+      
+      $shiftCount = 0;
+      
+      $workflowCount++;
+      $this->roles_queue = $original_queue;
+      $problemCreator = null;
+      $solutionCreator = null;
+ 
+      //We need to set a temporary variable so the iteration doesn't start skipping people
+      $workflowStep = $workflowCount;
+
+      foreach($workflow as $role_id => $ignore) :
+        // Just check if it's already assigned to be sure
+        if ($ignore !== NULL)
+          throw new AllocatorException(sprintf('Workflow role %d is already assigned to %d', $role_id, $ignore));
+        
+        $currentRole = $this->roles[$role_id];
+
+		for($i = 0; $i < $shiftCount + $workflowStep; $i++) :
+	          $this->roles_queue[$role_id] = $this->shift($this->roles_queue[$role_id]);
+		endfor;
+	
+      endforeach;
+	  
+    endforeach;
+  } 
+   
   public function runAssignment()
   {
     if (count($this->roles) == 0)
@@ -163,7 +229,6 @@ class Allocator {
     if (count($this->workflows) == 0)
       throw new AllocatorException('No workflows to allocate to.');
 
-    //ONLY GOOD FOR USE CASE 1A (is it?)
     $randomizedPool = null;
 
     // Now let's find the assignes
@@ -171,22 +236,17 @@ class Allocator {
       $rolePool = $this->getPool($role_data['rules']['pool']['name'])->all();
       // Let's keep this very random
       if(!isset($randomizedPool)) :
-	print "<br><br>Role Pool<br>";
-	var_export($rolePool);
-	print "<br>";
         $randomizedPool = shuffle_alloc($rolePool);
-	//shuffle($randomizedPool); Destroys keys!
-	endif;
+		//shuffle($randomizedPool); Destroys keys!
+	  endif;
 
       // Add it to a queue
-      // Very amateurish, but time is limited!
       // If this isn't an instructor pool, add our randomized pool. Otherwise add the rolePool.
       if($role_data['rules']['pool']['name'] != 'instructor')
         $this->roles_queue[$role_id] = $randomizedPool;
       else
         $this->roles_queue[$role_id] = $rolePool;
-	watchdog(WATCHDOG_INFO,"ROLES QUEUE" . print_r($this->roles_queue),$this->roles_queue);
-          endforeach;
+    endforeach;
     
     $workflowCount = -1;
     // Go though the workflows
@@ -270,10 +330,6 @@ class Allocator {
               $this->workflows[$workflow_id][$role_id] = $user;
 	      if($this->roles[$role_id]['rules']['pool']['name'] != 'instructor')
 	        $shiftCount++;
-
-	      print "<br><br><br>HELLOHELLO<br><br><br>";
-	      print "USER " . $user . " IS BEING ADDED TO THE WORKFLOW NUMBER " . $workflow_id . " FOR TASK NUMBER " . $role_id . ". THE TASK NAME IS " . $currentRole['name'] . $this->roles[$role_id]['rules']['pool']['name'] . ".";
-	      print "<br><br><br>HELLOHELLO<br><br><br>";
 
               // Should they be removed from the pool?
               //if ($currentRole['rules']['pool']['pull after'])
@@ -540,6 +596,7 @@ class Allocator {
    */
   public function createRole($name, $rules = [])
   {
+  	
     if (! isset($rules['pool']))
       $rules['pool'] = $this->defaultRolePool();
     else
@@ -548,6 +605,7 @@ class Allocator {
     $this->roles[] = [
       'name' => $name,
       'rules' => (array) $rules,
+      'ta' => $rules['ta'],
     ];
   }
 
@@ -662,7 +720,7 @@ class Allocator {
     for ($i = 0; $i < $maxRuns; $i++) :
       $this->runCount++;
 
-      $this->runAssignment();
+      $this->runAssignmentTA();
 
       $hasErrors = $this->contains_errors($this->getWorkflows());
 
