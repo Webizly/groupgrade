@@ -118,9 +118,23 @@ function groupgrade_view_reports($asec_id){
 	
 	if($section == null)
 	  return drupal_not_found();
-	
-	// Get all the students
-	  
+
+    $course = $section->course()->first();
+    $semester = $section->semester()->first();
+    $assignment = $asec->assignment()->first();
+  
+    drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
+  
+    $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$asec->section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)'));
+  
+    $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+      t('Course'),
+      $course->course_name, 
+      $section->section_name,
+      $semester->semester_name
+    );
+		
+	// Get all the students  
 	$students = array();  
 	  
 	$section_users = $section->students()->get();
