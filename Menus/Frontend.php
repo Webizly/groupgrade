@@ -677,7 +677,7 @@ return array(
   //Operations tab
   'class/instructor/%/assignment/%/operations' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'Operations',
+    'title' => 'Section-level Actions',
     'weight' => 1,
   ),
  
@@ -709,7 +709,7 @@ return array(
  //Operations -> Remove
  'class/instructor/%/assignment/%/operations/remove' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Remove',
+    'title' => 'Remove Assignment from Section',
 
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -725,7 +725,7 @@ return array(
   //View + Reassign -> All Problem Sets
  'class/instructor/%/assignment/%/view-reassign' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'View And Reassign',
+    'title' => 'View + Reassign (V+R)',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -756,14 +756,14 @@ return array(
  //All Problem Sets tab
   'class/instructor/%/assignment/%/view-reassign/all' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'All Problem Sets',
+    'title' => 'V+R Each Problem Set',
     'weight' => 1,
   ),
   
  //View + Reassign -> Late Problem Sets
  'class/instructor/%/assignment/%/view-reassign/late' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Late Problem Sets',
+    'title' => 'V+R Late Problem Sets',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -823,7 +823,7 @@ return array(
   //View and Reassign -> View Task Table
  'class/instructor/%/assignment/%/view-reassign/table' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'View Task Table',
+    'title' => 'V+R Task Table',
 
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -839,7 +839,7 @@ return array(
   //View and Reassign -> Remove and Reassign
  'class/instructor/%/assignment/%/view-reassign/remove-reassign' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Remove And Reassign',
+    'title' => 'Remove And Reassign Participants',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',

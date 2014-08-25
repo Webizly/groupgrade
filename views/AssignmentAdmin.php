@@ -564,12 +564,13 @@ function groupgrade_edit_assignment_section($form, &$form_state, $asec)
 
   
   $assignment = $section->assignment_id;
+  $a = Assignment::find($assignment);
 
-  drupal_set_title(sprintf('%s%s', t('Assignment Details for Section #'), $section->section_id));
+  drupal_set_title(sprintf('%s%s', $a->assignment_title,t(': Section-level Operations')));
 
   $items = array();
   $items['m'] = array(
-    '#markup' => '<a href="'.url('class/instructor/assignments/'.$assignment).'">Back to Assignment Management</a>',
+    '#markup' => '<a href="'.url('class/instructor/'.$section->section_id).'">Back to Select Assignment (this section)</a>',
   );
 
 /*$items['moodle'] = array(
@@ -759,6 +760,11 @@ function groupgrade_remove_assignment_section($form, &$form_state, $section)
 {
   global $user;
   $section = AssignmentSection::find($section);
+  
+  $a = Assignment::find($section->assignment_id);
+  
+  drupal_set_title(sprintf('%s: %s', $a->assignment_title, t('Section-level Operations')));
+  
   if ($section == NULL) return drupal_not_found();
 
   $items = array();
@@ -766,6 +772,10 @@ function groupgrade_remove_assignment_section($form, &$form_state, $section)
   $theSection = $section->section()->first();
   $course = $theSection->course()->first();
   $semester = $theSection->semester()->first();
+
+  $items['m'] = array(
+    '#markup' => '<a href="'.url('class/instructor/'.$section->section_id).'">Back to Select Assignment (this section)</a>',
+  );
 
   // Information about this course
   $items[] = [
@@ -942,7 +952,7 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 				default: $color = "#FFFFFF"; break;
 			}
 			
-			if($task['status'] == 'complete')
+			if($task['status'] == 'complete' && $view_names)
 			  $r['retrigger'] = "<br><br><a href=" . url(current_path() . '/' . $task['task_id']) . ">" . 'Re-Open</a>';
 			  //$r['retrigger'] = "<br><br><a href=" . url('class/instructor/assignments/' . $assignment . '/administrator-allocation/retrigger/' . $task['task_id']) . ">" . 'Re-Open</a>';
 			else

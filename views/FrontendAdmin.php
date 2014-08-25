@@ -252,14 +252,13 @@ function groupgrade_view_assignments($id) {
         $assignment->assignment_title
       ),
       gg_time_human($assignment->asec_start), 
-       '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$assignment->asec_id).'">'.t('Edit Start Date').'</a>'
-        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$assignment->asec_id).'">'.t('Remove Assignment from Section').'</a>'
+      
     ];
   endforeach; endif;
 
   $return .= theme('table', array(
     'rows' => $rows,
-    'header' => array('Title', 'Start Date', 'Operations'),
+    'header' => array('Title', 'Start Date'),
     'empty' => 'No assignments found.',
     'attributes' => array('width' => '100%'),
   ));
