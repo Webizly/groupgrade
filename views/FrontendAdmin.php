@@ -289,11 +289,11 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
   $assignment = $assignmentSection->assignment()->first();
 
   // Specify the title
-  drupal_set_title($assignment->assignment_title);
+  drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
 
   $return = '';
   // Back Link
-  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$section_id), HTML_BACK_ARROW, t('Back to View Section'));
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)'));
 
   $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
     t('Course'),
@@ -446,14 +446,40 @@ function groupgrade_frontend_swap_status($section, $user)
 }
 
 function groupgrade_remove_reassign_form($form, &$form_state, $asec_id){
-	
-	$items = array();
-	
-	$asec = AssignmentSection::where('asec_id','=',$asec_id)
+  
+  $asec = AssignmentSection::where('asec_id','=',$asec_id)
 	  ->first();
+  $section = Section::find($asec->section_id);
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+  $assignment = Assignment::find($asec->assignment_id);
+  
+  drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
+  
+  $items = array();
+  
+  $items[] = array(
+    '#markup' => sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$asec->section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)')),
+  );
+  
+  $items[] = array(
+    '#markup' => sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+    t('Course'),
+    $course->course_name, 
+    $section->section_name,
+    $semester->semester_name
+    )
+  );
+  
+  
+
 	  
 	if($asec == null)
 	  return drupal_not_found();
+	
+	$assignment = Assignment::find($asec->assignment_id);
+	
+	drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
 	
 	$items['removeLabel'] = array(
 	  '#type' => 'item',

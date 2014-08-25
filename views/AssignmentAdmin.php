@@ -842,16 +842,8 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
 function groupgrade_view_allocation($assignment,$view_names = false,$asec_view = null){
   // Workflow's assignment_id is for assignment section, not assignment!
   
-  drupal_set_title("View Allocation");
 
   $return = '';
-  
-  // Before anything, let's print out a legend
-  
-  $return .= "<h2>Legend</h2>";
-  $return .= "<table><tr>";
-  $return .= "<th style='background:#FFFFFF'>In Progress</th><th style='background:#B4F0BB'>Complete</th><th style='background:#FCC7C7'>Late</th><th style='background:#F5F598'>Not Needed</th><th style='background:#E8E8E8'>Inactive</th>";
-  $return .= "</tr></table><br>";
   
   // We have assignment given to us. We need to find the workflows through assignment section!
   if($asec_view == null){
@@ -862,6 +854,32 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
     $asecs = AssignmentSection::where('asec_id', '=', $asec_view)
       ->get();
   }
+  
+  //This is bad practice, but at the moment it seems that we won't need to see an assignment in every section.
+  //Fix this function up later.
+  $section = Section::find($asecs[0]->section_id);
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+  $assignment = $asecs[0]->assignment()->first();
+  
+  drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
+  
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$asecs[0]->section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)'));
+  
+  
+  $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+    t('Course'),
+    $course->course_name, 
+    $section->section_name,
+    $semester->semester_name
+  );
+  
+  // Before anything, let's print out a legend
+  
+  $return .= "<h2>Legend</h2>";
+  $return .= "<table><tr>";
+  $return .= "<th style='background:#FFFFFF'>In Progress</th><th style='background:#B4F0BB'>Complete</th><th style='background:#FCC7C7'>Late</th><th style='background:#F5F598'>Not Needed</th><th style='background:#E8E8E8'>Inactive</th>";
+  $return .= "</tr></table><br>";
   
   // Our array that keeps users confidential
   $replacement = array();
