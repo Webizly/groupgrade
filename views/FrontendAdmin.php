@@ -107,7 +107,6 @@ function groupgrade_view_user($section_id) {
 function groupgrade_view_reports($asec_id){
 	
 	$return = '';
-	$return .= '<h1>Completed Tasks and Grades</h1><br>';
 	
 	// Get all assignment section objects
 	$asec = AssignmentSection::where('asec_id','=',$asec_id)
@@ -133,7 +132,11 @@ function groupgrade_view_reports($asec_id){
       $section->section_name,
       $semester->semester_name
     );
-		
+	
+	drupal_set_title(sprintf('%s: %s',$assignment->assignment_title,t('Reports')));
+	
+	$return .= '<h1>Completed Tasks and Grades</h1><br>';
+	
 	// Get all the students  
 	$students = array();  
 	  
