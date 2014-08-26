@@ -12,7 +12,8 @@ use Drupal\ClassLearning\Models\User,
   Drupal\ClassLearning\Models\Assignment,
   Drupal\ClassLearning\Models\AssignmentSection,
   Drupal\ClassLearning\Models\Workflow,
-  Drupal\ClassLearning\Models\WorkflowTask;
+  Drupal\ClassLearning\Models\WorkflowTask,
+  Drupal\ClassLearning\Common\Modal;
 
 function groupgrade_assignment_dash() {
   global $user;
@@ -839,6 +840,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
   return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
 }
 
+/*
 function groupgrade_view_allocation($assignment,$view_names = false,$asec_view = null){
   // Workflow's assignment_id is for assignment section, not assignment!
   
@@ -860,9 +862,9 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
   $section = Section::find($asecs[0]->section_id);
   $course = $section->course()->first();
   $semester = $section->semester()->first();
-  $assignment = $asecs[0]->assignment()->first();
+  $assign = $asecs[0]->assignment()->first();
   
-  drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
+  drupal_set_title(sprintf('%s: %s', $assign->assignment_title, t('View + Reassign')));
   
   $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$asecs[0]->section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)'));
   
@@ -896,7 +898,7 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
   
   	  unset($rows);
   
-	  $return .= "<h2>Assignment Section #" . $asec['asec_id'] . "</h2>";   
+	  $return .= "<h2>" . $assign->assignment_title . "</h2>";   
   
 	  $workflows = Workflow::where('assignment_id', '=', $asec['asec_id'])
 	    ->get();
@@ -976,12 +978,12 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 			else
 			  $r['retrigger'] = null;
 			
-			$r['type'] = $task['type'];
+			//$r['type'] = $task['type'];
 			$r['task_id'] = $task['task_id'];
 			if(!$hide)
-			  $r['print'] = "<a href=" . url('class/task/' . $task['task_id']) . ">" . $printuser . "<br>(" . $task['task_id'] . ")</a>";
+			  $r['print'] = "<a title='" . $task['type'] . "' href=" . url('class/task/' . $task['task_id']) . ">" . $printuser . "<br>(" . $task['task_id'] . ")</a>";
 			else
-			  $r['print'] = $printuser . "<br>(" . $task['task_id'] . ")";
+			  $r['print'] = "<span title = '" . $task['type'] . "'>" . $printuser . "<br>(" . $task['task_id'] . ")</span>";
 			$r['color'] = $color;
 			$results[] = $r;
 			
@@ -993,17 +995,237 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 	  endforeach;
 	
 	  $return .= "<table><tr>";
-	  /*
+	  
 	  foreach($headers as $header => $head){
 	  	$return .= "<th>" . $head . "</th></span>";
 	  }
-	  */
+	  
 	  $return .= "</tr>";
 	  
 	  foreach($rows as $row){
 	  	$return .= "<tr>";
 		foreach($row as $data){
-		  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['type'] . "<br>" . $data['print']
+		  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['print']
+		  . ((isset($data['retrigger'])) ? $data['retrigger'] : '') . '</td>';
+		}
+		$return .= "</tr>";
+	  }
+	
+	  /*$return = theme('table', array(
+	    'rows' => $rows,
+	    'header' => $headers,
+	    'empty' => t('Nothing to display.'),
+	    //'attributes' => array('width' => '100%'),
+	  )); STOP COMMENT HERE
+	
+	  $return .= "</table><br><br>";
+	  
+  endforeach;
+
+  return $return;
+}
+*/
+
+function groupgrade_view_allocation($assignment,$view_names = false,$asec_view = null){
+  // Workflow's assignment_id is for assignment section, not assignment!
+  
+
+  $return = '';
+  
+  // We have assignment given to us. We need to find the workflows through assignment section!
+  if($asec_view == null){
+    $asecs = AssignmentSection::where('assignment_id', '=', $assignment)
+      ->get();
+  }
+  else {
+    $asecs = AssignmentSection::where('asec_id', '=', $asec_view)
+      ->get();
+  }
+  
+  //This is bad practice, but at the moment it seems that we won't need to see an assignment in every section.
+  //Fix this function up later.
+  $section = Section::find($asecs[0]->section_id);
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+  $assign = $asecs[0]->assignment()->first();
+  
+  drupal_set_title(sprintf('%s: %s', $assign->assignment_title, t('View + Reassign')));
+  
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$asecs[0]->section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)'));
+  
+  
+  $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+    t('Course'),
+    $course->course_name, 
+    $section->section_name,
+    $semester->semester_name
+  );
+  
+  // Before anything, let's print out a legend
+  
+  $return .= "<h2>Legend</h2>";
+  $return .= "<table><tr>";
+  $return .= "<th style='background:#FFFFFF'>In Progress</th><th style='background:#B4F0BB'>Complete</th><th style='background:#FCC7C7'>Late</th><th style='background:#F5F598'>Not Needed</th><th style='background:#E8E8E8'>Inactive</th>";
+  $return .= "</tr></table><br>";
+  
+  // Our array that keeps users confidential
+  $replacement = array();
+  $numstudents = 0;
+  $numinstructors = 0;
+  
+  $headers = array();
+  $rows = array();
+  
+  foreach($asecs as $asec) :
+  
+  if($asec_view != null)
+    $assignment = $asec->assignment_id;
+  
+  	  unset($rows);
+  
+	  $return .= "<h2>" . $assign->assignment_title . "</h2>";   
+  
+	  $workflows = Workflow::where('assignment_id', '=', $asec['asec_id'])
+	    ->get();
+	  
+	  if(count($workflows) == 0)
+	    return "No workflows for this assignment found.";
+	  
+	  foreach($workflows as $whocares => $workflow) :  
+		  
+		$tasks = WorkflowTask::where('workflow_id', '=', $workflow['workflow_id'])
+		  ->get();
+		
+		if(count($tasks) == 0)
+	      return "No tasks found for this assignment.";  
+		
+		$i = 0;
+		$results = array();
+		
+		foreach($tasks as $task) :
+		
+		  $printuser = '';
+		  if(!isset($task['user_id'])){
+		  	$printuser = 'AUTOMATIC';
+		  }
+		  else{
+		    $user = user_load($task['user_id']);
+			// Does this user exist in our array?
+			if(isset($replacement[$user->name])){
+		      $printuser = $replacement[$user->name];
+		      //print "USER FOUND, " . $user->name . " EXISTS<br>";
+			}
+			else{
+			  // The user doesn't, let's put them in the array then
+			  // But first, is this a user or an instructor?
+			  $num = $numstudents;
+			  $title = "Student";
+			  $numstudents++;
+			  if(isset($task['settings']['pool']['name']))
+			    if($task['settings']['pool']['name'] == "instructor")
+				{
+				  $num = $numinstructors;
+				  $title = "Instructor";
+			      $numinstructors++;
+				  //False alarm on the user, it was actually a student!
+				  $numstudents--;
+				}
+			  // Is $view_names on? Then we're displaying real names.
+			  // Else, only display aliases.
+			  if(!$view_names)
+			    $replacement[$user->name] = $title . ' ' . $num;
+			  else
+			  	$replacement[$user->name] = $user->name;
+			  $printuser = $replacement[$user->name];
+			  
+			  //print "USER NOT FOUND, SETTING " . $user->name . " AS USER " . $num . "<br>";
+			}
+		    
+		  }
+			
+			$headers[$i] = $task['type'];
+			$i+=1;
+			$color;
+			$hide = true;
+			
+			switch($task['status']){
+				
+				case 'complete': $color = "#B4F0BB"; $hide = false; break;
+				case 'not triggered': $color = "#E8E8E8"; break;
+				case 'timed out': $color = "#FCC7C7"; break;
+				case 'expired': $color = "#F5F598"; break;
+				default: $color = "#FFFFFF"; break;
+			}
+			
+			$m = new Modal($task['task_id']);
+			$m->setTitle(sprintf('%s (%s)',ucfirst($task['type']),$printuser));
+			
+			$fakeStatus = '';
+			
+			switch($task['status']){
+				
+				case 'complete': $fakeStatus = 'Complete'; break;
+				case 'timed out': $fakeStatus = 'Late'; break;
+				case 'expired': $fakeStatus = 'Not Needed'; break;
+				case 'triggered': $fakeStatus = 'In Progress'; break;
+				case 'not triggered': $fakeStatus = 'Inactive'; break;
+			};
+			
+			$view = '';
+			if($task['status'] == 'complete')
+			  $view = sprintf('<a style="font-weight:bold;" href="%s">View task in greater detail</a>',url('class/task/' . $task['task_id']));
+			else
+			  $view = '<strong>This task is not completed yet and cannot be viewed.</strong>';
+			
+			$retrigger = '';
+			
+			if($task['status'] == 'complete' && $view_names)
+			  $retrigger = "<a style='font-weight:bold;' href=" . url(current_path() . '/' . $task['task_id']) . ">" . 'Re-Open Task for User</a><br>';
+			  //$r['retrigger'] = "<br><br><a href=" . url('class/instructor/assignments/' . $assignment . '/administrator-allocation/retrigger/' . $task['task_id']) . ">" . 'Re-Open</a>';
+			
+			$body = sprintf('
+			<h4>Task</h4>
+			<strong>Task Type: </strong>%s<br>
+			<strong>Assigned to: </strong>%s<br>
+			<strong>Status: </strong>%s
+			<hr>
+			<h4>Actions</h4>
+			%s<br>
+			%s
+			
+			',$task['type'],$printuser,$fakeStatus,$view,$retrigger);
+			
+			$m->setBody($body);
+			
+			$return .= $m->build();
+			
+			//$r['type'] = $task['type'];
+			$r['task_id'] = $task['task_id'];
+			//$r['print'] = "<a title='" . $task['type'] . "' href=" . url('class/task/' . $task['task_id']) . ">" . $printuser . "<br>(" . $task['task_id'] . ")</a>";
+			$r['print'] = $m->printLink($printuser . "<br>(" . $task['task_id'] . ")");
+			$r['color'] = $color;
+			$results[] = $r;
+			
+			
+		endforeach;
+	  	
+		$rows[] = $results;
+		unset($results);
+		
+	  endforeach;
+	
+	  $return .= "<table><tr>";
+	  
+	  foreach($headers as $header => $head){
+	  	$return .= "<th>" . $head . "</th></span>";
+	  }
+	  
+	  $return .= "</tr>";
+	  
+	  foreach($rows as $row){
+	  	$return .= "<tr>";
+		foreach($row as $data){
+		  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['print']
 		  . ((isset($data['retrigger'])) ? $data['retrigger'] : '') . '</td>';
 		}
 		$return .= "</tr>";

@@ -14,8 +14,8 @@ class Modal{
 		$this->id = $id;
 	}
 	
-	public function printLink(){
-		return sprintf('<a href="#" data-toggle="modal" data-target="#%s">Click here to view.</a>',$this->id);
+	public function printLink($link = 'Click here to view'){
+		return sprintf('<a href="#" data-toggle="modal" data-target="#%s">%s</a>',$this->id,$link);
 	}
 	
 	public function setBody($body){
