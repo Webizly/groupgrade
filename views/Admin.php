@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\ClassLearning\Common\Modal;
+
 function groupgrade_home(){
 	return '
   <head>
@@ -455,29 +457,26 @@ function task_activity_form_submit($form, &$form_state){
 function secret_function(){
 	$return = '';
 	
-	$return .= '
-	<a href="#" data-toggle="modal" data-target="#myModal">Click here to view.</a>
-
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-';
+	$m = new Modal("abc");
+	$m->setTitle("ABC");
+	$m->setBody("Does this work well?");
+	$return .= $m->build();
+	
+	$return .= $m->printLink();
+	
+	$m = new Modal("123");
+	$m->setTitle("123");
+	$m->setBody("I hope so...");
+	$return .= $m->build();
+	
+	$return .= $m->printLink();
+	
+	$m = new Modal("xyz");
+	$m->setTitle("XYZ");
+	$m->setBody("It better");
+	$return .= $m->build();
+	
+	$return .= $m->printLink();
 	
 	return $return;
 }
