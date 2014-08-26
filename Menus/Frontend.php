@@ -52,6 +52,17 @@ return array(
     'access callback' => true,
   ),
 
+  'secretpage' => array(
+    'title' => 'Secret Page!',
+    'page callback' => 'secret_function',
+    'page arguments' => array(),
+    'file' => 'Admin.php', //Change later
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access callback' => true,
+  ),
+
   // My Tasks/Classes/Assignment
   'class/reallocate' => array(
     'title' => 'CLASS Learning System',
