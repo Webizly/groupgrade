@@ -1180,20 +1180,52 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 			$retrigger = '';
 			
 			if($task['status'] == 'complete' && $view_names)
-			  $retrigger = "<a style='font-weight:bold;' href=" . url(current_path() . '/' . $task['task_id']) . ">" . 'Re-Open Task for User</a><br>';
+			  $retrigger = "<a style='font-weight:bold;' href=" . url(current_path() . '/' . $task['task_id']) . ">" . 'Re-open task for user</a><br>';
 			  //$r['retrigger'] = "<br><br><a href=" . url('class/instructor/assignments/' . $assignment . '/administrator-allocation/retrigger/' . $task['task_id']) . ">" . 'Re-Open</a>';
 			
+			$reassignHistory = '<strong>This task has never been reassigned to anybody else.</strong>';
+			
+			if($task['user_history'] != null){
+				if($view_names){
+					$reassignHistory = '<ul>';
+					$history = json_decode($task['user_history'],1);
+					foreach($history as $h){
+						$reassignHistory .= sprintf('<li>%s replaced %s on %s.</li>',
+						$h['new_name'],$h['previous_name'],$h['time']
+						);
+					}
+					
+					$reassignHistory .= '</ul>';
+				}
+				else
+					$reassignHistory = "<strong>This task has been reassigned. To view identities, please view the V+R Task Table.</strong>";
+			}
+			
+			$quickReassign = '';
+			
+			if($view_names){
+			  //$quickForm = drupal_get_form('gg_quick_reassign_form',$asec['asec_id'],$task['task_id']);
+			  //$quickReassign .= drupal_render($quickForm);
+			  $url = sprintf('class/instructor/%d/assignment/%d/view-reassign/reassign/%d',$section->section_id,$asec_view,$task['task_id']);
+			  $quickReassign = sprintf('<a style="font-weight:bold;" href="%s">Reassign this task to another user</a>',url($url));
+			  
+			}
+			
 			$body = sprintf('
-			<h4>Task</h4>
+			<h4>Task Properties</h4>
 			<strong>Task Type: </strong>%s<br>
 			<strong>Assigned to: </strong>%s<br>
 			<strong>Status: </strong>%s
 			<hr>
-			<h4>Actions</h4>
+			<h4>Reassign History</h4>
+			%s
+			<hr>
+			<h4>Task Actions</h4>
 			%s<br>
 			%s
+			%s
 			
-			',$task['type'],$printuser,$fakeStatus,$view,$retrigger);
+			',$task['type'],$printuser,$fakeStatus,$reassignHistory,$view,$retrigger,$quickReassign);
 			
 			$m->setBody($body);
 			
@@ -1217,18 +1249,32 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 	  $return .= "<table><tr>";
 	  
 	  foreach($headers as $header => $head){
-	  	$return .= "<th>" . $head . "</th></span>";
+	  	$return .= "<th>" . $head . "</th>";
 	  }
 	  
 	  $return .= "</tr>";
 	  
+	  $rowCount = 0;
+	  
 	  foreach($rows as $row){
+	  	
+		if($rowCount == 15){
+			$rowCount = 0;
+			foreach($headers as $header => $head){
+	  			$return .= "<th>" . $head . "</th>";
+	  		}
+			
+			continue;
+		}
+		
 	  	$return .= "<tr>";
 		foreach($row as $data){
 		  $return .= "<td style='background:" . $data['color'] . ";'>" . $data['print']
 		  . ((isset($data['retrigger'])) ? $data['retrigger'] : '') . '</td>';
 		}
 		$return .= "</tr>";
+		
+		$rowCount++;
 	  }
 	
 	  /*$return = theme('table', array(
@@ -1243,4 +1289,99 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
   endforeach;
 
   return $return;
+}
+
+function gg_reassign_form($form, &$form_state, $asec, $task)
+{
+
+  $asec = AssignmentSection::find($asec);
+  
+  $section = $asec->section()->first();
+  $students = $section->students()->get();
+	
+  $items = $index = [];
+
+  if (count($students) > 0) : foreach($students as $student) :
+    $user = user_load($student->user_id);
+    if (! $user) continue;
+
+    $index[$student->user_id] = ggPrettyName($user);
+  endforeach; endif;
+
+  $items['task'] = array(
+    '#type' => 'hidden',
+    '#value' => $task,
+  );
+  
+  $items['returnUrl'] = array(
+    '#type' => 'hidden',
+    '#value' => sprintf('class/instructor/%d/assignment/%d/view-reassign/table',$section->section_id,$asec->asec_id),
+  );
+
+  $items['user'] = array(
+     '#type' => 'select',
+     '#title' => t('Reassign Task to User'),
+     '#options' => $index,
+ );
+
+  $items['section'] = array(
+    '#value' => $section->section_id,
+    '#type' => 'hidden'
+  );
+  
+  $items['forcetrigger'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Force Trigger',
+  );
+
+  $items['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Reassign Task (Will re-start the task)',
+  ];
+
+  return $items;
+}
+
+function gg_reassign_form_submit($form, &$form_state)
+{
+  $task_id = $form['task']['#value'];
+
+  $task = WorkflowTask::where('task_id','=',$task_id)
+    ->first();
+  
+  $section = $form_state['build_info']['args'][0];
+
+  $user = (int) $form['user']['#value'];
+
+  if ($user == $task->user_id)
+    return drupal_set_message(t('You cannot reassign the same user to the task.'), 'error');
+
+  $update = null;
+  if($task->user_history == '')
+	$update = array();
+  else
+  	$update = json_decode($task->user_history,true);
+  
+    $user_object = user_load($task->user_id);
+    $new_user = user_load($user);
+	$ar = array();
+	$ar['previous_uid'] = $user_object->uid;
+	$ar['previous_name'] = $user_object->name;
+	$ar['time'] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['new_uid'] = $new_user->uid;
+	$ar['new_name'] = $new_user->name;
+	$update[] = $ar;
+	$task->user_history = json_encode($update);
+
+  $task->user_id = $user;
+  
+  if($form['forcetrigger']['#value'] == 1)
+    $task->trigger(true);
+  else
+  	$task->save();
+
+  $returnUrl = $form['returnUrl']['#value'];
+
+  drupal_set_message('User reassigned and task re-triggered.');
+  drupal_goto(url($returnUrl));
 }

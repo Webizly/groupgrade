@@ -488,8 +488,6 @@ function groupgrade_remove_reassign_form($form, &$form_state, $asec_id){
     )
   );
   
-  
-
 	  
 	if($asec == null)
 	  return drupal_not_found();
@@ -647,9 +645,14 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
 	  	$update = json_decode($task->user_history,true);
       
 	  $ar = array();
-	  $ar[] = $removeUser->uid;
-	  $ar[] = $removeUser->name;
-	  $ar[] = Carbon\Carbon::now()->toDateTimeString();
+	  $new_user = user_load($user);
+	  $ar = array();
+	  $ar['previous_uid'] = $removeUser->uid;
+	  $ar['previous_name'] = $removeUser->name;
+	  $ar['time'] = Carbon\Carbon::now()->toDateTimeString();
+	  $ar['new_uid'] = $reassignUser->uid;
+	  $ar['new_name'] = $reassignUser->name;
+	  
 	  $update[] = $ar;
 	  $task->user_history = json_encode($update);
 	  

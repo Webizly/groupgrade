@@ -938,4 +938,18 @@ return array(
     'weight' => 5,
   ),
  
+ 'class/instructor/%/assignment/%/view-reassign/reassign/%' => array(
+   'type' => MENU_DEFAULT_LOCAL_TASK,
+   'title' => 'Reassign Task',
+   
+   'file' => 'AssignmentAdmin.php',
+   'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+   'page callback' => 'drupal_get_form',
+   'page arguments' => array('gg_reassign_form',4,7),
+   
+   'access arguments' => array('instructor', 2),
+   'access callback' => 'gg_has_role_in_section',
+ ),
+ 
 );

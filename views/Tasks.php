@@ -2237,11 +2237,13 @@ function gg_reassign_task_submit($form, &$form_state)
   	$update = json_decode($task->user_history,true);
   
     $user_object = user_load($task->user_id);
-  
+    $new_user = user_load($user);
 	$ar = array();
-	$ar[] = $user_object->uid;
-	$ar[] = $user_object->name;
-	$ar[] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['previous_uid'] = $user_object->uid;
+	$ar['previous_name'] = $user_object->name;
+	$ar['time'] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['new_uid'] = $new_user->uid;
+	$ar['new_name'] = $new_user->name;
 	$update[] = $ar;
 	$task->user_history = json_encode($update);
 
@@ -2317,11 +2319,13 @@ function gg_manual_reassign_submit($form, &$form_state)
   	$update = json_decode($task->user_history,true);
   
     $user_object = user_load($task->user_id);
-  
+    $new_user = user_load($user);
 	$ar = array();
-	$ar[] = $user_object->uid;
-	$ar[] = $user_object->name;
-	$ar[] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['previous_uid'] = $user_object->uid;
+	$ar['previous_name'] = $user_object->name;
+	$ar['time'] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['new_uid'] = $new_user->uid;
+	$ar['new_name'] = $new_user->name;
 	$update[] = $ar;
 	$task->user_history = json_encode($update);
 
