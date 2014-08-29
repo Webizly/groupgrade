@@ -210,7 +210,7 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment) {
   drupal_set_title(t('Add "@assignment-title" to Section', ['@assignment-title' => Assignment::find($assignment)->assignment_title]));
 
   //SELECT * FROM moodlelink2
-  $records = db_select('moodlelink2', 'ml2')
+  $records = db_select('moodlelink_assignment_title', 'ml2')
   	->fields('ml2')
     ->execute()
     ->fetchAll();
@@ -349,16 +349,16 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment) {
   );
 
   $items['moodle'] = array(
- 	 '#type' => 'checkbox',
-  	 '#title' => t('Link Assignment to Moodle?'),
+  	'#type' => 'checkbox',
+  	'#title' => t('Link Assignment to Moodle?'),
   );
-	  
+  
   $items['moodlelink'] = array(
-	  '#type' => 'select',
-	  '#title' => t('Select Moodle Assignment'),
-	  '#options' => $options,
-	  '#states' => array(
-	  	'visible' => array(
+  	'#type' => 'select',
+  	'#title' => t('Select Moodle Assignment'),
+  	'#options' => $options,
+  	'#states' => array(
+  		'visible' => array(
 			':input[name = "moodle"]' => array('checked' => TRUE),
 		),
 	),
@@ -474,7 +474,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state) {
 	#krumo($moodle_assignment_id);
 	
 	//SELECT matitle FROM moodlelink2 where maid = $moodle_assignment_id
-	$moodle_assignment_title = db_select('moodlelink2', 'ml2')
+	$moodle_assignment_title = db_select('moodlelink_assignment_title', 'ml2')
 		->fields('ml2', array('matitle'))
 		->condition('maid', $moodle_assignment_id)
 		->execute()
@@ -496,8 +496,8 @@ function groupgrade_add_assignment_section_submit($form, &$form_state) {
   	$class_id = $user->uid;  
 	
   	//SELECT * FROM moodlelink3 where maid = $moodle_assignment_id and aid = $class_assignment_id and uid = $class_id and asecid = $class_assignment_section_id
-  	$record = db_select('moodlelink3', 'ml3')
-  		->fields('ml3')
+  	$record = db_select('moodlelink_assignment', 'ml4')
+  		->fields('ml4')
 		->condition('maid', $moodle_assignment_id)
 		->condition('aid', $class_assignment_id)
 		->condition('uid', $class_id)
@@ -526,7 +526,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state) {
 	
 	//INSERT/UPDATE into moodlelink3 ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid') VALUES ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid')
 	
-	$query = db_merge('moodlelink3')
+	$query = db_merge('moodlelink_assignment')
 		->key(array('maid' => $record->maid))
 		->key(array('matitle' => $record->matitle))
 		->key(array('aid' => $record->aid))
@@ -546,7 +546,7 @@ function groupgrade_edit_assignment_section($form, &$form_state, $asec)
 {
 	
 	//SELECT * FROM moodlelink2
-  $records = db_select('moodlelink2', 'ml2')
+  $records = db_select('moodlelink_assignment_title', 'ml2')
   	->fields('ml2')
     ->execute()
     ->fetchAll();
@@ -590,6 +590,47 @@ function groupgrade_edit_assignment_section($form, &$form_state, $asec)
 	),
   );*/
 
+  /*
+  $answer = array(0 => t('Yes'), 1 => t('No'));
+  
+  $items['linkcheck'] = array(
+  	'#type' => 'radios',
+  	'#title' => t('Did you link this assignment to a Moodle assignment?'),
+  	'#options' => $answer,
+  	);
+  
+  $items['moodlechange'] = array(
+  	'#type' => 'radios',
+  	'#title' => t('Do you want to change the Moodle assignment?'),
+  	'#states' => array(
+  		'visible' => array(
+			':input[name = linkcheck, value = Yes]' => array('checked' => TRUE),
+		),
+	),
+  );
+  
+  
+  $items['moodlechange'] = array(
+  	'#type' => 'checkbox',
+  	'#title' => t('Do you want to change the Moodle assignment?'),
+  	'#states' => array(
+  		'visible' => array(
+			':input[name = "linkcheck"]' => array('checked' => FALSE),
+		),
+	),
+  );
+  
+  $items['newmoodlelink'] = array(
+  	'#type' => 'select',
+  	'#title' => t('Select Moodle Assignment'),
+  	'#options' => $options,
+  	'#states' => array(
+  		'visible' => array(
+			':input[name = "moodlechange"]' => array('checked' => TRUE),
+		),
+	),
+  );*/
+  
   $theSection = $section->section()->first();
   $course = $theSection->course()->first();
   $semester = $theSection->semester()->first();
@@ -674,7 +715,7 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 	#krumo($moodle_assignment_id);
 	
 	//SELECT matitle FROM moodlelink2 where maid = $moodle_assignment_id
-	$moodle_assignment_title = db_select('moodlelink2', 'ml2')
+	$moodle_assignment_title = db_select('moodlelink_assignment_title', 'ml2')
 		->fields('ml2', array('matitle'))
 		->condition('maid', $moodle_assignment_id)
 		->execute()
@@ -703,8 +744,8 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
   	$class_id = $user->uid;  
 	
   	//SELECT * FROM moodlelink3 where maid = $moodle_assignment_id and aid = $class_assignment_id and uid = $class_id and asecid = $class_assignment_section_id
-  	$record = db_select('moodlelink3', 'ml3')
-  		->fields('ml3')
+  	$record = db_select('moodlelink_assignment', 'ml4')
+  		->fields('ml4')
 		->condition('asecid', $class_assignment_section_id)
     	->execute()
     	->fetch();
@@ -729,7 +770,7 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 	
 	//INSERT/UPDATE into moodlelink3 ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid') VALUES ('maid, 'matitle', 'aid', 'atitle', 'uid', 'asecid')
 	
-	$query = db_merge('moodlelink3')
+	$query = db_merge('moodlelink_assignment')
 		->key(array('maid' => $record->maid))
 		->key(array('matitle' => $record->matitle))
 		->key(array('aid' => $record->aid))
@@ -738,7 +779,7 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 		->key(array('asecid' => $record->asecid))
 		->execute();
   	} else {
-  		$query = db_update('moodlelink3')
+  		$query = db_update('moodlelink_assignment')
 		->fields(array(
 		'maid' => $moodle_assignment_id,
 		'matitle' => $moodle_assignment_title->matitle,

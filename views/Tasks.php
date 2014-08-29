@@ -20,12 +20,13 @@ function groupgrade_tasks_get_moodle_id () {
 	//gets the user id from Moodle and store it into a variable
 	$moodle_id = $_SESSION['lti_tool_provider_context_info']['user_id'];
 	
-	//SELECT uid, mid FROM moodlelink WHERE mid = $moodle_id
-	$query = db_select('moodlelink', 'ml')
+	//SELECT uid, mid FROM moodlelink_user_id WHERE mid = $moodle_id
+	$record = db_select('moodlelink_user_id', 'ml')
 		->fields('ml', array('uid', 'mid'))
-		->condition('mid', $moodle_id);
-	$record = $query->execute()->fetch();
-	
+		->condition('mid', $moodle_id)
+		->execute()
+		->fetch();
+
 	//if the user has never logged into CLASS from Moodle, it adds Drupal user ID and Moodle user ID to the table
 	$moodle_id = $_SESSION['lti_tool_provider_context_info']['user_id'];
   		if ($record == FALSE) {
@@ -34,24 +35,24 @@ function groupgrade_tasks_get_moodle_id () {
 			$record->mid = $moodle_id;
 		}
   		//INSERT/UPDATE into moodlelink ('uid, 'mid') VALUES ('uid', 'mid')
-		$query = db_merge('moodlelink')
-			->key(array('uid' => $record->uid))
-			->key(array('mid' => $record->mid))
-			->fields((array) $record)
-			->execute();
+		$query = db_merge('moodlelink_user_id')
+		->key(array('uid' => $record->uid))
+		->key(array('mid' => $record->mid))
+		->fields((array) $record)
+		->execute();
 }
 
 function groupgrade_tasks_get_moodle_assignment_record () {
 	//gets the assignment id from Moodle and stores it into a variable
 	$moodle_assignment_id = $_SESSION['lti_tool_provider_context_info']['resource_link_id'];
 	//SELECT maid, matitle FROM moodlelink2 WHERE maid = $moodle_assignment_id
-	$query = db_select('moodlelink2', 'ml2')
+	$record = db_select('moodlelink_assignment_title', 'ml2')
 		->fields('ml2', array('maid', 'matitle'))
-		->condition('maid', $moodle_assignment_id);
-	$record = $query->execute()->fetch();
+		->condition('maid', $moodle_assignment_id)
+		->execute()
+		->fetch();
 	
 	//gets the assignment id and assignment title from Moodle and stores it into a variable
-	$moodle_assignment_id = $_SESSION['lti_tool_provider_context_info']['resource_link_id'];
 	$moodle_assignment_title = $_SESSION['lti_tool_provider_context_info']['resource_link_title'];
 	
 	//if the record doesn't exist, add it to the table
@@ -60,12 +61,12 @@ function groupgrade_tasks_get_moodle_assignment_record () {
 		$record->maid = $moodle_assignment_id;
 		$record->matitle = $moodle_assignment_title;
   	}
-  		//INSERT/UPDATE into moodlelink2 ('maid, 'matitle') VALUES ('maid', 'matitle')
-		$query = db_merge('moodlelink2')
-			->key(array('maid' => $record->maid))
-			->key(array('matitle' => $record->matitle))
-			->fields((array) $record)
-			->execute();
+  		//INSERT/UPDATE into moodlelink_assignment_title ('maid, 'matitle') VALUES ('maid', 'matitle')
+	$query = db_merge('moodlelink_assignment_title')
+		->key(array('maid' => $record->maid))
+		->key(array('matitle' => $record->matitle))
+		->fields((array) $record)
+		->execute();
 }
 
 function groupgrade_tasks_get_moodle_lti_outcomes_id () {
@@ -724,8 +725,8 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   #krumo($class_assignment_section_id->assignment_id);
   
   //SELECT atitle FROM moodlelink3 WHERE asecid = $class_assignment_section_id
-  $class_assignment_title = db_select('moodlelink3', 'ml3')
-  	->fields('ml3', array('atitle'))
+  $class_assignment_title = db_select('moodlelink_assignment', 'ml4')
+  	->fields('ml4', array('atitle'))
 	->condition('asecid', $class_assignment_section_id->assignment_id)
 	->execute()
 	->fetch();
@@ -735,8 +736,8 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   $class_id = $user->uid;
   	
   //SELECT * FROM moodlelink4 WHERE workflowid = $class_workflow_id AND uid = $class_id
-  $record = db_select('moodlelink4', 'ml4')
-	->fields('ml4')
+  $record = db_select('moodlelink_workflow', 'ml5')
+	->fields('ml5')
 	->condition('workflowid', $class_workflow_id->workflow_id)
 	->condition('uid', $class_id)
 	->execute()
@@ -752,7 +753,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   }
 	
   //INSERT/UPDATE into moodlelink4 ('workflowid, 'uid', 'asecid', 'atitle') VALUES ('workflowid', 'uid', 'asecid', 'atitle')
-  $query = db_merge('moodlelink4')
+  $query = db_merge('moodlelink_workflow')
 	->key(array('workflowid' => $record->workflowid))
 	->key(array('uid' => $record->uid))
 	->key(array('asecid' => $record->asecid))
@@ -1181,9 +1182,11 @@ function gg_task_dispute_form_submit($form, &$form_state) {
     endif;
   else :
     $task->save();
-  
-  /*$class_task_id = $task->task_id;
-  #krumo($class_task_id);
+	$task->complete();	
+    drupal_set_message(t('Your decision to not dispute has been submitted.'));
+	
+	$class_task_id = $task->task_id;
+  #drupal_set_message($class_task_id);
   
   //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
   $class_workflow_id = db_select('pla_task', 'pla_t')
@@ -1192,17 +1195,17 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 	->execute()
 	->fetch();
 
-  #krumo($class_workflow_id->workflow_id);
+  #drupal_set_message($class_workflow_id->workflow_id);
   	
-  //SELECT uid, asecid FROM moodlelink4 WHERE workflowid = $class_workflow_id->workflow_id
-  $class_id = db_select('moodlelink4', 'ml4')
-	->fields('ml4', array('uid', 'asecid'))
+  //SELECT uid, asecid FROM moodlelink_workflow WHERE workflowid = $class_workflow_id->workflow_id
+  $class_id = db_select('moodlelink_workflow', 'ml5')
+	->fields('ml5', array('uid', 'asecid'))
 	->condition('workflowid', $class_workflow_id->workflow_id)
 	->execute()
 	->fetch();
   
-  #krumo($class_id->uid);
-  #krumo($class_id->asecid);
+  #drupal_set_message($class_id->uid);
+  #drupal_set_message($class_id->asecid);
   
   //SELECT data FROM pla_workflow WHERE workflow_id = $class_workflow_id->workflow_id
   $newgrade = db_select('pla_workflow', 'pla_w')
@@ -1219,23 +1222,23 @@ function gg_task_dispute_form_submit($form, &$form_state) {
   	
   #drupal_set_message($actualgrade);
   
-  //SELECT maid FROM moodlelink3 WHERE asecid = $class_id->asecid
-  $moodle_assignment_id = db_select('moodlelink3', 'ml3')
-  	->fields('ml3', array('maid'))
+  //SELECT maid FROM moodlelink_assignment WHERE asecid = $class_id->asecid
+  $moodle_assignment_id = db_select('moodlelink_assignment', 'ml4')
+  	->fields('ml4', array('maid'))
 	->condition('asecid', $class_id->asecid)
 	->execute()
 	->fetch();
   
-  #krumo($moodle_assignment_id->maid);
+  #drupal_set_message($moodle_assignment_id->maid);
   	
-  //SELECT mid FROM moodlelink WHERE uid = $class_id->uid
-  $moodle_id = db_select('moodlelink', 'ml')
+  //SELECT mid FROM moodlelink_user_id WHERE uid = $class_id->uid
+  $moodle_id = db_select('moodlelink_user_id', 'ml')
   	->fields('ml', array('mid'))
 	->condition('uid', $class_id->uid)
 	->execute()
 	->fetch();
   
-  #krumo($moodle_id->mid);
+  #drupal_set_message($moodle_id->mid);
   
   //SELECT lti_id FROM moodlelink_lti WHERE mid = $moodle_id->mid AND maid = $moodle_assignment_id->maid
   $lti = db_select('moodlelink_lti', 'ml2')
@@ -1249,7 +1252,7 @@ function gg_task_dispute_form_submit($form, &$form_state) {
    
   /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
    *WHERE lti_tool_provider_outcomes_id = $lti->lti_id
-   
+   */
   
   $record = db_select('lti_tool_provider_outcomes', 'lti')
   	->fields('lti', array('lti_tool_provider_outcomes_score'))
@@ -1269,10 +1272,8 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 	->fields(array('lti_tool_provider_outcomes_score' => $record->lti_tool_provider_outcomes_score))
 	->condition('lti_tool_provider_outcomes_id', $lti->lti_id)
 	->execute();
-  }*/
-  
-	$task->complete();	
-    drupal_set_message(t('Your decision to not dispute has been submitted.'));
+  }
+	
   endif;
 }
 
@@ -1511,8 +1512,17 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
   $task->save();
+  
+  drupal_set_message(sprintf('%s %s', t('Grade'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
 
-  /*$class_task_id = $task->task_id;
+  if (! $save) :
+    $task->complete();
+
+    // Save to the workflow
+    $params['workflow']->setData('grade', $gradeSum);
+    $params['workflow']->save();
+    
+	$class_task_id = $task->task_id;
   #drupal_set_message($class_task_id);
   
   //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
@@ -1525,8 +1535,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   #drupal_set_message($class_workflow_id->workflow_id);
   	
   //SELECT uid, asecid FROM moodlelink4 WHERE workflowid = $class_workflow_id->workflow_id
-  $class_id = db_select('moodlelink4', 'ml4')
-	->fields('ml4', array('uid', 'asecid'))
+  $class_id = db_select('moodlelink_workflow', 'ml5')
+	->fields('ml5', array('uid', 'asecid'))
 	->condition('workflowid', $class_workflow_id->workflow_id)
 	->execute()
 	->fetch();
@@ -1541,7 +1551,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 	->execute()
 	->fetch();
 	
-  if ($newgrade == TRUE) {
+  if ($grade == TRUE) {
   	$mygrade = json_decode($newgrade->data, true);
   }
   
@@ -1550,8 +1560,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   #drupal_set_message($actualgrade);
   
   //SELECT maid FROM moodlelink_assignment WHERE asecid = $class_id->asecid
-  $moodle_assignment_id = db_select('moodlelink3', 'ml3')
-  	->fields('ml3', array('maid'))
+  $moodle_assignment_id = db_select('moodlelink_assignment', 'ml4')
+  	->fields('ml4', array('maid'))
 	->condition('asecid', $class_id->asecid)
 	->execute()
 	->fetch();
@@ -1559,7 +1569,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   #drupal_set_message($moodle_assignment_id->maid);
   	
   //SELECT mid FROM moodlelink_user_id WHERE uid = $class_id->uid
-  $moodle_id = db_select('moodlelink', 'ml')
+  $moodle_id = db_select('moodlelink_user_id', 'ml')
   	->fields('ml', array('mid'))
 	->condition('uid', $class_id->uid)
 	->execute()
@@ -1579,7 +1589,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
    
   /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
    *WHERE lti_tool_provider_outcomes_id = $lti->lti_id
-   
+   */
   
   $record = db_select('lti_tool_provider_outcomes', 'lti')
   	->fields('lti', array('lti_tool_provider_outcomes_score'))
@@ -1599,17 +1609,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 	->fields(array('lti_tool_provider_outcomes_score' => $record->lti_tool_provider_outcomes_score))
 	->condition('lti_tool_provider_outcomes_id', $lti->lti_id)
 	->execute();
-  }*/
-  
-  drupal_set_message(sprintf('%s %s', t('Grade'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
-
-  if (! $save) :
-    $task->complete();
-
-    // Save to the workflow
-    $params['workflow']->setData('grade', $gradeSum);
-    $params['workflow']->save();
-
+  }
+	
     return drupal_goto('class');
   endif;
 }
