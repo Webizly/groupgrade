@@ -480,3 +480,50 @@ function secret_function(){
 	
 	return $return;
 }
+
+function file_test_form($form, &$form_state){
+	$return = array();
+	
+	$return['file'] = array(
+	  '#type' => 'file',
+	  '#title' => 'Upload',
+	);
+	
+	$return['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' =>  'Submit',
+	  //'#validate' => 'file_test_form_validate',
+	);
+	
+	$return[] = array(
+	  '#markup' => sprintf('<a href="%s">???</a>',url('sites/default/files/CLASS/Worms.docx')),
+	);
+	
+	return $return;
+}
+
+function file_test_form_validate($form, &$form_state){
+	
+	drupal_set_message("Blegh");
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "Failed to write the uploaded file to the site\'s file folder.");
+		}
+	}
+	else{
+		form_set_error('file','No file was uploaded');
+	}
+}
+
+function file_test_form_submit($form, &$form_state){
+	return drupal_set_message("Cocky doody");
+}

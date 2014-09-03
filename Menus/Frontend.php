@@ -62,6 +62,15 @@ return array(
     // Permissions
     'access callback' => true,
   ),
+  
+  'filetest' => array(
+    'title' => 'File Uploading!',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('file_test_form'),
+    'access callback' => true,
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+  ),
 
   // My Tasks/Classes/Assignment
   'class/reallocate' => array(
