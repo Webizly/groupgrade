@@ -496,7 +496,7 @@ function file_test_form($form, &$form_state){
 	);
 	
 	$return[] = array(
-	  '#markup' => sprintf('<a href="%s">???</a>',url('sites/default/files/CLASS/Worms.docx')),
+	  '#markup' => sprintf('<br><br><a href="%s">Worms.docx</a>',url('sites/default/files/CLASS/Worms.docx')),
 	);
 	
 	return $return;
@@ -504,7 +504,7 @@ function file_test_form($form, &$form_state){
 
 function file_test_form_validate($form, &$form_state){
 	
-	drupal_set_message("Blegh");
+	drupal_set_message("Validate Function");
 	
 	$file = file_save_upload('file', array(
 	  //'file_validate_is_image' => array(),
@@ -512,11 +512,13 @@ function file_test_form_validate($form, &$form_state){
 	));
 	
 	if($file){
+		$file->status = 1;
+		file_save($file);
 		if($file = file_move($file, 'public://CLASS')) {
 			$form_state['storage']['file'] = $file;
 		}
 		else{
-			form_set_error('file', "Failed to write the uploaded file to the site\'s file folder.");
+			form_set_error('file', "Failed to write the uploaded file to the site's file folder.");
 		}
 	}
 	else{
@@ -525,5 +527,8 @@ function file_test_form_validate($form, &$form_state){
 }
 
 function file_test_form_submit($form, &$form_state){
-	return drupal_set_message("Cocky doody");
+	
+	$file = $form_state['storage']['file'];
+	
+	return drupal_set_message(sprintf("<a href='%s'>%s</a>",url('sites/default/files/CLASS/' . $file->filename),$file->uri));
 }

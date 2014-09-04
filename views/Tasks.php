@@ -499,6 +499,18 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     '#default_value' => (isset($params['task']->data['problem'])) ? $params['task']->data['problem'] : '',
   ];
 
+  if(isset($params['task']->settings['file'])){
+  	$items[] = array(
+  	  '#markup' => '<strong style="color:red;">You are required to submit a file for this assignment. Please upload one below.</strong>',
+	);
+	
+	$items['file'] = array(
+	  '#type' => 'file',
+	  '#title' => 'Please upload your file',
+	);
+	
+  }
+
   $items['save'] = [
     '#type' => 'submit',
     '#value' => 'Save Problem For Later',
@@ -508,6 +520,40 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     '#value' => 'Submit Problem',
   ];
   return $items;
+}
+
+function gg_task_create_problem_form_validate($form, &$form_state) {
+	
+	drupal_set_message("Validated");
+	
+	$save = ($form_state['clicked_button']['#id'] == 'edit-save');
+	$task = $form_state['build_info']['args'][0]['task'];
+	
+	if($save || !isset($task->settings['file'])){
+		//Don't even bother...
+		return;
+	}
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		
+		$file->status = 1;
+		file_save($file);
+		
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
+		}
+	}
+	else{
+		form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
+	}
 }
 
 /**

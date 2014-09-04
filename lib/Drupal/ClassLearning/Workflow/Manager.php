@@ -1093,6 +1093,8 @@ class Manager {
 	          ]
 	        ],
 
+			'file' => true,
+
 	        'user alias' => 'grade solution',
 
 	        'instructions' => 'Read the assignment instructions and enter '
