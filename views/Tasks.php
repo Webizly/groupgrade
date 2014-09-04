@@ -570,8 +570,15 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
   $task->save();
 
-  if (! $save)
+  if (! $save){
+  	if(isset($task->settings['file'])){
+  	  $file = $form_state['storage']['file'];
+	  $url = $file->uri;
+	  $url = str_replace('public://','sites/default/files/',$url);
+	  $task->task_file = $url;
+  	} 
     $task->complete();
+  }
   
   drupal_set_message(sprintf('%s %s', t('Problem'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'created.'));
 
@@ -594,14 +601,22 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
 
   $items = [];
 
-  if ($params['action'] == 'display')
+  if ($params['action'] == 'display'){
     $items['original problem'] = [
-      '#markup' => sprintf('<p><strong>%s:</strong></p><p>%s</p><hr />',
+      '#markup' => sprintf('<p><strong>%s:</strong></p><p>%s</p>',
         t('Original Problem'),
         nl2br($params['previous task']->data['problem'])
       )
     ];
-
+	
+	if(isset($params['previous task']->settings['file'])){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',url($params['previous task']->task_file),t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+  }
+  
   if (! $params['edit']) :
     $items['edited problem lb'] = [
       '#markup' => sprintf('<strong>%s:</strong>', t('Edited Problem')),
