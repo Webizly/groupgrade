@@ -1019,6 +1019,10 @@ function gg_task_dispute_form($form, &$form_state, $params)
     ->where('workflow_id', '=', $task->workflow_id)
     ->get();
 
+  $original_problem = Task::whereType('create problem')
+    ->where('workflow_id','=',$task->workflow_id)
+	->first();
+
   if (! $params['edit']) :
     $items[] = [
       '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
@@ -1057,10 +1061,16 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
   $a = new Accordion('dispute-'.$task->task_id);
 
+  $f = '';
+
+  if(isset($original_problem->settings['file'])){
+	  $f = sprintf('<br><a href="%s" style="font-weight:bold;">%s</a>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.'));
+	}
+
   // Problem for the Workflow
-  $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s</p>',
+  $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p>',
     t('Problem'),
-    nl2br($params['problem']->data['problem'])
+    nl2br($params['problem']->data['problem']),$f
   ), true);
 
   // Solution for the Workflow
@@ -2011,6 +2021,10 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
   $solution = $params['solution'];
   $task = $params['task'];
 
+  $original_problem = Task::whereType('create problem')
+    ->where('workflow_id','=',$task->workflow_id)
+	->first();
+
   // Previous Grades
   $grades = Task::where('workflow_id', '=', $task->workflow_id)
     ->whereType('grade solution')
@@ -2019,10 +2033,18 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
 
   $items = [];
   $items['problem'] = [
-    '#markup' => '<h4>Problem</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
+    '#markup' => '<h4>Problem</h4><p>'.nl2br($problem->data['problem']).'</p>',
   ];
+  
+  if(isset($original_problem->settings['file'])){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+  
   $items['solution'] = [
-    '#markup' => '<h4>Solution</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
+    '#markup' => '<hr><h4>Solution</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
 
   $items[] = [
