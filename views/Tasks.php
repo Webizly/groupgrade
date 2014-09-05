@@ -701,11 +701,23 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
   $problem = (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '';
   $items = [];
 
-  if ($params['action'] == 'display')
-    $items['original problem'] = [
-      '#markup' => '<p><strong>'.t('Problem').':</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
-    ];
+  $original_problem = Task::whereType('create problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
 
+  if ($params['action'] == 'display'){
+    $items['original problem'] = [
+      '#markup' => '<p><strong>'.t('Problem').':</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p>'
+    ];
+	
+	if(isset($original_problem->settings['file'])){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+	
+  }
   if (! $params['edit']) :
     $items['problem lb'] = [
       '#markup' => '<strong>'.t('Solution').':</strong>',
@@ -834,6 +846,10 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $solution = $params['solution'];
   $task = $params['task'];
 
+  $original_problem = Task::whereType('create problem')
+    ->where('workflow_id','=',$task->workflow_id)
+	->first();
+
   $items = [];
 
   // If we aren't editing anything, just viewing the task
@@ -864,10 +880,18 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   endif;
 
   $items['problem'] = [
-    '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
+    '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p>',
   ];
+  
+  if(isset($original_problem->settings['file'])){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+  
   $items['solution'] = [
-    '#markup' => '<h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
+    '#markup' => '<hr><h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
 
   $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
