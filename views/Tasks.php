@@ -1023,6 +1023,12 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
     '#markup' => '<hr><h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
   ];
 
+  if(isset($params['solution']->settings['file'])){
+  	$items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',$params['solution']->task_file,t('A file was uploaded with this solution. Click here to view it.')),
+	  ];
+  }
+
   $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
 
   if (isset($params['task']->settings['instructions']))
@@ -1159,6 +1165,10 @@ function gg_task_dispute_form($form, &$form_state, $params)
 		->first();
   }
 
+  $solution = Task::whereType('create solution')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
   if (! $params['edit']) :
     $items[] = [
       '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
@@ -1201,7 +1211,13 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
   if(isset($original_problem->settings['file'])){
 	  $f = sprintf('<br><a href="%s" style="font-weight:bold;">%s</a>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.'));
-	}
+  }
+  
+  $sf = '';
+
+  if(isset($solution->settings['file'])){
+	  $sf = sprintf('<br><a href="%s" style="font-weight:bold;">%s</a>',$solution->task_file,t('A file was uploaded with this solution. Click here to view it.'));
+  }
 
   // Problem for the Workflow
   $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p>',
@@ -1210,9 +1226,9 @@ function gg_task_dispute_form($form, &$form_state, $params)
   ), true);
 
   // Solution for the Workflow
-  $a->addGroup('Solution', 'solution-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s</p><hr />',
+  $a->addGroup('Solution', 'solution-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p><hr />',
     t('Solution'),
-    nl2br($params['solution']->data['solution'])
+    nl2br($params['solution']->data['solution']),$sf
   ), true);
 
   $graderCount = 1;
@@ -1530,10 +1546,20 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 		->first();
   }
 
+  $solution = Task::whereType('create solution')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
   $f = '';
 
   if(isset($original_problem->settings['file'])){
 	  $f = sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.'));
+  }
+
+  $sf = '';
+
+  if(isset($solution->settings['file'])){
+	  $sf = sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',$solution->task_file,t('A file was uploaded with this solution. Click here to view it.'));
   }
 
   $items = [];
@@ -1575,6 +1601,10 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   $items[] = [
     '#markup' => '<h4>'.t('Solution').':</h4>'
     .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
+  ];
+
+  $items[] = [
+    '#markup' => $sf
   ];
 
   $a = new Drupal\ClassLearning\Common\Accordion('resolve-dispute');
