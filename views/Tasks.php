@@ -500,8 +500,13 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
   ];
 
   if(isset($params['task']->settings['file'])){
+  	
+	$m = 'You are required to submit a file for this assignment. Please upload one below.';
+	if($params['task']->settings['file'] == 'optional')
+	  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below.';
+	
   	$items[] = array(
-  	  '#markup' => '<strong style="color:red;">You are required to submit a file for this assignment. Please upload one below.</strong>',
+  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
 	);
 	
 	$items['file'] = array(
@@ -523,8 +528,6 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
 }
 
 function gg_task_create_problem_form_validate($form, &$form_state) {
-	
-	drupal_set_message("Validated");
 	
 	$save = ($form_state['clicked_button']['#id'] == 'edit-save');
 	$task = $form_state['build_info']['args'][0]['task'];
@@ -552,7 +555,8 @@ function gg_task_create_problem_form_validate($form, &$form_state) {
 		}
 	}
 	else{
-		form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
+		if($task->settings['file'] == 'mandatory')
+		  form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
 	}
 }
 
@@ -626,6 +630,21 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
       '#markup' => nl2br($problem),
     ];
 
+	if(isset($params['task']->settings['file'])){
+		$m = 'You are required to submit a file for this assignment. Please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
+		if($params['task']->settings['file'] == 'optional')
+		  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
+		
+	  	$items[] = array(
+	  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
+		);
+		
+		$items['file'] = array(
+		  '#type' => 'file',
+		  '#title' => 'Please upload your file',
+		);
+	}
+
     $items['comment lb'] = [
       '#markup' => sprintf('<strong>%s:</strong>', t('Edited Comments')),
     ];
@@ -667,6 +686,40 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
   return $items;
 }
 
+function gg_task_edit_problem_form_validate($form, &$form_state) {
+	
+	
+	$save = ($form_state['clicked_button']['#id'] == 'edit-save');
+	$task = $form_state['build_info']['args'][0]['task'];
+	
+	if($save || !isset($task->settings['file'])){
+		//Don't even bother...
+		return;
+	}
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		
+		$file->status = 1;
+		file_save($file);
+		
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
+		}
+	}
+	else{
+		if($task->settings['file'] == 'mandatory')
+		  form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
+	}
+}
+
 /**
  * Callback submit function for class/task/%
  */
@@ -685,8 +738,15 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
   $task->save();
 
-  if (! $save)
+  if (! $save){
+  	if(isset($task->settings['file'])){
+  	  $file = $form_state['storage']['file'];
+	  $url = $file->uri;
+	  $url = str_replace('public://','sites/default/files/',$url);
+	  $task->task_file = $url;
+  	} 
     $task->complete();
+  }
   
   drupal_set_message(sprintf('Edited problem %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'completed.'));
 
@@ -1383,10 +1443,19 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     ->where('workflow_id', '=', $task->workflow_id)
     ->get();
 
+  $original_problem = Task::whereType('create problem')
+    ->where('workflow_id','=',$task->workflow_id)
+	->first();
+
+  $f = '';
+
+  if(isset($original_problem->settings['file'])){
+	  $f = sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.'));
+  }
+
   $items = [];
 
   if (! $params['edit']) :
-    
     
     $data = [];
     foreach ($grades[0]->data['grades'] as $field => $g){
@@ -1414,6 +1483,10 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   $items[] = [
     '#markup' => '<h4>'.t('Problem').':</h4>'
     .'<p>'.nl2br($params['problem']->data['problem']).'</p>'
+  ];
+
+  $items[] = [
+    '#markup' => $f
   ];
 
   $items[] = [

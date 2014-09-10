@@ -1093,7 +1093,7 @@ class Manager {
 	          ]
 	        ],
 
-			'file' => true,
+			'file' => 'mandatory',
 
 	        'user alias' => 'grade solution',
 
@@ -1108,6 +1108,8 @@ class Manager {
 	          'name' => 'instructor',
 	          'pull after' => false,
 	        ],
+
+			'file' => 'optional',
 
 	        'duration' => 2,
 
@@ -1137,6 +1139,8 @@ class Manager {
 	            'task status' => 'complete',
 	          ],
 	        ],
+
+			'file' => 'optional',
 
 	        'user alias' => 'dispute',
 
