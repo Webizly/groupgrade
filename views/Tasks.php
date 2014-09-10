@@ -761,9 +761,16 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
   $problem = (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '';
   $items = [];
 
-  $original_problem = Task::whereType('create problem')
+  $original_problem = Task::whereType('edit problem')
     ->where('workflow_id','=',$params['task']->workflow_id)
 	->first();
+
+  if(!isset($original_problem->settings['file'])){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
 
   if ($params['action'] == 'display'){
     $items['original problem'] = [
@@ -803,6 +810,21 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     '#default_value' => (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '',
   ];
 
+  if(isset($params['task']->settings['file'])){
+		$m = 'You are required to submit a file for this assignment. Please upload one below.';
+		if($params['task']->settings['file'] == 'optional')
+		  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below.';
+		
+	  	$items[] = array(
+	  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
+		);
+		
+		$items['file'] = array(
+		  '#type' => 'file',
+		  '#title' => 'Please upload your file',
+		);
+  }
+
   $items['save'] = [
     '#type' => 'submit',
     '#value' => 'Save Solution For Later',
@@ -812,6 +834,39 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     '#value' => 'Submit Solution',
   ];
   return $items;
+}
+
+function gg_task_create_solution_form_validate($form, &$form_state) {
+	
+	$save = ($form_state['clicked_button']['#id'] == 'edit-save');
+	$task = $form_state['build_info']['args'][0]['task'];
+	
+	if($save || !isset($task->settings['file'])){
+		//Don't even bother...
+		return;
+	}
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		
+		$file->status = 1;
+		file_save($file);
+		
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
+		}
+	}
+	else{
+		if($task->settings['file'] == 'mandatory')
+		  form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
+	}
 }
 
 /**
@@ -829,8 +884,15 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
     $task->save();
   
-  if (! $save)
+  if (! $save){
+  	if(isset($task->settings['file'])){
+  	  $file = $form_state['storage']['file'];
+	  $url = $file->uri;
+	  $url = str_replace('public://','sites/default/files/',$url);
+	  $task->task_file = $url;
+  	} 
     $task->complete();
+  }
   
   drupal_set_message(sprintf(t('Solution').' %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'completed.'));
   
@@ -906,9 +968,16 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $solution = $params['solution'];
   $task = $params['task'];
 
-  $original_problem = Task::whereType('create problem')
-    ->where('workflow_id','=',$task->workflow_id)
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
 	->first();
+
+  if(!isset($original_problem->settings['file'])){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
 
   $items = [];
 
@@ -1079,9 +1148,16 @@ function gg_task_dispute_form($form, &$form_state, $params)
     ->where('workflow_id', '=', $task->workflow_id)
     ->get();
 
-  $original_problem = Task::whereType('create problem')
-    ->where('workflow_id','=',$task->workflow_id)
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
 	->first();
+
+  if(!isset($original_problem->settings['file'])){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
 
   if (! $params['edit']) :
     $items[] = [
@@ -1443,9 +1519,16 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     ->where('workflow_id', '=', $task->workflow_id)
     ->get();
 
-  $original_problem = Task::whereType('create problem')
-    ->where('workflow_id','=',$task->workflow_id)
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
 	->first();
+
+  if(!isset($original_problem->settings['file'])){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
 
   $f = '';
 
@@ -2094,9 +2177,16 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
   $solution = $params['solution'];
   $task = $params['task'];
 
-  $original_problem = Task::whereType('create problem')
-    ->where('workflow_id','=',$task->workflow_id)
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
 	->first();
+
+  if(!isset($original_problem->settings['file'])){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
 
   // Previous Grades
   $grades = Task::where('workflow_id', '=', $task->workflow_id)
