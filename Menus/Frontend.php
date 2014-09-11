@@ -947,6 +947,7 @@ return array(
     'weight' => 5,
   ),
  
+ /*
  'class/instructor/%/assignment/%/view-reassign/reassign/%' => array(
    'type' => MENU_DEFAULT_LOCAL_TASK,
    'title' => 'Reassign Task',
@@ -960,5 +961,5 @@ return array(
    'access arguments' => array('instructor', 2),
    'access callback' => 'gg_has_role_in_section',
  ),
- 
+ */
 );

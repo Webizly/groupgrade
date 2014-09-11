@@ -29,7 +29,7 @@ class Modal{
 	public function build(){
 		return sprintf('
 		
-		<div class="modal fade" id="%s" tabindex="-1" role="dialog" aria-labelledby="MyModalLabel" aria-hidden="true">
+		<div class="modal hide fade" id="%s" tabindex="-1" role="dialog" aria-labelledby="MyModalLabel" aria-hidden="true">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
