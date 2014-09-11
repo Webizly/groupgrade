@@ -113,6 +113,12 @@ class Manager {
   {
     global $base_url;
 
+	$asec = $task->assignmentSection->first();
+	
+	//Don't even
+	if($asec->asec_id == 81 || $asec->asec_id == 90)
+	  return;
+
     // Nobody to notify
     if ($task->user_id == NULL) return;
 
