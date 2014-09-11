@@ -801,6 +801,303 @@ class Manager {
     ];
 }
 	
+	if($course->course_name == 'TA 101')
+	{
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => '<p><strong>With this homework, students write MatLab expressions to carry out calculations that are described with math expressions. To write correct MatLab expressions, students should use the legitimate MatLab operators and use MatLab built-in functions correctly. Students also need to pay attention to the precedence of the operations and use parentheses when necessary.</strong></p>'
+	        
+	        .' 
+				<ol>
+				<li>Build 10 algebraic expressions with constants, algebraic operations, and/or functions. Each expression should meet the following requirements.
+				<ul>
+				<li>It should have at least 5 and at most 8 constants.</li>
+				<li>The constants in it can be any real numbers, including pi and e.</li>
+				<li>The algebraic operations in it can be chosen from addition, subtraction, multiplication, division and exponentiation.</li>
+				<li>If it includes functions, the functions should be selected from sin, cos, tan, log (base 10 logarithm), and ln (natural logarithm).</li>
+				<li>It should be mathematically legitimate.</li>
+				</ul>
+				</li>
+				
+				<li>
+				Type in the expressions into a MS Word document using its equation editor. You may refer to this video (<a href = "https://www.youtube.com/watch?v=f4z2qhyiQuU">https://www.youtube.com/watch?v=f4z2qhyiQuU</a>) for an introduction on how to use equation editor in MS Word 2010.
+				</li>
+				
+				<li>
+				Index the expressions clearly in the document, and submit the Word document via CLASS.
+				</li>
+				
+				</ol>
+				
+				',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' => 'Rephrase the problem (if necessary) so it is '
+	          .'appropriate to the assignment and clear to the person solving '
+	          .'it. The solver and graders will only see your edited version, not '
+	          .'the original version. (Others not involved in solving or grading '
+	          .'will see both the original and edited versions.) You can also '
+	          .'leave a comment to explain any rephrasing.',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => '
+	        <p><strong>Use MatLab to evaluate the algebraic expressions.</strong></p>
+	        
+			<ol>
+			<li>Open the Word document for the assignment.</li>
+			<li>For each question (algebraic expression), write a MatLab expression in MatLab command window to calculate the value. When you finish, press enter and let MatLab evaluate the expression. If MatLab points out an error message, modify the expression to remove the error.</li>
+			<li>Copy the expression and the result, and paste into the Word document under the corresponding question. If you don’t have a MatLab, access a public computer on campus with your UCID and UCID password, or you may download and install MatLab on your own computer. MatLab can be downloaded via NJIT IST (<a href="http://ist.njit.edu/software/download.php">http://ist.njit.edu/software/download.php</a>). A 64-bit MatLab R2014a is preferred.</li>
+			<li>Verify your answer. This is an optional step. Use a calculator to evaluate the algebraic expression and compare the value with that obtained via MatLab. If the two values are not identical, go back and repeat step 2.</li>
+			<li>Submit the Word document when you finish.  The document should include a MatLab expression and a value for each question. All the questions and answers should be in black font color.</li>
+			</ol>
+	        ',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  'Factual_Accuracy' => [
+			    'max' => 40,
+			    'description' => 'Judge the factual accuracy of this response.',
+			    'grade' => 0,
+			    'justification' => '',
+			    'additional-instructions' => '
+			    <p><strong>A Level (score = 40):</strong> All of the factual information necessary for the answer is present, terms are defined correctly, and facts of the case or issue are accurately described.</p>
+
+				<p><strong>B Level (score = 34):</strong> Most of the factual information necessary for the answer is present. One or two terms may be left undefined or assumed to be understood by the reader. One or two facts of the case may be missing.</p>
+
+				<p><strong>C Level (score = 30):</strong> (any of the following) Some of the factual information is incorrect. Terms may be defined incorrectly or facts of the case are presented incorrectly. Details may be missing that are required for the reader to understand the proposed solution.</p>
+
+				<p><strong>D Level (score = 24):</strong> Most of the factual information is inaccurate or missing.</p>
+
+				<p><strong>F Level (score = 0):</strong> No attempt is made to explain the terms or situation that is being discussed.</p>
+			    ',
+			  ],
+			  
+			  'Philosophical_Accuracy' => [
+			    'max' => 40,
+			    'description' => 'Judge the philosophical accuracy of this response.',
+			    'grade' => 0,
+			    'justification' => '',
+			    'additional-instructions' => '
+			    <p><strong>A Level (score = 40):</strong> All of the philosophical concepts and problem solving techniques necessary for the answer are present, concepts are used correctly; and theories and techniques are accurately employed.</p>
+
+				<p><strong>B Level (score = 34):</strong> Most of the philosophical concepts and problem solving techniques necessary for the answer are present and, any of the following: concepts are used correctly with one or two minor errors; theories and techniques are employed with minor omissions.</p>
+
+				<p><strong>C Level (score = 30):</strong> Some of the philosophical concepts and problem solving techniques necessary for the answer are present. And, any of the following: concepts are used but not always correctly or not at all; theories and techniques are not employed or not correctly employed.</p>
+
+				<p><strong>D Level (score = 24):</strong> Most of the philosophical analysis is inaccurate or missing.</p>
+				
+				<p><strong>F Level (score = 0):</strong> No attempt is made to offer a philosophical analysis.</p>
+				',
+			  ],
+			  
+			  'Writing' => [
+			    'max' => 20,
+			    'description' => 'Judge how well the response is written.',
+			    'grade' => 0,
+			    'justification' => '',
+			    'additional-instructions' => '
+			    <p><strong>A Level (score = 20):</strong> No grammatical errors and at most 2 proof	reading errors, and paragraphs are significantly rich enough to	answer the question fully.</p>
+				
+				<p><strong>B Level (score = 17):</strong> Three or Four grammatical, spelling or proofreading errors, and paragraphs are organized and mostly stay on topic.</p>
+				
+				<p><strong>C Level (score = 15):</strong> Five to ten grammatical, spelling or proof reading errors, or the answer is divided into paragraphs but the paragraphs are not tightly focused and stray from the question’s topic.</p>
+				
+				<p><strong>D Level (score = 12):</strong> Many grammatical or spelling errors, or no paragraph development and no development of argumentation.</p>
+							
+				<p><strong>F Level (score = 0):</strong> The writing is incoherent to the point of not making sense.</p>
+				',
+			  ],
+			],
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '<p>For each question, check the result, and then examine the MatLab expression. If the result is correct, probably the MatLab expression is correct. Otherwise, there must be some mistakes in the MatLab expression. 
+Student earns credit with correct expressions. For each question, if the MatLab expression is correct, the student gets 10 points. The result does not need to be correct (it is a very rare case with correct expression). 
+Student cannot get any points (no partial credit), if the expression is not correct. Explain why the expression is not correct and point out the mistakes.</p>'
+	          
+	          .'<p>Evaluate these questions on three criteria:</p>
+	          <ul><li>Factual Accuracy (40 Points)</li>
+	          <li>Philosophical Accuracy (40 Points)</li>
+	          <li>Writing (20 Points)</li></ul>',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => 'Because the regular graders did not give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => 'You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.',
+	      ],
+	    ];
+	}
 	
 	if($course->course_name == ' PHIL 334')
 	{
