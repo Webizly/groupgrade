@@ -630,21 +630,6 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
       '#markup' => nl2br($problem),
     ];
 
-	if(isset($params['task']->settings['file'])){
-		$m = 'You are required to submit a file for this assignment. Please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
-		if($params['task']->settings['file'] == 'optional')
-		  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
-		
-	  	$items[] = array(
-	  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
-		);
-		
-		$items['file'] = array(
-		  '#type' => 'file',
-		  '#title' => 'Please upload your file',
-		);
-	}
-
     $items['comment lb'] = [
       '#markup' => sprintf('<strong>%s:</strong>', t('Edited Comments')),
     ];
@@ -667,6 +652,21 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     '#title' => 'Edited Problem',
     '#default_value' => $problem,
   ];
+
+  if(isset($params['task']->settings['file'])){
+		$m = 'You are required to submit a file for this assignment. Please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
+		if($params['task']->settings['file'] == 'optional')
+		  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
+		
+	  	$items[] = array(
+	  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
+		);
+		
+		$items['file'] = array(
+		  '#type' => 'file',
+		  '#title' => 'Please upload your file',
+		);
+	}
 
   $items['comment'] = [
     '#type' => 'textarea',
@@ -779,7 +779,7 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 	
 	if(isset($original_problem->settings['file'])){
 	  $items[] = [
-	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.')),
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',url($original_problem->task_file),t('A file was uploaded with this problem. Click here to view it.')),
 	  ];
 	  
 	}
@@ -1014,22 +1014,22 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   
   if(isset($original_problem->settings['file'])){
 	  $items[] = [
-	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',$original_problem->task_file,t('A file was uploaded with this problem. Click here to view it.')),
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',url($original_problem->task_file),t('A file was uploaded with this problem. Click here to view it.')),
 	  ];
 	  
 	}
   
   $items['solution'] = [
-    '#markup' => '<hr><h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
+    '#markup' => '<hr><h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p>',
   ];
 
   if(isset($params['solution']->settings['file'])){
   	$items[] = [
-	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',$params['solution']->task_file,t('A file was uploaded with this solution. Click here to view it.')),
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',url($params['solution']->task_file),t('A file was uploaded with this solution. Click here to view it.')),
 	  ];
   }
 
-  $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
+  $items[] = ['#markup' => sprintf('<hr><h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
 
   if (isset($params['task']->settings['instructions']))
     $items[] = [
