@@ -801,7 +801,7 @@ class Manager {
     ];
 }
 	
-	if($course->course_name == 'TA 101')
+	if($asec->assignment_id == 79)
 	{
 		return [
 	      'create problem' => [
@@ -814,15 +814,15 @@ class Manager {
 	
 	        'user alias' => 'grade solution',
 	
-	        'instructions' => '<p><strong>With this homework, students write MatLab expressions to carry out calculations that are described with math expressions. To write correct MatLab expressions, students should use the legitimate MatLab operators and use MatLab built-in functions correctly. Students also need to pay attention to the precedence of the operations and use parentheses when necessary.</strong></p>'
+	        'instructions' => '<p><strong>Create 10 algebraic expressions, but not use MatLab yet. <em>(Homework 1 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>'
 	        
 	        .' 
 				<ol>
-				<li>Build 10 algebraic expressions with constants, algebraic operations, and/or functions. Each expression should meet the following requirements.
+				<li>Build 10 algebraic expressions with constants, arithmetic operations, and/or functions. Each expression should meet the following requirements:
 				<ul>
 				<li>It should have at least 5 and at most 8 constants.</li>
 				<li>The constants in it can be any real numbers, including pi and e.</li>
-				<li>The algebraic operations in it can be chosen from addition, subtraction, multiplication, division and exponentiation.</li>
+				<li>The arithmetic operations in it can be chosen from addition, subtraction, multiplication, division and exponentiation.</li>
 				<li>If it includes functions, the functions should be selected from sin, cos, tan, log (base 10 logarithm), and ln (natural logarithm).</li>
 				<li>It should be mathematically legitimate.</li>
 				</ul>
@@ -833,7 +833,15 @@ class Manager {
 				</li>
 				
 				<li>
-				Index the expressions clearly in the document, and submit the Word document via CLASS.
+				Number the expressions clearly in the document from 1 to 10.
+				</li>
+				
+				<li>
+				Ensure your Word document is anonymous.
+				</li>
+				
+				<li>
+				Upload the document and then click submit.
 				</li>
 				
 				</ol>
@@ -858,12 +866,19 @@ class Manager {
 	        ],
 	
 	        'reference task' => 'create problem',
-	        'instructions' => 'Rephrase the problem (if necessary) so it is '
-	          .'appropriate to the assignment and clear to the person solving '
-	          .'it. The solver and graders will only see your edited version, not '
-	          .'the original version. (Others not involved in solving or grading '
-	          .'will see both the original and edited versions.) You can also '
-	          .'leave a comment to explain any rephrasing.',
+	        'instructions' => '
+	        <ol>
+	        
+			<li>
+	        Edit any of the algebraic instructions as necessary, upload the edited document here, and in the comments box below explain why you made changes. If no edits are necessary, type “Approved” in the comments box.
+	        </li>
+	        
+			<li>
+			Click on the submit button.
+			</li>
+			
+	        </ol>
+	        ',
 	      ],
 	
 	      'create solution' => [
@@ -880,14 +895,14 @@ class Manager {
 	
 	        'reference task' => 'edit problem',
 	        'instructions' => '
-	        <p><strong>Use MatLab to evaluate the algebraic expressions.</strong></p>
+	        <p><strong>Convert the algebraic expressions to MatLab expressions, and evaluate them in MatLab. To write correct MatLab expressions, you should use the legitimate MatLab operators and use MatLab built-in functions correctly. Pay attention to the precedence of the operations and use parentheses when necessary.<em>(Homework 1 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>
 	        
 			<ol>
-			<li>Open the Word document for the assignment.</li>
-			<li>For each question (algebraic expression), write a MatLab expression in MatLab command window to calculate the value. When you finish, press enter and let MatLab evaluate the expression. If MatLab points out an error message, modify the expression to remove the error.</li>
-			<li>Copy the expression and the result, and paste into the Word document under the corresponding question. If you don’t have a MatLab, access a public computer on campus with your UCID and UCID password, or you may download and install MatLab on your own computer. MatLab can be downloaded via NJIT IST (<a href="http://ist.njit.edu/software/download.php">http://ist.njit.edu/software/download.php</a>). A 64-bit MatLab R2014a is preferred.</li>
-			<li>Verify your answer. This is an optional step. Use a calculator to evaluate the algebraic expression and compare the value with that obtained via MatLab. If the two values are not identical, go back and repeat step 2.</li>
-			<li>Submit the Word document when you finish.  The document should include a MatLab expression and a value for each question. All the questions and answers should be in black font color.</li>
+			<li>For each of the 10 questions (algebraic expressions), write a MatLab expression in the MatLab command window to calculate the value. When you finish, press enter and let MatLab evaluate the expression. If MatLab produces an error message, modify the expression to remove the error.</li>
+			<li>Copy the expression and the result, and paste into the Word document under the corresponding question.</li>
+			<li>Verify your answer.</li>
+			<li>Confirm that this Word document is anonymous.</li>
+			<li>Upload the document and then click submit.</li>
 			</ol>
 	        ',
 	      ],
@@ -907,59 +922,76 @@ class Manager {
 	
 			// Just for grade solution tasks. How should this grade be set up?
 			'criteria' => [
-			  'Factual_Accuracy' => [
-			    'max' => 40,
-			    'description' => 'Judge the factual accuracy of this response.',
+			  'Question1' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 1.',
 			    'grade' => 0,
 			    'justification' => '',
-			    'additional-instructions' => '
-			    <p><strong>A Level (score = 40):</strong> All of the factual information necessary for the answer is present, terms are defined correctly, and facts of the case or issue are accurately described.</p>
-
-				<p><strong>B Level (score = 34):</strong> Most of the factual information necessary for the answer is present. One or two terms may be left undefined or assumed to be understood by the reader. One or two facts of the case may be missing.</p>
-
-				<p><strong>C Level (score = 30):</strong> (any of the following) Some of the factual information is incorrect. Terms may be defined incorrectly or facts of the case are presented incorrectly. Details may be missing that are required for the reader to understand the proposed solution.</p>
-
-				<p><strong>D Level (score = 24):</strong> Most of the factual information is inaccurate or missing.</p>
-
-				<p><strong>F Level (score = 0):</strong> No attempt is made to explain the terms or situation that is being discussed.</p>
-			    ',
 			  ],
 			  
-			  'Philosophical_Accuracy' => [
-			    'max' => 40,
-			    'description' => 'Judge the philosophical accuracy of this response.',
+			  'Question2' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 2.',
 			    'grade' => 0,
 			    'justification' => '',
-			    'additional-instructions' => '
-			    <p><strong>A Level (score = 40):</strong> All of the philosophical concepts and problem solving techniques necessary for the answer are present, concepts are used correctly; and theories and techniques are accurately employed.</p>
-
-				<p><strong>B Level (score = 34):</strong> Most of the philosophical concepts and problem solving techniques necessary for the answer are present and, any of the following: concepts are used correctly with one or two minor errors; theories and techniques are employed with minor omissions.</p>
-
-				<p><strong>C Level (score = 30):</strong> Some of the philosophical concepts and problem solving techniques necessary for the answer are present. And, any of the following: concepts are used but not always correctly or not at all; theories and techniques are not employed or not correctly employed.</p>
-
-				<p><strong>D Level (score = 24):</strong> Most of the philosophical analysis is inaccurate or missing.</p>
-				
-				<p><strong>F Level (score = 0):</strong> No attempt is made to offer a philosophical analysis.</p>
-				',
 			  ],
 			  
-			  'Writing' => [
-			    'max' => 20,
-			    'description' => 'Judge how well the response is written.',
+			  'Question3' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 3.',
 			    'grade' => 0,
 			    'justification' => '',
-			    'additional-instructions' => '
-			    <p><strong>A Level (score = 20):</strong> No grammatical errors and at most 2 proof	reading errors, and paragraphs are significantly rich enough to	answer the question fully.</p>
-				
-				<p><strong>B Level (score = 17):</strong> Three or Four grammatical, spelling or proofreading errors, and paragraphs are organized and mostly stay on topic.</p>
-				
-				<p><strong>C Level (score = 15):</strong> Five to ten grammatical, spelling or proof reading errors, or the answer is divided into paragraphs but the paragraphs are not tightly focused and stray from the question’s topic.</p>
-				
-				<p><strong>D Level (score = 12):</strong> Many grammatical or spelling errors, or no paragraph development and no development of argumentation.</p>
-							
-				<p><strong>F Level (score = 0):</strong> The writing is incoherent to the point of not making sense.</p>
-				',
 			  ],
+			  
+			  'Question4' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 4.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question5' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 5.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question6' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 6.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question7' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 7.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question8' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 8.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question9' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 9.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question10' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Question 10.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
 			],
 	
 	        'trigger' => [
@@ -971,14 +1003,78 @@ class Manager {
 	        ],
 	
 	        'reference task' => 'create solution',
-	        'instructions' => '<p>For each question, check the result, and then examine the MatLab expression. If the result is correct, probably the MatLab expression is correct. Otherwise, there must be some mistakes in the MatLab expression. 
-Student earns credit with correct expressions. For each question, if the MatLab expression is correct, the student gets 10 points. The result does not need to be correct (it is a very rare case with correct expression). 
-Student cannot get any points (no partial credit), if the expression is not correct. Explain why the expression is not correct and point out the mistakes.</p>'
-	          
-	          .'<p>Evaluate these questions on three criteria:</p>
-	          <ul><li>Factual Accuracy (40 Points)</li>
-	          <li>Philosophical Accuracy (40 Points)</li>
-	          <li>Writing (20 Points)</li></ul>',
+	        'instructions' => '
+	        
+			<p><strong>Confirm that each MatLab expression correctly represents the original algebraic expression.</strong></p>
+			<p><strong>Note that there can be several correct ways to convert an algebraic expression to MatLab. Each correct expression will produce the same result.</strong></p>
+			
+			<br><p>For each of the 10 questions:</p>
+			<ol>
+			
+			<li>
+			Carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression? If not, figure out the correct MatLab expression and use MatLab to get the result.
+			</li>
+			
+			<li>
+			Check the result, and then examine the MatLab expression. If the result is correct, probably the MatLab expression is valid. Otherwise, there must be some mistakes in the MatLab expression. If there are mistakes, figure out the correct MatLab expression and use MatLab to get the result.
+			</li>
+			
+			</ol>
+			
+			<br><p><strong>HOW TO GRADE</strong></p>
+			
+			<ol>
+			
+			<li>
+			If the solution is correct:
+				
+				<ul>
+				
+				<li>
+				Give the solution a grade of <strong>10</strong>.
+				</li>
+				
+				<li>
+				Write "OK" in the justification box.
+				</li>
+				
+				</ul>
+				
+			</li>
+			
+			<li>
+			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
+				
+				<ul>
+				
+				<li>
+				Give the solution a grade of <strong>0</strong>.
+				</li>
+				
+				<li>
+				In the justification box:
+				
+					<ul>
+					
+					<li>
+					Clearly explain what was wrong.
+					</li>
+					
+					<li>
+					Enter <em>both</em> the corrected MatLab expression and result.
+					</li>
+					
+					</ul>
+				
+				</li>
+				
+				</ul>
+				
+			</li>
+			
+			</ol>
+			
+	        '
 	      ],
 	
 	      // Resolve the grades
