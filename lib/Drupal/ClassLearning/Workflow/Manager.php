@@ -812,6 +812,8 @@ class Manager {
 	          ]
 	        ],
 	
+			'file' => 'mandatory',
+	
 	        'user alias' => 'grade solution',
 	
 	        'instructions' => '<p><strong>Create 10 algebraic expressions, but not use MatLab yet. <em>(Homework 1 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>'
@@ -829,7 +831,7 @@ class Manager {
 				</li>
 				
 				<li>
-				Type in the expressions into a MS Word document using its equation editor. You may refer to this video (<a href = "https://www.youtube.com/watch?v=f4z2qhyiQuU">https://www.youtube.com/watch?v=f4z2qhyiQuU</a>) for an introduction on how to use equation editor in MS Word 2010.
+				Type in the expressions into a MS Word document using its equation editor.
 				</li>
 				
 				<li>
@@ -865,6 +867,8 @@ class Manager {
 	          ],
 	        ],
 	
+			'file' => 'optional',
+	
 	        'reference task' => 'create problem',
 	        'instructions' => '
 	        <ol>
@@ -890,6 +894,8 @@ class Manager {
 	            'task status' => 'complete',
 	          ],
 	        ],
+	
+			'file' => 'mandatory',
 	
 	        'user alias' => 'dispute',
 	
