@@ -62,7 +62,7 @@ return array(
     // Permissions
     'access callback' => true,
   ),
-  
+  /*
   'filetest' => array(
     'title' => 'File Uploading!',
     'page callback' => 'drupal_get_form',
@@ -71,7 +71,7 @@ return array(
     'file' => 'Admin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
   ),
-
+*/
   // My Tasks/Classes/Assignment
   'class/reallocate' => array(
     'title' => 'CLASS Learning System',

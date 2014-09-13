@@ -178,7 +178,7 @@ class Manager {
           t('task assigned for'),
           $courseSectionSemester
         );
-		if($course->course_name == ' PHIL 334')
+		if($course->course_name == ' PHIL 334' || $course->course_name == 'CS 101')
 		{
 	        $body = sprintf('Hello,
 	
@@ -233,7 +233,7 @@ class Manager {
           t('for'),
           $courseSectionSemester
         );
-		if($course->course_name == ' PHIL 334')
+		if($course->course_name == ' PHIL 334' || $course->course_name == 'CS 101')
 		{
 			$body = sprintf('Hello,
 			
@@ -288,7 +288,7 @@ class Manager {
           t('for for'),
           $courseSectionSemester
         );
-		if($course->course_name == ' PHIL 334')
+		if($course->course_name == ' PHIL 334' || $course->course_name == 'CS 101')
 		{
 			$body = sprintf('Hello,
 			
@@ -801,7 +801,7 @@ class Manager {
     ];
 }
 	
-	if($asec->assignment_id == 79)
+	if($asec->assignment_id == 76) //76
 	{
 		return [
 	      'create problem' => [
@@ -813,6 +813,8 @@ class Manager {
 	        ],
 	
 			'file' => 'mandatory',
+	
+			'optional' => true,
 	
 	        'user alias' => 'grade solution',
 	
@@ -898,6 +900,8 @@ class Manager {
 			'file' => 'mandatory',
 	
 	        'user alias' => 'dispute',
+	
+			'optional' => true,
 	
 	        'reference task' => 'edit problem',
 	        'instructions' => '

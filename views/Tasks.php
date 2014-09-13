@@ -493,11 +493,20 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
 
-  $items['body'] = [
-    '#type' => 'textarea',
+  if(isset($params['task']->settings['optional'])){
+  	$items['body'] = [
+    '#type' => 'hidden',
     '#required' => true,
-    '#default_value' => (isset($params['task']->data['problem'])) ? $params['task']->data['problem'] : '',
+    '#value' => "(This problem was a file upload. Please open the file to view the problem.)",
   ];
+  }
+  else{
+	  $items['body'] = [
+	    '#type' => 'textarea',
+	    '#required' => true,
+	    '#default_value' => (isset($params['task']->data['problem'])) ? $params['task']->data['problem'] : '',
+	  ];
+  }
 
   if(isset($params['task']->settings['file'])){
   	
@@ -511,7 +520,7 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
 	
 	$items['file'] = array(
 	  '#type' => 'file',
-	  '#title' => 'Please upload your file',
+	  '#title' => 'Please upload your file before submitting.',
 	);
 	
   }
@@ -664,7 +673,7 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
 		
 		$items['file'] = array(
 		  '#type' => 'file',
-		  '#title' => 'Please upload your file',
+		  '#title' => 'Please upload your file before submitting.',
 		);
 	}
 
@@ -803,12 +812,21 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 
   $items[] = ['#markup' => sprintf('<p><strong>%s</strong></p>', t('Create Solution'))];
 
-  $items['body'] = [
-    '#type' => 'textarea',
+  if(isset($params['task']->settings['optional'])){
+  	$items['body'] = [
+    '#type' => 'hidden',
     '#required' => true,
-    '#default_value' => (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '',
+    '#value' => "(This solution was a file upload. Please open the file to view the solution.)",
   ];
-
+  }
+  else{
+	  $items['body'] = [
+	    '#type' => 'textarea',
+	    '#required' => true,
+	    '#default_value' => (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '',
+	  ];
+  }
+  
   if(isset($params['task']->settings['file'])){
 		$m = 'You are required to submit a file for this assignment. Please upload one below.';
 		if($params['task']->settings['file'] == 'optional')
@@ -820,7 +838,7 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 		
 		$items['file'] = array(
 		  '#type' => 'file',
-		  '#title' => 'Please upload your file',
+		  '#title' => 'Please upload your file before submitting.',
 		);
   }
 
