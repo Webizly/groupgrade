@@ -801,7 +801,7 @@ class Manager {
     ];
 }
 	
-	if($asec->assignment_id == 76) //76
+	if($asec->assignment_id == 80) //76 - 1
 	{
 		return [
 	      'create problem' => [
@@ -818,26 +818,33 @@ class Manager {
 	
 	        'user alias' => 'grade solution',
 	
-	        'instructions' => '<p><strong>Create 10 algebraic expressions, but not use MatLab yet. <em>(Homework 1 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>'
+	        'instructions' => '<p><strong>Create variable names and algebraic expressions as explained below, but do not use MatLab yet.<em>(Homework 2 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>'
 	        
 	        .' 
+			
 				<ol>
-				<li>Build 10 algebraic expressions with constants, arithmetic operations, and/or functions. Each expression should meet the following requirements:
+				<li><strong>Part 1:</strong> Create 5 variable names. Three names must be invalid MatLab variable names, and two names must be valid MatLab variable names. Each of the three invalid variable names must violate a different rule, e.g. starting with a digit, starting with an underscore, or having punctuation characters.</li>
+				
+				<li>Mix these up so the valid and invalid names match the example document\'s format on Moodle.</li>
+				
+				
+				
+				<li><strong>Part 2:</strong> Build 8 algebraic expressions with numbers, variables, algebraic operations, and/or functions. Each expression should meet the following requirements:
 				<ul>
-				<li>It should have at least 5 and at most 8 constants.</li>
-				<li>The constants in it can be any real numbers, including pi and e.</li>
-				<li>The arithmetic operations in it can be chosen from addition, subtraction, multiplication, division and exponentiation.</li>
+				<li>It should be at least 10 characters long.</li>
+				<li>The numbers must be single-digit integers.</li>
+				<li>The algebraic operations in it can be chosen from addition, subtraction, multiplication, division, exponentiation and absolute value.</li>
 				<li>If it includes functions, the functions should be selected from sin, cos, tan, log (base 10 logarithm), and ln (natural logarithm).</li>
 				<li>It should be mathematically legitimate.</li>
 				</ul>
 				</li>
 				
 				<li>
-				Type in the expressions into a MS Word document using its equation editor.
+				Type the expressions into a MS Word document using its equation editor.
 				</li>
 				
 				<li>
-				Number the expressions clearly in the document from 1 to 10.
+				Number these 6-13 as shown in the example\'s document format on Moodle.
 				</li>
 				
 				<li>
@@ -905,12 +912,11 @@ class Manager {
 	
 	        'reference task' => 'edit problem',
 	        'instructions' => '
-	        <p><strong>Convert the algebraic expressions to MatLab expressions, and evaluate them in MatLab. To write correct MatLab expressions, you should use the legitimate MatLab operators and use MatLab built-in functions correctly. Pay attention to the precedence of the operations and use parentheses when necessary.<em>(Homework 1 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>
+	        <p><strong>Create solutions to Part 1 and Part 2 following the template in the instructions on Moodle.<em>(Homework 2 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>
 	        
 			<ol>
-			<li>For each of the 10 questions (algebraic expressions), write a MatLab expression in the MatLab command window to calculate the value. When you finish, press enter and let MatLab evaluate the expression. If MatLab produces an error message, modify the expression to remove the error.</li>
-			<li>Copy the expression and the result, and paste into the Word document under the corresponding question.</li>
-			<li>Verify your answer.</li>
+			<li>For each question in part 1, determine whether the name is a valid or invalid MatLab variable name. <strong>If it is invalid, clearly explain why it is not valid.</strong></li>
+			<li>For each question in part 2, write the corresponding MatLab expression under each algebraic equation in the Word document. (If you want to use MatLab to evaluate the expression, you need to initialize the corresponding variables first (i.e. assign values to them) before you type in the expression and press ‘enter’.)</li>
 			<li>Confirm that this Word document is anonymous.</li>
 			<li>Upload the document and then click submit.</li>
 			</ol>
@@ -933,71 +939,92 @@ class Manager {
 			// Just for grade solution tasks. How should this grade be set up?
 			'criteria' => [
 			  'Question1' => [
-			    'max' => 10,
+			    'max' => 4,
 			    'description' => 'Provide a grade for Question 1.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question2' => [
-			    'max' => 10,
+			    'max' => 4,
 			    'description' => 'Provide a grade for Question 2.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question3' => [
-			    'max' => 10,
+			    'max' => 4,
 			    'description' => 'Provide a grade for Question 3.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question4' => [
-			    'max' => 10,
+			    'max' => 4,
 			    'description' => 'Provide a grade for Question 4.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question5' => [
-			    'max' => 10,
+			    'max' => 4,
 			    'description' => 'Provide a grade for Question 5.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question6' => [
-			    'max' => 10,
+			    'max' => 8,
 			    'description' => 'Provide a grade for Question 6.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question7' => [
-			    'max' => 10,
+			    'max' => 8,
 			    'description' => 'Provide a grade for Question 7.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question8' => [
-			    'max' => 10,
+			    'max' => 8,
 			    'description' => 'Provide a grade for Question 8.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question9' => [
-			    'max' => 10,
+			    'max' => 8,
 			    'description' => 'Provide a grade for Question 9.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
 			  
 			  'Question10' => [
-			    'max' => 10,
+			    'max' => 8,
 			    'description' => 'Provide a grade for Question 10.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question11' => [
+			    'max' => 8,
+			    'description' => 'Provide a grade for Question 11.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question12' => [
+			    'max' => 8,
+			    'description' => 'Provide a grade for Question 12.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question13' => [
+			    'max' => 8,
+			    'description' => 'Provide a grade for Question 13.',
 			    'grade' => 0,
 			    'justification' => '',
 			  ],
@@ -1015,74 +1042,50 @@ class Manager {
 	        'reference task' => 'create solution',
 	        'instructions' => '
 	        
-			<p><strong>Confirm that each MatLab expression correctly represents the original algebraic expression.</strong></p>
-			<p><strong>Note that there can be several correct ways to convert an algebraic expression to MatLab. Each correct expression will produce the same result.</strong></p>
+			<p><strong>Grade each solution in Part 1 and in Part 2. There is no partial credit.</strong></p>
 			
-			<br><p>For each of the 10 questions:</p>
-			<ol>
+			<br><p><strong>Part 1:</strong> For each variable name, check the answers:</p>
+			<ul>
 			
 			<li>
-			Carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression? If not, figure out the correct MatLab expression and use MatLab to get the result.
+			For a valid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is valid. (The solution does not need to explain why the name is valid.)</li>
+				<li>Give 0 points if the solution states that the name is invalid.</li>
+				</ul>
 			</li>
 			
 			<li>
-			Check the result, and then examine the MatLab expression. If the result is correct, probably the MatLab expression is valid. Otherwise, there must be some mistakes in the MatLab expression. If there are mistakes, figure out the correct MatLab expression and use MatLab to get the result.
+			For an invalid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is invalid, AND explains the correct reason why it is invalid.</li>
+				<li>Give 2 points if the solution states that the name is invalid, but the correct reason is not given.</li>
+				<li>Give 0 points if the solution states that the name is valid.</li>
+				</ul>
 			</li>
 			
-			</ol>
+			</ul>
 			
-			<br><p><strong>HOW TO GRADE</strong></p>
-			
-			<ol>
+			<br><p><strong>Part 2:</strong> For each expression, carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression?</p>
+			<ul>
 			
 			<li>
 			If the solution is correct:
-				
 				<ul>
-				
-				<li>
-				Give the solution a grade of <strong>10</strong>.
-				</li>
-				
-				<li>
-				Write "OK" in the justification box.
-				</li>
-				
+				<li>Give 8 points.</li>
+				<li>State OK in the justification box.</li>
 				</ul>
-				
 			</li>
 			
 			<li>
 			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
-				
 				<ul>
-				
-				<li>
-				Give the solution a grade of <strong>0</strong>.
-				</li>
-				
-				<li>
-				In the justification box:
-				
-					<ul>
-					
-					<li>
-					Clearly explain what was wrong.
-					</li>
-					
-					<li>
-					Enter <em>both</em> the corrected MatLab expression and result.
-					</li>
-					
-					</ul>
-				
-				</li>
-				
+				<li>Give 0 points.</li>
+				<li>In the justification box, clearly explain what was wrong and give a correct MatLab expression.</li>
 				</ul>
-				
 			</li>
 			
-			</ol>
+			</ul>
 			
 	        '
 	      ],
@@ -1150,10 +1153,62 @@ class Manager {
 	        ],
 	
 	        'reference task' => 'create solution',
-	        'instructions' => 'Because the regular graders did not give the same '
+	        'instructions' => '<strong>Because the regular graders did not give the same '
 	          .'grade, please resolve the grade disagreement. Assign your '
 	          .'own score and justification for each part of the grade, and afterwards '
-	          .'summarize why you resolved it this way.',
+	          .'summarize why you resolved it this way.</strong><br>'
+	          
+	          .
+	          
+			  '
+	        
+			<p><strong>Grade each solution in Part 1 and in Part 2. There is no partial credit.</strong></p>
+			
+			<br><p><strong>Part 1:</strong> For each variable name, check the answers:</p>
+			<ul>
+			
+			<li>
+			For a valid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is valid. (The solution does not need to explain why the name is valid.)</li>
+				<li>Give 0 points if the solution states that the name is invalid.</li>
+				</ul>
+			</li>
+			
+			<li>
+			For an invalid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is invalid, AND explains the correct reason why it is invalid.</li>
+				<li>Give 2 points if the solution states that the name is invalid, but the correct reason is not given.</li>
+				<li>Give 0 points if the solution states that the name is valid.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+			<br><p><strong>Part 2:</strong> For each expression, carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression?</p>
+			<ul>
+			
+			<li>
+			If the solution is correct:
+				<ul>
+				<li>Give 8 points.</li>
+				<li>State OK in the justification box.</li>
+				</ul>
+			</li>
+			
+			<li>
+			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
+				<ul>
+				<li>Give 0 points.</li>
+				<li>In the justification box, clearly explain what was wrong and give a correct MatLab expression.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+	        '
+	          ,
 	      ],
 	
 	      // Dispute grades
@@ -1173,10 +1228,62 @@ class Manager {
 	          ],
 	        ],
 	
-	        'instructions' => 'You have the option to dispute your grade. To do '
+	        'instructions' => '<strong>You have the option to dispute your grade. To do '
 	          .'so, you need to fully grade your own solution. Assign your own '
 	          .'score and justification for each part of the grade. You must also '
-	          .'explain why the other graders were wrong.',
+	          .'explain why the other graders were wrong.</strong><br>'
+	          
+	          .
+	          
+			  '
+	        
+			<p><strong>Grade each solution in Part 1 and in Part 2. There is no partial credit.</strong></p>
+			
+			<br><p><strong>Part 1:</strong> For each variable name, check the answers:</p>
+			<ul>
+			
+			<li>
+			For a valid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is valid. (The solution does not need to explain why the name is valid.)</li>
+				<li>Give 0 points if the solution states that the name is invalid.</li>
+				</ul>
+			</li>
+			
+			<li>
+			For an invalid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is invalid, AND explains the correct reason why it is invalid.</li>
+				<li>Give 2 points if the solution states that the name is invalid, but the correct reason is not given.</li>
+				<li>Give 0 points if the solution states that the name is valid.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+			<br><p><strong>Part 2:</strong> For each expression, carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression?</p>
+			<ul>
+			
+			<li>
+			If the solution is correct:
+				<ul>
+				<li>Give 8 points.</li>
+				<li>State OK in the justification box.</li>
+				</ul>
+			</li>
+			
+			<li>
+			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
+				<ul>
+				<li>Give 0 points.</li>
+				<li>In the justification box, clearly explain what was wrong and give a correct MatLab expression.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+	        '
+	          ,
 	      ],
 	
 	      // Resolve a dispute and end the workflow
@@ -1197,10 +1304,62 @@ class Manager {
 	          ],
 	        ],
 	
-	        'instructions' => 'The problem solver is disputing his or her grade. '
+	        'instructions' => '<strong>The problem solver is disputing his or her grade. '
 	          .'You need to provide the final grade. Assign a final score with '
 	          .'justification for each part of the grade, and also please provide '
-	          .'an explanation.',
+	          .'an explanation.</strong><br>'
+	          
+	          .
+	          
+			  '
+	        
+			<p><strong>Grade each solution in Part 1 and in Part 2. There is no partial credit.</strong></p>
+			
+			<br><p><strong>Part 1:</strong> For each variable name, check the answers:</p>
+			<ul>
+			
+			<li>
+			For a valid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is valid. (The solution does not need to explain why the name is valid.)</li>
+				<li>Give 0 points if the solution states that the name is invalid.</li>
+				</ul>
+			</li>
+			
+			<li>
+			For an invalid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is invalid, AND explains the correct reason why it is invalid.</li>
+				<li>Give 2 points if the solution states that the name is invalid, but the correct reason is not given.</li>
+				<li>Give 0 points if the solution states that the name is valid.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+			<br><p><strong>Part 2:</strong> For each expression, carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression?</p>
+			<ul>
+			
+			<li>
+			If the solution is correct:
+				<ul>
+				<li>Give 8 points.</li>
+				<li>State OK in the justification box.</li>
+				</ul>
+			</li>
+			
+			<li>
+			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
+				<ul>
+				<li>Give 0 points.</li>
+				<li>In the justification box, clearly explain what was wrong and give a correct MatLab expression.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+	        '
+	          ,
 	      ],
 	    ];
 	}
@@ -1304,15 +1463,15 @@ class Manager {
 			    'grade' => 0,
 			    'justification' => '',
 			    'additional-instructions' => '
-			    <p><strong>A Level (score = 40):</strong> All of the factual information necessary for the answer is present, terms are defined correctly, and facts of the case or issue are accurately described.</p>
+			    <p><strong>40 points (equivalent to an A):</strong> All of the factual information necessary for the answer is present, terms are defined correctly, and facts of the case or issue are accurately described.</p>
 
-				<p><strong>B Level (score = 34):</strong> Most of the factual information necessary for the answer is present. One or two terms may be left undefined or assumed to be understood by the reader. One or two facts of the case may be missing.</p>
+				<p><strong>35 points (equivalent to a B):</strong> Most of the factual information necessary for the answer is present. One or two terms may be left undefined or assumed to be understood by the reader. One or two facts of the case may be missing.</p>
 
-				<p><strong>C Level (score = 30):</strong> (any of the following) Some of the factual information is incorrect. Terms may be defined incorrectly or facts of the case are presented incorrectly. Details may be missing that are required for the reader to understand the proposed solution.</p>
+				<p><strong>30 points (equivalent to a C):</strong> (any of the following) Some of the factual information is incorrect. Terms may be defined incorrectly or facts of the case are presented incorrectly. Details may be missing that are required for the reader to understand the proposed solution.</p>
 
-				<p><strong>D Level (score = 24):</strong> Most of the factual information is inaccurate or missing.</p>
+				<p><strong>25 points (equivalent to a D):</strong> Most of the factual information is inaccurate or missing.</p>
 
-				<p><strong>F Level (score = 0):</strong> No attempt is made to explain the terms or situation that is being discussed.</p>
+				<p><strong>0 points (equivalent to an F):</strong> No attempt is made to explain the terms or situation that is being discussed.</p>
 			    ',
 			  ],
 			  
@@ -1322,15 +1481,15 @@ class Manager {
 			    'grade' => 0,
 			    'justification' => '',
 			    'additional-instructions' => '
-			    <p><strong>A Level (score = 40):</strong> All of the philosophical concepts and problem solving techniques necessary for the answer are present, concepts are used correctly; and theories and techniques are accurately employed.</p>
+			    <p><strong>40 points (equivalent to an A):</strong> All of the philosophical concepts and problem solving techniques necessary for the answer are present, concepts are used correctly; and theories and techniques are accurately employed.</p>
 
-				<p><strong>B Level (score = 34):</strong> Most of the philosophical concepts and problem solving techniques necessary for the answer are present and, any of the following: concepts are used correctly with one or two minor errors; theories and techniques are employed with minor omissions.</p>
+				<p><strong>35 points (equivalent to a B):</strong> Most of the philosophical concepts and problem solving techniques necessary for the answer are present and, any of the following: concepts are used correctly with one or two minor errors; theories and techniques are employed with minor omissions.</p>
 
-				<p><strong>C Level (score = 30):</strong> Some of the philosophical concepts and problem solving techniques necessary for the answer are present. And, any of the following: concepts are used but not always correctly or not at all; theories and techniques are not employed or not correctly employed.</p>
+				<p><strong>30 points (equivalent to a C):</strong> Some of the philosophical concepts and problem solving techniques necessary for the answer are present. And, any of the following: concepts are used but not always correctly or not at all; theories and techniques are not employed or not correctly employed.</p>
 
-				<p><strong>D Level (score = 24):</strong> Most of the philosophical analysis is inaccurate or missing.</p>
+				<p><strong>25 points (equivalent to a D):</strong> Most of the philosophical analysis is inaccurate or missing.</p>
 				
-				<p><strong>F Level (score = 0):</strong> No attempt is made to offer a philosophical analysis.</p>
+				<p><strong>0 points (equivalent to an F):</strong> No attempt is made to offer a philosophical analysis.</p>
 				',
 			  ],
 			  
@@ -1340,15 +1499,15 @@ class Manager {
 			    'grade' => 0,
 			    'justification' => '',
 			    'additional-instructions' => '
-			    <p><strong>A Level (score = 20):</strong> No grammatical errors and at most 2 proof	reading errors, and paragraphs are significantly rich enough to	answer the question fully.</p>
+			    <p><strong>20 points (equivalent to an A):</strong> No grammatical errors and at most 2 proof	reading errors, and paragraphs are significantly rich enough to	answer the question fully.</p>
 				
-				<p><strong>B Level (score = 17):</strong> Three or Four grammatical, spelling or proofreading errors, and paragraphs are organized and mostly stay on topic.</p>
+				<p><strong>17 points (equivalent to a B):</strong> Three or Four grammatical, spelling or proofreading errors, and paragraphs are organized and mostly stay on topic.</p>
 				
-				<p><strong>C Level (score = 15):</strong> Five to ten grammatical, spelling or proof reading errors, or the answer is divided into paragraphs but the paragraphs are not tightly focused and stray from the question’s topic.</p>
+				<p><strong>15 points (equivalent to a C):</strong> Five to ten grammatical, spelling or proof reading errors, or the answer is divided into paragraphs but the paragraphs are not tightly focused and stray from the question’s topic.</p>
 				
-				<p><strong>D Level (score = 12):</strong> Many grammatical or spelling errors, or no paragraph development and no development of argumentation.</p>
+				<p><strong>12 points (equivalent to a D):</strong> Many grammatical or spelling errors, or no paragraph development and no development of argumentation.</p>
 							
-				<p><strong>F Level (score = 0):</strong> The writing is incoherent to the point of not making sense.</p>
+				<p><strong>0 points (equivalent to an F):</strong> The writing is incoherent to the point of not making sense.</p>
 				',
 			  ],
 			],
