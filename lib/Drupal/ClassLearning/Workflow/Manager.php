@@ -801,7 +801,7 @@ class Manager {
     ];
 }
 	
-	if($asec->assignment_id == 80) //76 - 1
+	if($asec->assignment_id == 77) //76 - 1
 	{
 		return [
 	      'create problem' => [
