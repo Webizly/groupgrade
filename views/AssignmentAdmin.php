@@ -1305,7 +1305,7 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 	  			$return .= "<th>" . $head . "</th>";
 	  		}
 			
-			continue;
+			//continue;
 		}
 		
 	  	$return .= "<tr>";
