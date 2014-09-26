@@ -1820,7 +1820,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
     $params['workflow']->setData('grade', $gradeSum);
     $params['workflow']->save();
     
-	$class_task_id = $task->task_id;
+  $class_task_id = $task->task_id;
   #drupal_set_message($class_task_id);
   
   //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
