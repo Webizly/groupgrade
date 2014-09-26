@@ -1364,6 +1364,546 @@ class Manager {
 	    ];
 	}
 	
+	//HOMEWORK 3
+	if($asec->assignment_id == 77)
+	{
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+	
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => '<p><strong>Part 1: Come up with FIVE (5) arrays as explained below, but do not use MatLab yet. <em>Homework 3 instructions on Moodle provide details for each step and examples. The following is just a summary</em></strong></p>'
+	        
+	        .' 
+			
+				<ol>
+				<li>The arrays should meet the following requirements:
+				
+				<ul>
+					<li>The elements must be real numbers (integers or decimals).</li>
+					<li>Each array must have at least 5 elements (numbers) and at most 20 elements.</li>
+					<li>Arrays #1-3 are one-dimensional. Arrays #4 and #5 are two-dimensional.</li>
+					<li>Each array must have:
+						<ul>
+							<li>At least three consecutive elements whose values are evenly spaced.</li>
+							<li>Other elements: The other elements can continue this consecutive spacing. Alternatively in more challenging problems, the other elements do not need to be consecutive with these elements, and may have different spacing or have no even spacing. <em>(See the examples in the “Solving Problems” section.)</em></li>
+						</ul>
+					</li>
+					<li>Each of the 5 arrays must use different steps for the evenly spaced elements. Make sure that the steps you choose include 1, positive steps, and negative steps.</li>
+				</ul>
+				
+				</li>
+				
+				<li>List the elements of the arrays in a MS Word document. If the array is two-dimensional, use the equation editor.</li>
+				
+				<li>Clearly number the one-dimensional arrays in the document from 1 to 3, and the two-dimensional arrays from 4 to 5. Use the example document format on Moodle.</li>
+				
+				<li>Ensure your Word document is anonymous by removing personal information from the document, including the title, content and properties.</li>
+				
+				<li>Follow the Homework 3 link in Moodle, upload the document and then click submit.</li>
+				
+				</ol>
+				
+				',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+			'file' => 'optional',
+	
+	        'reference task' => 'create problem',
+	        'instructions' => '
+	        <ol>
+	        
+			<li>
+	        Edit any of the algebraic instructions as necessary, upload the edited document here, and in the comments box below explain why you made changes. If no edits are necessary, type “Approved” in the comments box.
+	        </li>
+	        
+			<li>
+			Click on the submit button.
+			</li>
+			
+	        </ol>
+	        ',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+			'file' => 'mandatory',
+	
+	        'user alias' => 'dispute',
+	
+			'optional' => true,
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => '
+	        <p><strong>Create solutions following the template in the instructions on Moodle. <em>(Homework 3 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></strong></p>
+	        
+			<ol>
+			<li>For each problem, you need to create two different MatLab commands, both of which can generate the array described in the problem
+			
+			<ul>
+				<li>One command only uses shortcut expression(s) to generate all consecutive evenly spaced elements. It cannot use linspace function calls.</li>
+				<li>The other only uses linspace function call(s) to generate those elements. It cannot use shortcut expressions.</li>
+				<li>For any other single, non-evenly spaced elements, which cannot be generated with shortcut expressions or linspace function calls, you may list them in the command.</li>
+			</ul>
+			</li>
+			
+			<li>For each problem, execute each of your commands in MatLab to check them. Copy the commands from MatLab’s command window and paste them into a MS Word document under the corresponding problem.</li>
+			
+			<li>Confirm that this Word document is anonymous.</li>
+			
+			<li>Upload the document and then click submit.</li>
+			
+			</ol>
+	        ',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  'Problem1-Shortcut_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 1 - Shortcut Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem1-Linspace_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 1 - Linspace Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem2-Shortcut_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 2 - Shortcut Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem2-Linspace_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 2 - Linspace Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem3-Shortcut_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 3 - Shortcut Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem3-Linspace_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 3 - Linspace Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem4-Shortcut_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 4 - Shortcut Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem4-Linspace_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 4 - Linspace Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem5-Shortcut_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 5 - Shortcut Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Problem5-Linspace_Expression' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade for Problem 5 - Linspace Expression.',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			],
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '
+	        
+			<p><strong>Confirm that each MatLab command correctly generates the array listed in each problem.</strong></p>
+			
+			<br>
+			
+			<ol>
+				<li>For each solution, check both MatLab commands:
+					<ul>
+						<li><strong>Shortcut Expressions:</strong> In MatLab, type in and execute the MatLab command with <em>shortcut expression(s)</em>, and then compare the array generated by the command against the array in the problem.
+						
+							<ul>
+								<li>If the array is identical to the array in the problem, give a score of 10 AND in the justification box, write OK.</li>
+								<li>If the MatLab command does not generate that array, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give the corrected MatLab command.</em>
+							</ul>
+						
+						</li>
+						
+						<li>
+							<strong>Linspace function calls:</strong> In MatLab, type in and execute the MatLab command with <em>linspace function call(s)</em>, and then compare the array generated by the command against the array in the problem.
+						
+							<ul>
+								<li>If the array is identical to the array in the problem, give a score of 10 AND in the justification box, write OK.</li>
+								<li>If the MatLab command does not generate that array, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give the corrected MatLab command.</em></li>
+							</ul>
+							
+						</li>
+						
+						<li>
+							<strong>Duplicates: </strong>If If there are two correct MatLab commands that both use shortcut expressions OR there are two correct MatLab commands that both use linspace function call(s), you will only give a score of 10 to one, and a score of 0 to the other. <em>Explain why in the justification box</em>.
+						</li>
+						
+						<li>
+							There is no other partial credit. Each solution gets a score of 20, 10, or 0.
+						</li>
+						
+					</ul>
+				</li>
+			</ol>
+			
+	        '
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '<strong>Because the regular graders did not give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.</strong><br>'
+	          
+	          .
+	          
+			  '
+	        
+			<p><strong>Grade each solution in Part 1 and in Part 2. There is no partial credit.</strong></p>
+			
+			<br><p><strong>Part 1:</strong> For each variable name, check the answers:</p>
+			<ul>
+			
+			<li>
+			For a valid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is valid. (The solution does not need to explain why the name is valid.)</li>
+				<li>Give 0 points if the solution states that the name is invalid.</li>
+				</ul>
+			</li>
+			
+			<li>
+			For an invalid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is invalid, AND explains the correct reason why it is invalid.</li>
+				<li>Give 2 points if the solution states that the name is invalid, but the correct reason is not given.</li>
+				<li>Give 0 points if the solution states that the name is valid.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+			<br><p><strong>Part 2:</strong> For each expression, carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression?</p>
+			<ul>
+			
+			<li>
+			If the solution is correct:
+				<ul>
+				<li>Give 8 points.</li>
+				<li>State OK in the justification box.</li>
+				</ul>
+			</li>
+			
+			<li>
+			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
+				<ul>
+				<li>Give 0 points.</li>
+				<li>In the justification box, clearly explain what was wrong and give a correct MatLab expression.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+	        '
+	          ,
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => '<strong>You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.</strong><br>'
+	          
+	          .
+	          
+			  '
+	        
+			<p><strong>Grade each solution in Part 1 and in Part 2. There is no partial credit.</strong></p>
+			
+			<br><p><strong>Part 1:</strong> For each variable name, check the answers:</p>
+			<ul>
+			
+			<li>
+			For a valid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is valid. (The solution does not need to explain why the name is valid.)</li>
+				<li>Give 0 points if the solution states that the name is invalid.</li>
+				</ul>
+			</li>
+			
+			<li>
+			For an invalid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is invalid, AND explains the correct reason why it is invalid.</li>
+				<li>Give 2 points if the solution states that the name is invalid, but the correct reason is not given.</li>
+				<li>Give 0 points if the solution states that the name is valid.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+			<br><p><strong>Part 2:</strong> For each expression, carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression?</p>
+			<ul>
+			
+			<li>
+			If the solution is correct:
+				<ul>
+				<li>Give 8 points.</li>
+				<li>State OK in the justification box.</li>
+				</ul>
+			</li>
+			
+			<li>
+			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
+				<ul>
+				<li>Give 0 points.</li>
+				<li>In the justification box, clearly explain what was wrong and give a correct MatLab expression.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+	        '
+	          ,
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => '<strong>The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.</strong><br>'
+	          
+	          .
+	          
+			  '
+	        
+			<p><strong>Grade each solution in Part 1 and in Part 2. There is no partial credit.</strong></p>
+			
+			<br><p><strong>Part 1:</strong> For each variable name, check the answers:</p>
+			<ul>
+			
+			<li>
+			For a valid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is valid. (The solution does not need to explain why the name is valid.)</li>
+				<li>Give 0 points if the solution states that the name is invalid.</li>
+				</ul>
+			</li>
+			
+			<li>
+			For an invalid MatLab variable name:
+				<ul>
+				<li>Give 4 points if the solution states that the name is invalid, AND explains the correct reason why it is invalid.</li>
+				<li>Give 2 points if the solution states that the name is invalid, but the correct reason is not given.</li>
+				<li>Give 0 points if the solution states that the name is valid.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+			<br><p><strong>Part 2:</strong> For each expression, carefully compare the MatLab expression with the original algebraic expression. Does the MatLab expression correctly represent the original algebraic expression?</p>
+			<ul>
+			
+			<li>
+			If the solution is correct:
+				<ul>
+				<li>Give 8 points.</li>
+				<li>State OK in the justification box.</li>
+				</ul>
+			</li>
+			
+			<li>
+			If the MatLab expression does not match the original algebraic expression OR is otherwise incorrect:
+				<ul>
+				<li>Give 0 points.</li>
+				<li>In the justification box, clearly explain what was wrong and give a correct MatLab expression.</li>
+				</ul>
+			</li>
+			
+			</ul>
+			
+	        '
+	          ,
+	      ],
+	    ];
+	}
+	
 	if($course->course_name == ' PHIL 334')
 	{
 		return [
