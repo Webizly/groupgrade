@@ -11,7 +11,18 @@ return array(
     // Permissions
     'access callback' => 'groupgrade_baseaccess',
   ),
-
+/*
+  'csvsecret' => array(
+    'title' => 'CLASS Learning System',
+    'page callback' => 'get_csv',
+    //'page arguments' => array('groupgrade_tasks_dashboard'),
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access arguments' => array('access administration pages'),
+  ),
+*/
   'home' => array(
     'page callback' => 'groupgrade_home',
     //'page arguments' => array('groupgrade_tasks_dashboard'),

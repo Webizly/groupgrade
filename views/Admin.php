@@ -1,7 +1,9 @@
 <?php
 
-use Drupal\ClassLearning\Common\Modal;
-
+use Drupal\ClassLearning\Common\Modal,
+Drupal\ClassLearning\Models\WorkflowTask as Task,
+  Drupal\ClassLearning\Models\Workflow;
+  
 function groupgrade_home(){
 	return '
   <head>
@@ -532,3 +534,91 @@ function file_test_form_submit($form, &$form_state){
 	
 	return drupal_set_message(sprintf("<a href='%s'>%s</a>",url('sites/default/files/CLASS/' . $file->filename),$file->uri));
 }
+
+function get_csv(){
+	
+	//Get every workflow from 1488 to 1541
+	$workflows = Workflow::where('workflow_id','>',1583)
+	  ->where('workflow_id','<',1638)
+	  ->get();
+	
+	$headers = array(
+	'Question No.',
+	'Problem Creator',
+	'Solution Creator',
+	'Grader 1',
+	'Grade 1',
+	'Grader 2',
+	'Grade 2',
+	'Disputer',
+	'Dispute Grade',
+	'Instructor Resolved Grade',
+	'Final Grade',
+	);
+	
+	$fp = fopen('sites/default/files/file2.csv','w');
+	
+	fputcsv($fp,$headers);
+	
+	foreach($workflows as $wf){
+		
+		$tasks = Task::where('workflow_id','=',$wf->workflow_id)
+		  ->get();
+		  
+		$csv_entry = array(
+			$wf->workflow_id,
+		);
+		
+		foreach($tasks as $t){
+			
+			switch($t->type){
+				case 'create problem':
+					$csv_entry[] = $t->user_id;
+					break;
+				case 'create solution':
+					$csv_entry[] = $t->user_id;
+					break;
+				case 'grade solution':
+					$csv_entry[] = $t->user_id;
+					$csv_entry[] = $t->data['grades']['Factual_Accuracy']['grade'] + $t->data['grades']['Philosophical_Accuracy']['grade'] + $t->data['grades']['Writing']['grade'];
+					break;
+				case 'dispute':
+					$csv_entry[] = $t->user_id;
+					if(isset($t->data['value'])){
+						if($t->data['value'] == true){
+							$csv_entry[] = $t->data['proposed-Factual_Accuracy-grade'] + $t->data['proposed-Philosophical_Accuracy-grade'] + $t->data['proposed-Writing-grade'];
+						}
+						else
+							$csv_entry[] = 'No Dispute';
+					}
+					else {
+						$csv_entry[] = 'No Dispute';
+					}
+					break;
+				case 'resolve dispute':
+					if(isset($t->data['Factual_Accuracy-grade'])){
+						$csv_entry[] = $t->data['Factual_Accuracy-grade'] + $t->data['Philosophical_Accuracy-grade'] + $t->data['Writing-grade'];
+					}
+					else
+						$csv_entry[] = 'No resolution';
+					break;
+			}
+			
+		}
+
+		if(isset($wf->data['grade']))
+			$csv_entry[] = $wf->data['grade'];
+			else
+			$csv_entry[] = 'No grade';
+			
+		fputcsv($fp,$csv_entry);
+		$csv_entry = null;
+		
+	}  
+	 
+	 
+	fclose($fp);
+	 
+	return '???';
+}
+
