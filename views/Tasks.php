@@ -2093,8 +2093,8 @@ function gg_view_workflow($workflow_id, $admin = false)
   $graderCount = 0;
   if (count($tasks) > 0) :
 	
-	$manualForm = drupal_get_form('gg_manual_reassign', $section, $students);
-    $return .= drupal_render($manualForm);
+	//$manualForm = drupal_get_form('gg_manual_reassign', $section, $students);
+    //$return .= drupal_render($manualForm);
 	
 	foreach ($tasks as $task) :
     if (! $admin AND $task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])

@@ -878,7 +878,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
   $asec->delete();
 
   drupal_set_message(t('Assignment Section and all related tasks/workflows deleted.'));
-  return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
+  return drupal_goto('class/instructor/assignments/'.$assignment_id);
 }
 
 /*
@@ -1252,25 +1252,40 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 			  
 			}
 			
-			$body = sprintf('
-			<h4>Task Properties</h4>
-			<strong>Task Type: </strong>%s<br>
-			<strong>Assigned to: </strong>%s<br>
-			<strong>Status: </strong>%s
-			<hr>
-			<h4>Reassign History</h4>
-			%s
-			<hr>
-			<h4>Task Actions</h4>
-			%s<br>
-			%s
-			%s
-			
-			',$task['type'],$printuser,$fakeStatus,$reassignHistory,$view,$retrigger,$quickReassign);
-			
-			$m->setBody($body);
-			
-			$return .= $m->build();
+			if(isset($task['user_id'])){
+				$body = sprintf('
+				<h4>Task Properties</h4>
+				<strong>Task Type: </strong>%s<br>
+				<strong>Assigned to: </strong>%s<br>
+				<strong>Status: </strong>%s
+				<hr>
+				<h4>Reassign History</h4>
+				%s
+				<hr>
+				<h4>Task Actions</h4>
+				%s<br>
+				%s
+				%s
+				
+				',$task['type'],$printuser,$fakeStatus,$reassignHistory,$view,$retrigger,$quickReassign);
+				
+				$m->setBody($body);
+				
+				$return .= $m->build();
+			}
+			else{
+				$body = sprintf('
+				<h4>Task Properties</h4>
+				<strong>Task Type: </strong>%s<br>
+				<strong>Assigned to: </strong><em>This task is handled by the server.</em><br>
+				<strong>Status: </strong>%s
+				
+				',$task['type'],$fakeStatus);
+				
+				$m->setBody($body);
+				
+				$return .= $m->build();
+			}
 			
 			//$r['type'] = $task['type'];
 			$r['task_id'] = $task['task_id'];
