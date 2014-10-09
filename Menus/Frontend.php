@@ -746,7 +746,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page callback' => 'drupal_get_form', //drupal_get_form',
-    'page arguments' => array('groupgrade_remove_assignment_section', 4),
+    'page arguments' => array('groupgrade_remove_assignment_section', 4,2),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',

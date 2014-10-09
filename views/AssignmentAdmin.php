@@ -798,9 +798,17 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 /**
  * Remove a section from an assignment
  */
-function groupgrade_remove_assignment_section($form, &$form_state, $section)
+function groupgrade_remove_assignment_section($form, &$form_state, $section, $r)
 {
   global $user;
+  
+  $items = array();
+  
+  $items['r'] = [
+    '#type' => 'hidden',
+    '#value' => $r,
+  ];
+  
   $section = AssignmentSection::find($section);
   
   $a = Assignment::find($section->assignment_id);
@@ -808,8 +816,6 @@ function groupgrade_remove_assignment_section($form, &$form_state, $section)
   drupal_set_title(sprintf('%s: %s', $a->assignment_title, t('Section-level Operations')));
   
   if ($section == NULL) return drupal_not_found();
-
-  $items = array();
   
   $theSection = $section->section()->first();
   $course = $theSection->course()->first();
@@ -860,6 +866,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
 {
   // Remove everything
   $asec_id = $form['asec_id']['#value'];
+  $r = $form['r']['#value'];
   $assignment_id = $form['assignment_id']['#value'];
 
   $workflows = Drupal\ClassLearning\Models\Workflow::where('assignment_id', '=', $asec_id)
@@ -878,7 +885,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
   $asec->delete();
 
   drupal_set_message(t('Assignment Section and all related tasks/workflows deleted.'));
-  return drupal_goto('class/instructor/assignments/'.$assignment_id);
+  return drupal_goto('class/instructor/' . $r);
 }
 
 /*
