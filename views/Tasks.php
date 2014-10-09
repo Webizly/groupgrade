@@ -2664,7 +2664,7 @@ function gg_manual_reassign_submit($form, &$form_state)
   return drupal_set_message('User reassigned and task re-triggered.');
 }
 
-function groupgrade_retrigger_task_form($form, &$form_state, $task_id, $asec){
+function groupgrade_retrigger_task_form($form, &$form_state, $task_id, $asec, $section){
 	
 	drupal_set_title('Re-Open Task');
 	
@@ -2684,6 +2684,11 @@ function groupgrade_retrigger_task_form($form, &$form_state, $task_id, $asec){
 	$items['task'] = array(
 	  '#type' => 'hidden',
 	  '#value' => $task_id,
+	);
+	
+	$items['section'] = array(
+	  '#type' => 'hidden',
+	  '#value' => $section,
 	);
 	
 	$items['asec'] = array(
@@ -2732,8 +2737,9 @@ function groupgrade_retrigger_task_form_submit($form, &$form_state){
 	}
 	
 	$asec = $form['asec']['#value'];
+	$section = $form['section']['#value'];
 	
-	//drupal_goto('class/instructor/assignments/' . $asec . '/administrator-allocation');
+	drupal_goto(sprintf('class/instructor/%d/assignment/%d/view-reassign/table',$section,$asec));
 }
 /**
  * Reassign to Contingency Tasks

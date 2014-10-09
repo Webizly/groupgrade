@@ -1247,7 +1247,7 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 			if($view_names){
 			  //$quickForm = drupal_get_form('gg_quick_reassign_form',$asec['asec_id'],$task['task_id']);
 			  //$quickReassign .= drupal_render($quickForm);
-			  $url = sprintf('class/instructor/%d/assignment/%d/view-reassign/reassigntask/%d',$section->section_id,$asec_view,$task['task_id']);
+			  $url = sprintf('class/instructor/%d/assignment/%d/reassigntask/%d',$section->section_id,$asec_view,$task['task_id']);
 			  $quickReassign = sprintf('<a style="font-weight:bold;" href="%s">Reassign this task to another user</a>',url($url));
 			  
 			}
@@ -1342,8 +1342,6 @@ function gg_reassign_form($form, &$form_state, $asec, $task)
 	
   $items = $index = [];
 
-  drupal_set_message($task);
-
   if (count($students) > 0) : foreach($students as $student) :
     $user = user_load($student->user_id);
     if (! $user) continue;
@@ -1425,6 +1423,6 @@ function gg_reassign_form_submit($form, &$form_state)
 
   $returnUrl = $form['returnUrl']['#value'];
 
-  drupal_set_message('User reassigned and task re-triggered.');
-  drupal_goto(url($returnUrl));
+  drupal_set_message(sprintf("%s was replaced with %s for task %d",$user_object->name,$new_user->name,$task_id));
+  drupal_goto($returnUrl);
 }
