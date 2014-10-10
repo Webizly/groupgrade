@@ -798,9 +798,17 @@ function groupgrade_edit_assignment_section_submit($form, &$form_state)
 /**
  * Remove a section from an assignment
  */
-function groupgrade_remove_assignment_section($form, &$form_state, $section)
+function groupgrade_remove_assignment_section($form, &$form_state, $section, $r)
 {
   global $user;
+  
+  $items = array();
+  
+  $items['r'] = [
+    '#type' => 'hidden',
+    '#value' => $r,
+  ];
+  
   $section = AssignmentSection::find($section);
   
   $a = Assignment::find($section->assignment_id);
@@ -808,8 +816,6 @@ function groupgrade_remove_assignment_section($form, &$form_state, $section)
   drupal_set_title(sprintf('%s: %s', $a->assignment_title, t('Section-level Operations')));
   
   if ($section == NULL) return drupal_not_found();
-
-  $items = array();
   
   $theSection = $section->section()->first();
   $course = $theSection->course()->first();
@@ -860,6 +866,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
 {
   // Remove everything
   $asec_id = $form['asec_id']['#value'];
+  $r = $form['r']['#value'];
   $assignment_id = $form['assignment_id']['#value'];
 
   $workflows = Drupal\ClassLearning\Models\Workflow::where('assignment_id', '=', $asec_id)
@@ -878,7 +885,7 @@ function groupgrade_remove_assignment_section_submit($form, &$form_state)
   $asec->delete();
 
   drupal_set_message(t('Assignment Section and all related tasks/workflows deleted.'));
-  return drupal_goto(url('class/instructor/assignments/'.$assignment_id));
+  return drupal_goto('class/instructor/' . $r);
 }
 
 /*
@@ -1247,30 +1254,45 @@ function groupgrade_view_allocation($assignment,$view_names = false,$asec_view =
 			if($view_names){
 			  //$quickForm = drupal_get_form('gg_quick_reassign_form',$asec['asec_id'],$task['task_id']);
 			  //$quickReassign .= drupal_render($quickForm);
-			  $url = sprintf('class/instructor/%d/assignment/%d/view-reassign/reassign/%d',$section->section_id,$asec_view,$task['task_id']);
+			  $url = sprintf('class/instructor/%d/assignment/%d/reassigntask/%d',$section->section_id,$asec_view,$task['task_id']);
 			  $quickReassign = sprintf('<a style="font-weight:bold;" href="%s">Reassign this task to another user</a>',url($url));
 			  
 			}
 			
-			$body = sprintf('
-			<h4>Task Properties</h4>
-			<strong>Task Type: </strong>%s<br>
-			<strong>Assigned to: </strong>%s<br>
-			<strong>Status: </strong>%s
-			<hr>
-			<h4>Reassign History</h4>
-			%s
-			<hr>
-			<h4>Task Actions</h4>
-			%s<br>
-			%s
-			%s
-			
-			',$task['type'],$printuser,$fakeStatus,$reassignHistory,$view,$retrigger,$quickReassign);
-			
-			$m->setBody($body);
-			
-			$return .= $m->build();
+			if(isset($task['user_id'])){
+				$body = sprintf('
+				<h4>Task Properties</h4>
+				<strong>Task Type: </strong>%s<br>
+				<strong>Assigned to: </strong>%s<br>
+				<strong>Status: </strong>%s
+				<hr>
+				<h4>Reassign History</h4>
+				%s
+				<hr>
+				<h4>Task Actions</h4>
+				%s<br>
+				%s
+				%s
+				
+				',$task['type'],$printuser,$fakeStatus,$reassignHistory,$view,$retrigger,$quickReassign);
+				
+				$m->setBody($body);
+				
+				$return .= $m->build();
+			}
+			else{
+				$body = sprintf('
+				<h4>Task Properties</h4>
+				<strong>Task Type: </strong>%s<br>
+				<strong>Assigned to: </strong><em>This task is handled by the server.</em><br>
+				<strong>Status: </strong>%s
+				
+				',$task['type'],$fakeStatus);
+				
+				$m->setBody($body);
+				
+				$return .= $m->build();
+			}
 			
 			//$r['type'] = $task['type'];
 			$r['task_id'] = $task['task_id'];
@@ -1423,6 +1445,6 @@ function gg_reassign_form_submit($form, &$form_state)
 
   $returnUrl = $form['returnUrl']['#value'];
 
-  drupal_set_message('User reassigned and task re-triggered.');
-  drupal_goto(url($returnUrl));
+  drupal_set_message(sprintf("%s was replaced with %s for task %d",$user_object->name,$new_user->name,$task_id));
+  drupal_goto($returnUrl);
 }

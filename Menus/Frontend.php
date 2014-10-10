@@ -746,7 +746,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page callback' => 'drupal_get_form', //drupal_get_form',
-    'page arguments' => array('groupgrade_remove_assignment_section', 4),
+    'page arguments' => array('groupgrade_remove_assignment_section', 4,2),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
@@ -844,7 +844,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
 	'page callback' => 'drupal_get_form',
-    'page arguments' => array('groupgrade_retrigger_task_form',7,4),
+    'page arguments' => array('groupgrade_retrigger_task_form',7,4,2),
     
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
@@ -943,6 +943,7 @@ return array(
   ),
   */
   //Moodle Integration
+  /*
  'class/instructor/%/assignment/%/moodle' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Moodle Integration',
@@ -957,20 +958,20 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 5,
   ),
+ */
  
- /*
- 'class/instructor/%/assignment/%/view-reassign/reassign/%' => array(
-   'type' => MENU_DEFAULT_LOCAL_TASK,
+ 'class/instructor/%/assignment/%/reassigntask/%' => array(
+   'type' => MENU_NORMAL_ITEM,
    'title' => 'Reassign Task',
    
    'file' => 'AssignmentAdmin.php',
    'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
    'page callback' => 'drupal_get_form',
-   'page arguments' => array('gg_reassign_form',4,7),
+   'page arguments' => array('gg_reassign_form',4,6),
    
    'access arguments' => array('instructor', 2),
    'access callback' => 'gg_has_role_in_section',
  ),
- */
+ 
 );

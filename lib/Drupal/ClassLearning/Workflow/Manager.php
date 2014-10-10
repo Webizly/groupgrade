@@ -1364,7 +1364,10 @@ class Manager {
 	    ];
 	}
 	
-		//HOMEWORK 3
+
+
+
+	//HOMEWORK 3
 	if($asec->assignment_id == 79)//79
 	{
 		return [
@@ -1877,6 +1880,425 @@ class Manager {
 	    ];
 	}
 	
+
+	if($asec->assignment_id == 82)//PHIL 334 Quiz
+	{
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => '<p><strong>Number your quiz questions 1, 2, and 3. (Do not include any answers.)</strong></p>'
+	        
+	        .'<strong>(1) True or False Question:</strong> Write a single sentence that tests knowledge from the chapter. Your question should require the quiz-taker to understand <em>the concepts behind</em> the terms and ideas you are using and doesn\'t just ask them to define the terms.
+	        
+			<div style="color:blue;">
+			Example:
+				<ul>
+					<li>An okay but not great true or false question:</li>
+					<li>(1)At NJIT, "CSLA" is an appreviation for "College of Science and Liberal Arts".</li>
+					<ul><li>This sentence is true, but all you really need to look at to find the answer is the abbreviation. You don\'t need to really know what a College of Science and Liberal Arts is.</li></ul>
+				</ul>
+				
+				<ul>
+					<li>Here\'s a great true or false question:</li>
+					<li>(1)At NJIT, CSLA is the home of the Physics Department and Humanities Department.</li>
+					<ul><li>This sentence is true, but to answer it you need to know more than just what "CSLA" stands for - you need to actually know what it is and what departments are part of it.</li></ul>
+				</ul>
+			</div>
+			
+			<strong>(2) Matching Question:</strong> Find 3 terms you think are important in the chapter and write a simple definition for each term.
+			<ul>
+				<li>Number your 3 terms (T1), (T2), and (T3).</li>
+				<li>Number your 3 definitions (D4), (D5), and (D6).</li>
+				<li>Shuffle your terms and definitions in random orders so T1 <em>only maybe</em> matches D4, and so on.</li>
+			</ul>
+			
+			<strong>(3) Short Answer Question:</strong> Write a question of substance that can be answered in two or three sentences.
+	        
+	        <div style="color:blue;">
+			Example:
+				<ul>
+					<li>One good example of this would be to describe a situation and ask what term or concept the situation illustrates from the chapter.</li>
+					<li>Consider the trolley problem from the first week of class. Here\'s a good short answer question and answer:
+					<ul><li>Question: (3)Choosing to kill one innocent in the trolley case is best explained by what moral theory?</li>
+					<li>Answer: Choosing to kill one innocent in the trolley case is best explained by utilitarianism. Utilitarianism determines the rightness of actions by consequences and it is better for one innocent to die than five. Killing one innocent is not a good act, but if there is a forced choice between killing one or five, killing one limits the bad consequences.</li></ul>
+					<li>Post the question only, not your answer.</li>
+				</ul>
+			</div>
+				
+			',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' => 'Rephrase the problem (if necessary) so it is '
+	          .'appropriate to the assignment and clear to the person solving '
+	          .'it. The solver and graders will only see your edited version, not '
+	          .'the original version. (Others not involved in solving or grading '
+	          .'will see both the original and edited versions.) You can also '
+	          .'leave a comment to explain any rephrasing.',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => '
+	        <strong>Number your quiz solutions 1, 2, and 3.</strong><br><br>
+	        
+			<strong>True or False question:</strong> Respond "(1)true" or "(1)false".<br>
+			
+			<strong>Matching question:</strong> Respond with the three matches in this format: (2) T1 = D4, T2 = D6, T3 = D5<br>
+			
+			<strong>Short Answer question:</strong> Answer in 2-3 sentences. Include the important points and explain your answer so it is clear that you understand the issues. Start your answer with "(3)".<br>
+			
+	        ',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  '(1)True_Or_False' => [
+			    'max' => 15,
+			    'description' => 'Provide a grade to solution (1)',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  '(2a)Match_for_T1' => [
+			    'max' => 15,
+			    'description' => 'Provide a grade to solution (T1)',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  '(2b)Match_for_T2' => [
+			    'max' => 15,
+			    'description' => 'Provide a grade to solution (T2)',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  '(2c)Match_for_T3' => [
+			    'max' => 15,
+			    'description' => 'Provide a grade to solution (T3)',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  '(3)Short_Answer' => [
+			    'max' => 40,
+			    'description' => 'Provide a grade to solution (3)',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			],
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '
+	        
+			<strong>Grade each quiz answer using only the scores shown. There is no partial credit.</strong>
+			
+			<ul>
+				<li><strong>(1)True or False solution:</strong>
+				<ul><li>If you agree, award 15 points AND write "Correct" (or optionally justify further why you agree).</li>
+				<li>If you disagree, award 0 points AND justify why you disagree.</li></ul>
+				</li>
+				
+				<li>
+				<strong>(2)For each Matching solution T1, T2, and T3:</strong>
+				<ul>
+					<li>If you agree with the match, award 15 points AND write "Correct" (or optionally justify why you agree).</li>
+					<li>If you disagree with the match, award 0 points AND justify why you disagree</li>
+				</ul></li>
+				
+				<li>
+				<strong>(3)Short Answer solution: Award the score shown here AND justify your score.</strong>
+				<ul>
+					<li>(0 Points) No response or the answer doesn\'t respond to the question at all.</li>
+					<li>(20 Points) The answer misses a major point or shows the quiz-taker doesn\'t really understand the issues.</li>
+					<li>(30 Points) The answer responds to the question, but misses a minor point or has a small misunderstanding.</li>
+					<li>(40 Points) The answer completely responds to the question.</li>
+				</ul>
+				</li>
+				
+				</li>
+			</ul>
+			
+	        ',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' =>
+	        '<strong>Because the regular graders did not give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.</strong>'
+	          . 
+	        '
+	        
+			<strong>Grade each quiz answer using only the scores shown. There is no partial credit.</strong>
+			
+			<ul>
+				<li><strong>(1)True or False solution:</strong>
+				<ul><li>If you agree, award 15 points AND write "Correct" (or optionally justify further why you agree).</li>
+				<li>If you disagree, award 0 points AND justify why you disagree.</li></ul>
+				</li>
+				
+				<li>
+				<strong>(2)For each Matching solution T1, T2, and T3:</strong>
+				<ul>
+					<li>If you agree with the match, award 15 points AND write "Correct" (or optionally justify why you agree).</li>
+					<li>If you disagree with the match, award 0 points AND justify why you disagree</li>
+				</ul></li>
+				
+				<li>
+				<strong>(3)Short Answer solution: Award the score shown here AND justify your score.</strong>
+				<ul>
+					<li>(0 Points) No response or the answer doesn\'t respond to the question at all.</li>
+					<li>(20 Points) The answer misses a major point or shows the quiz-taker doesn\'t really understand the issues.</li>
+					<li>(30 Points) The answer responds to the question, but misses a minor point or has a small misunderstanding.</li>
+					<li>(40 Points) The answer completely responds to the question.</li>
+				</ul>
+				</li>
+				
+				</li>
+			</ul>
+			
+	        ',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => '<strong>You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.</strong><br>'
+	          
+	          .
+	          
+	          '
+	        
+			<strong>Grade each quiz answer using only the scores shown. There is no partial credit.</strong>
+			
+			<ul>
+				<li><strong>(1)True or False solution:</strong>
+				<ul><li>If you agree, award 15 points AND write "Correct" (or optionally justify further why you agree).</li>
+				<li>If you disagree, award 0 points AND justify why you disagree.</li></ul>
+				</li>
+				
+				<li>
+				<strong>(2)For each Matching solution T1, T2, and T3:</strong>
+				<ul>
+					<li>If you agree with the match, award 15 points AND write "Correct" (or optionally justify why you agree).</li>
+					<li>If you disagree with the match, award 0 points AND justify why you disagree</li>
+				</ul></li>
+				
+				<li>
+				<strong>(3)Short Answer solution: Award the score shown here AND justify your score.</strong>
+				<ul>
+					<li>(0 Points) No response or the answer doesn\'t respond to the question at all.</li>
+					<li>(20 Points) The answer misses a major point or shows the quiz-taker doesn\'t really understand the issues.</li>
+					<li>(30 Points) The answer responds to the question, but misses a minor point or has a small misunderstanding.</li>
+					<li>(40 Points) The answer completely responds to the question.</li>
+				</ul>
+				</li>
+				
+				</li>
+			</ul>
+			
+	        ',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.'
+	          
+	          .
+	          
+	          '
+	        
+			<strong>Grade each quiz answer using only the scores shown. There is no partial credit.</strong>
+			
+			<ul>
+				<li><strong>(1)True or False solution:</strong>
+				<ul><li>If you agree, award 15 points AND write "Correct" (or optionally justify further why you agree).</li>
+				<li>If you disagree, award 0 points AND justify why you disagree.</li></ul>
+				</li>
+				
+				<li>
+				<strong>(2)For each Matching solution T1, T2, and T3:</strong>
+				<ul>
+					<li>If you agree with the match, award 15 points AND write "Correct" (or optionally justify why you agree).</li>
+					<li>If you disagree with the match, award 0 points AND justify why you disagree</li>
+				</ul></li>
+				
+				<li>
+				<strong>(3)Short Answer solution: Award the score shown here AND justify your score.</strong>
+				<ul>
+					<li>(0 Points) No response or the answer doesn\'t respond to the question at all.</li>
+					<li>(20 Points) The answer misses a major point or shows the quiz-taker doesn\'t really understand the issues.</li>
+					<li>(30 Points) The answer responds to the question, but misses a minor point or has a small misunderstanding.</li>
+					<li>(40 Points) The answer completely responds to the question.</li>
+				</ul>
+				</li>
+				
+				</li>
+			</ul>
+			
+	        ',
+	      ],
+	    ];
+	}
+	
+
 	if($course->course_name == ' PHIL 334')
 	{
 		return [
