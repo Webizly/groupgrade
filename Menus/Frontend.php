@@ -32,6 +32,15 @@ return array(
     'access callback' => true,
   ),
 
+  'fixthesedates' => array(
+  	'page callback' => 'fix_times',
+    //'page arguments' => array('groupgrade_tasks_dashboard'),
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'access callback' => true,
+  ),
+
   'about' => array(
     'title' => 'About CLASS',
     'page callback' => 'groupgrade_about',

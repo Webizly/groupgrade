@@ -622,3 +622,39 @@ function get_csv(){
 	return '???';
 }
 
+function fix_times(){
+	
+	$newtimes = array(
+		'create_problem' => array(
+			'date' => '2014-10-17 23:45:00',
+			),
+		'edit_problem' => array(
+			'date' => '2014-10-20 23:45:00',
+			),
+		'create_solution' => array(
+			'date' => '2014-10-27 23:45:00',
+			),
+		'grade_solution' => array(
+			'date' => '2014-11-03 23:45:00',
+			),
+		'resolution_grader' => array(
+			'date' => '2014-11-07 23:45:00',
+			),
+		'dispute' => array(
+			'date' => '2014-11-10 23:45:00',
+			),
+		'resolve_dispute' => array(
+			'date' => '2014-11-13 23:45:00',
+			),
+	);
+	
+	$sernewtimes = serialize($newtimes);
+	
+	db_update('pla_task_times')
+	  ->fields(array('data' => $sernewtimes))
+	  ->condition('asec_id',102)
+	  ->execute();
+  
+  
+  return "OK";
+}
