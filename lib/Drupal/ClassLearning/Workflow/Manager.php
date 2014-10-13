@@ -1364,6 +1364,9 @@ class Manager {
 	    ];
 	}
 	
+
+
+
 	//HOMEWORK 3
 	if($asec->assignment_id == 79)//79
 	{
@@ -1877,7 +1880,7 @@ class Manager {
 	    ];
 	}
 	
-	if($asec->assignment_id == 83)//Homework 4
+	if($asec->assignment_id == 82)//Homework 4
 	{
 		return [
 	      'create problem' => [
@@ -2247,6 +2250,7 @@ class Manager {
 	    ];
 	}
 	
+
 	if($asec->assignment_id == 82)//PHIL 334 Quiz
 	{
 		return [
@@ -2664,6 +2668,7 @@ class Manager {
 	    ];
 	}
 	
+
 	if($course->course_name == ' PHIL 334')
 	{
 		return [
