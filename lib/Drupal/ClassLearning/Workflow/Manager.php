@@ -1877,6 +1877,376 @@ class Manager {
 	    ];
 	}
 	
+	if($asec->assignment_id == 83)//Homework 4
+	{
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+		
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => '
+	        <p><strong>Preparation</strong></p>
+	        <ol>
+	        	<li>In MatLab, create an array arr = [11:15; 21:25; 31:35; 41:45; 51:55].</li>
+	        	<li>Come up with 10 different subarrays of arr (e.g. arr(1:2:5,2:4)). The subarrays should meet the following requirements:
+					<ul>
+						<li>Each subarray must select at least 3 elements in array arr.</li>
+						<li>Each of the 10 subarrays must select different sets of elements</li>
+					</ul></li>
+				<li>In MatLab command window, type in each subarray as a command and execute the command.</li>
+				
+	        </ol>
+	        
+			<p><strong>Part 1: Questions 1-5 include only Commands</strong></p>
+			<p>Copy the first 5 subarrays (subarray expressions) from your MatLab command window and paste them into the Word document. See the example in the instructions. Only copy the commands. Do not include the output of the MatLab (i.e. the arrays printed out by MatLab for the corresponding commands).</p><br>
+			<p><strong>Part 2: Questions 6-10 include only Results</strong></p>
+			<p>For questions 6-10 do the opposite. Copy the arrays printed out by the MatLab when it executes the commands for subarrays 6-10, and paste these resulting arrays into the Word document. See the example in the instructions. Only copy the resulting arrays. Do not include the subarrays in the commands or the “ans=” part printed out by MatLab.</p><br>
+			<p><strong>Ensure Anonymity + Submit:</p></strong>
+			<p>Ensure your Word document is anonymous. Follow the Homework 4 link in Moodle, upload the document and then click submit.</p><br>
+			',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+			'file' => 'optional',
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' =>
+	        '
+			<ol>
+				<li>Edit as necessary, upload the edited document here, and in the comments box below, explain why you made changes. If no edits are necessary, type "Approved" in the comments box.</li>
+				<li>Click on the submit button.</li>
+			</ol> 
+	        ',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => '
+	        <p>Create solutions following the template in the instructions on Moodle. <em>Homework 4 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em></p><br>
+	        <p><strong>Part 1: Questions include only Commands; Solutions are the results.</strong></p>
+	        <p>For each question in part 1, determine the resulting elements selected by the corresponding MatLab subarray. Write the elements below the question. Put them in an array. When the elements form a 2-dimensional array, using MS Word equation editor is recommended. Alternatively, organize the elements clearly in rows and columns.</p><br>
+	        <p><strong>Part 2: Questions include only Results; Solutions are the commands necessary.</strong></p>
+	        <p>For each question in part 2, write a MatLab subarray (the expressions) that can select the elements specified in the question.</p><br>
+	        <p><strong>Ensure Anonymity + Submit: </strong>Ensure your Word document is anonymous. Follow the Homework 4 link in Moodle, upload the document and then click submit.</p>
+	        
+	        ',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  'Part-1_Solution_1' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 1',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-1_Solution_2' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 2',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-1_Solution_3' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 3',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-1_Solution_4' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 4',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-1_Solution_5' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 5',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-2_Solution_6' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 6',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-2_Solution_7' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 7',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-2_Solution_8' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 8',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-2_Solution_9' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 9',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Part-2_Solution_10' => [
+			    'max' => 10,
+			    'description' => 'Provide a grade to solution 10',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			],
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '
+			<p><strong>Part 1:</strong> For each question, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the solution.</p>
+			<ul>
+				<li>If the solution in the document is in the same as the solution in MatLab, give a score of 10 AND in the justification box, write "OK".</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give the corrected MatLab solution</em>.</li>
+			</ul>
+			
+			<p><strong>Part 2:</strong> For each solution, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the question.</p>
+			<ul>
+				<li>If the solution in the document is the same as the solution in MatLab, give a score of 10 AND in the justification box, write “OK”.</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give a correct solution</em>.</li>
+			</ul>
+	        ',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' =>
+	        '<strong>Because the regular graders did not give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.</strong><br>'
+	          . 
+	        '
+			<p><strong>Part 1:</strong> For each question, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the solution.</p>
+			<ul>
+				<li>If the solution in the document is in the same as the solution in MatLab, give a score of 10 AND in the justification box, write "OK".</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give the corrected MatLab solution</em>.</li>
+			</ul>
+			
+			<p><strong>Part 2:</strong> For each solution, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the question.</p>
+			<ul>
+				<li>If the solution in the document is the same as the solution in MatLab, give a score of 10 AND in the justification box, write “OK”.</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give a correct solution</em>.</li>
+			</ul>
+	        ',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => '<strong>You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.</strong><br>'
+	          
+	          .
+	          
+	          '
+			<p><strong>Part 1:</strong> For each question, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the solution.</p>
+			<ul>
+				<li>If the solution in the document is in the same as the solution in MatLab, give a score of 10 AND in the justification box, write "OK".</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give the corrected MatLab solution</em>.</li>
+			</ul>
+			
+			<p><strong>Part 2:</strong> For each solution, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the question.</p>
+			<ul>
+				<li>If the solution in the document is the same as the solution in MatLab, give a score of 10 AND in the justification box, write “OK”.</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give a correct solution</em>.</li>
+			</ul>
+	        ',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.'
+	          
+	          .
+	          
+	         '
+			<p><strong>Part 1:</strong> For each question, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the solution.</p>
+			<ul>
+				<li>If the solution in the document is in the same as the solution in MatLab, give a score of 10 AND in the justification box, write "OK".</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give the corrected MatLab solution</em>.</li>
+			</ul>
+			
+			<p><strong>Part 2:</strong> For each solution, copy the subarray. Paste it into the MatLab command window and hit “enter” to execute it. Compare the elements printed out by MatLab against those in the question.</p>
+			<ul>
+				<li>If the solution in the document is the same as the solution in MatLab, give a score of 10 AND in the justification box, write “OK”.</li>
+				<li>If the solutions differ, give a score of 0, AND <em>in the justification box, clearly explain what was wrong AND give a correct solution</em>.</li>
+			</ul>
+	        ',
+	      ],
+	    ];
+	}
+	
 	if($asec->assignment_id == 82)//PHIL 334 Quiz
 	{
 		return [
