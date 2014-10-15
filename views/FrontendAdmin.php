@@ -107,7 +107,6 @@ function groupgrade_view_user($section_id) {
 function groupgrade_view_reports($asec_id){
 	
 	$return = '';
-	$return .= '<h1>Completed Tasks and Grades</h1><br>';
 	
 	// Get all assignment section objects
 	$asec = AssignmentSection::where('asec_id','=',$asec_id)
@@ -118,9 +117,27 @@ function groupgrade_view_reports($asec_id){
 	
 	if($section == null)
 	  return drupal_not_found();
+
+    $course = $section->course()->first();
+    $semester = $section->semester()->first();
+    $assignment = $asec->assignment()->first();
+  
+    drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
+  
+    $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$asec->section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)'));
+  
+    $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+      t('Course'),
+      $course->course_name, 
+      $section->section_name,
+      $semester->semester_name
+    );
 	
-	// Get all the students
-	  
+	drupal_set_title(sprintf('%s: %s',$assignment->assignment_title,t('Reports')));
+	
+	$return .= '<h1>Completed Tasks and Grades</h1><br>';
+	
+	// Get all the students  
 	$students = array();  
 	  
 	$section_users = $section->students()->get();
@@ -252,14 +269,13 @@ function groupgrade_view_assignments($id) {
         $assignment->assignment_title
       ),
       gg_time_human($assignment->asec_start), 
-       '<a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/edit-section/'.$assignment->asec_id).'">'.t('Edit Start Date').'</a>'
-        .' &mdash; <a href="'.url('class/instructor/assignments/'.$assignment->assignment_id.'/remove-section/'.$assignment->asec_id).'">'.t('Remove Assignment from Section').'</a>'
+      
     ];
   endforeach; endif;
 
   $return .= theme('table', array(
     'rows' => $rows,
-    'header' => array('Title', 'Start Date', 'Operations'),
+    'header' => array('Title', 'Start Date'),
     'empty' => 'No assignments found.',
     'attributes' => array('width' => '100%'),
   ));
@@ -290,11 +306,11 @@ function groupgrade_view_assignment($section_id, $asec_id, $type = NULL)
   $assignment = $assignmentSection->assignment()->first();
 
   // Specify the title
-  drupal_set_title($assignment->assignment_title);
+  drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
 
   $return = '';
   // Back Link
-  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$section_id), HTML_BACK_ARROW, t('Back to View Section'));
+  $return .= sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)'));
 
   $return .= sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
     t('Course'),
@@ -447,14 +463,38 @@ function groupgrade_frontend_swap_status($section, $user)
 }
 
 function groupgrade_remove_reassign_form($form, &$form_state, $asec_id){
-	
-	$items = array();
-	
-	$asec = AssignmentSection::where('asec_id','=',$asec_id)
+  
+  $asec = AssignmentSection::where('asec_id','=',$asec_id)
 	  ->first();
+  $section = Section::find($asec->section_id);
+  $course = $section->course()->first();
+  $semester = $section->semester()->first();
+  $assignment = Assignment::find($asec->assignment_id);
+  
+  drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
+  
+  $items = array();
+  
+  $items[] = array(
+    '#markup' => sprintf('<p><a href="%s">%s %s</a>', url('class/instructor/'.$asec->section_id), HTML_BACK_ARROW, t('Back to Select Assignment (this section)')),
+  );
+  
+  $items[] = array(
+    '#markup' => sprintf('<p><strong>%s:</strong> %s &mdash; %s &mdash; %s</p>', 
+    t('Course'),
+    $course->course_name, 
+    $section->section_name,
+    $semester->semester_name
+    )
+  );
+  
 	  
 	if($asec == null)
 	  return drupal_not_found();
+	
+	$assignment = Assignment::find($asec->assignment_id);
+	
+	drupal_set_title(sprintf('%s: %s', $assignment->assignment_title, t('View + Reassign')));
 	
 	$items['removeLabel'] = array(
 	  '#type' => 'item',
@@ -605,9 +645,14 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
 	  	$update = json_decode($task->user_history,true);
       
 	  $ar = array();
-	  $ar[] = $removeUser->uid;
-	  $ar[] = $removeUser->name;
-	  $ar[] = Carbon\Carbon::now()->toDateTimeString();
+	  $new_user = user_load($user);
+	  $ar = array();
+	  $ar['previous_uid'] = $removeUser->uid;
+	  $ar['previous_name'] = $removeUser->name;
+	  $ar['time'] = Carbon\Carbon::now()->toDateTimeString();
+	  $ar['new_uid'] = $reassignUser->uid;
+	  $ar['new_name'] = $reassignUser->name;
+	  
 	  $update[] = $ar;
 	  $task->user_history = json_encode($update);
 	  

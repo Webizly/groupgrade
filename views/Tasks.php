@@ -21,12 +21,13 @@ function groupgrade_tasks_get_moodle_id () {
 	//gets the user id from Moodle and store it into a variable
 	$moodle_id = $_SESSION['lti_tool_provider_context_info']['user_id'];
 	
-	//SELECT uid, mid FROM moodlelink WHERE mid = $moodle_id
-	$query = db_select('moodlelink', 'ml')
+	//SELECT uid, mid FROM moodlelink_user_id WHERE mid = $moodle_id
+	$record = db_select('moodlelink_user_id', 'ml')
 		->fields('ml', array('uid', 'mid'))
-		->condition('mid', $moodle_id);
-	$record = $query->execute()->fetch();
-	
+		->condition('mid', $moodle_id)
+		->execute()
+		->fetch();
+
 	//if the user has never logged into CLASS from Moodle, it adds Drupal user ID and Moodle user ID to the table
 	$moodle_id = $_SESSION['lti_tool_provider_context_info']['user_id'];
   		if ($record == FALSE) {
@@ -35,24 +36,24 @@ function groupgrade_tasks_get_moodle_id () {
 			$record->mid = $moodle_id;
 		}
   		//INSERT/UPDATE into moodlelink ('uid, 'mid') VALUES ('uid', 'mid')
-		$query = db_merge('moodlelink')
-			->key(array('uid' => $record->uid))
-			->key(array('mid' => $record->mid))
-			->fields((array) $record)
-			->execute();
+		$query = db_merge('moodlelink_user_id')
+		->key(array('uid' => $record->uid))
+		->key(array('mid' => $record->mid))
+		->fields((array) $record)
+		->execute();
 }
 
 function groupgrade_tasks_get_moodle_assignment_record () {
 	//gets the assignment id from Moodle and stores it into a variable
 	$moodle_assignment_id = $_SESSION['lti_tool_provider_context_info']['resource_link_id'];
 	//SELECT maid, matitle FROM moodlelink2 WHERE maid = $moodle_assignment_id
-	$query = db_select('moodlelink2', 'ml2')
+	$record = db_select('moodlelink_assignment_title', 'ml2')
 		->fields('ml2', array('maid', 'matitle'))
-		->condition('maid', $moodle_assignment_id);
-	$record = $query->execute()->fetch();
+		->condition('maid', $moodle_assignment_id)
+		->execute()
+		->fetch();
 	
 	//gets the assignment id and assignment title from Moodle and stores it into a variable
-	$moodle_assignment_id = $_SESSION['lti_tool_provider_context_info']['resource_link_id'];
 	$moodle_assignment_title = $_SESSION['lti_tool_provider_context_info']['resource_link_title'];
 	
 	//if the record doesn't exist, add it to the table
@@ -61,12 +62,12 @@ function groupgrade_tasks_get_moodle_assignment_record () {
 		$record->maid = $moodle_assignment_id;
 		$record->matitle = $moodle_assignment_title;
   	}
-  		//INSERT/UPDATE into moodlelink2 ('maid, 'matitle') VALUES ('maid', 'matitle')
-		$query = db_merge('moodlelink2')
-			->key(array('maid' => $record->maid))
-			->key(array('matitle' => $record->matitle))
-			->fields((array) $record)
-			->execute();
+  		//INSERT/UPDATE into moodlelink_assignment_title ('maid, 'matitle') VALUES ('maid', 'matitle')
+	$query = db_merge('moodlelink_assignment_title')
+		->key(array('maid' => $record->maid))
+		->key(array('matitle' => $record->matitle))
+		->fields((array) $record)
+		->execute();
 }
 
 function groupgrade_tasks_get_moodle_lti_outcomes_id () {
@@ -502,11 +503,37 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     ];
   }
 
-  $items['body'] = [
-    '#type' => 'textarea',
+  if(isset($params['task']->settings['optional'])){
+  	$items['body'] = [
+    '#type' => 'hidden',
     '#required' => true,
-    '#default_value' => (isset($params['task']->data['problem'])) ? $params['task']->data['problem'] : '',
+    '#value' => "(This problem was a file upload. Please open the file to view the problem.)",
   ];
+  }
+  else{
+	  $items['body'] = [
+	    '#type' => 'textarea',
+	    '#required' => true,
+	    '#default_value' => (isset($params['task']->data['problem'])) ? $params['task']->data['problem'] : '',
+	  ];
+  }
+
+  if(isset($params['task']->settings['file'])){
+  	
+	$m = 'You are required to submit a file for this assignment. Please upload one below.';
+	if($params['task']->settings['file'] == 'optional')
+	  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below.';
+	
+  	$items[] = array(
+  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
+	);
+	
+	$items['file'] = array(
+	  '#type' => 'file',
+	  '#title' => 'Please upload your file before submitting.',
+	);
+	
+  }
 
   $items['save'] = [
     '#type' => 'submit',
@@ -517,6 +544,39 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
     '#value' => 'Submit Problem',
   ];
   return $items;
+}
+
+function gg_task_create_problem_form_validate($form, &$form_state) {
+	
+	$save = ($form_state['clicked_button']['#id'] == 'edit-save');
+	$task = $form_state['build_info']['args'][0]['task'];
+	
+	if($save || !isset($task->settings['file'])){
+		//Don't even bother...
+		return;
+	}
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		
+		$file->status = 1;
+		file_save($file);
+		
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
+		}
+	}
+	else{
+		if($task->settings['file'] == 'mandatory')
+		  form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
+	}
 }
 
 /**
@@ -533,8 +593,15 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
   $task->save();
 
-  if (! $save)
+  if (! $save){
+  	if(isset($form_state['storage']['file'])){
+  	  $file = $form_state['storage']['file'];
+	  $url = $file->uri;
+	  $url = str_replace('public://','sites/default/files/',$url);
+	  $task->task_file = $url;
+  	} 
     $task->complete();
+  }
   
   drupal_set_message(sprintf('%s %s', t('Problem'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'created.'));
 
@@ -557,14 +624,22 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
 
   $items = [];
 
-  if ($params['action'] == 'display')
+  if ($params['action'] == 'display'){
     $items['original problem'] = [
-      '#markup' => sprintf('<p><strong>%s:</strong></p><p>%s</p><hr />',
+      '#markup' => sprintf('<p><strong>%s:</strong></p><p>%s</p>',
         t('Original Problem'),
         nl2br($params['previous task']->data['problem'])
       )
     ];
-
+	
+	if(isset($params['previous task']->task_file)){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',url($params['previous task']->task_file),t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+  }
+  
   if (! $params['edit']) :
     $items['edited problem lb'] = [
       '#markup' => sprintf('<strong>%s:</strong>', t('Edited Problem')),
@@ -606,6 +681,21 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     '#default_value' => $problem,
   ];
 
+  if(isset($params['task']->settings['file'])){
+		$m = 'You are required to submit a file for this assignment. Please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
+		if($params['task']->settings['file'] == 'optional')
+		  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below. Because you are editing this problem, your uploaded file will take the place of the problem creator\'s file when others attempt to view it.';
+		
+	  	$items[] = array(
+	  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
+		);
+		
+		$items['file'] = array(
+		  '#type' => 'file',
+		  '#title' => 'Please upload your file before submitting.',
+		);
+	}
+
   $items['comment'] = [
     '#type' => 'textarea',
     '#required' => true,
@@ -622,6 +712,39 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     '#value' => 'Submit Edited Problem',
   ];
   return $items;
+}
+
+function gg_task_edit_problem_form_validate($form, &$form_state) {
+	
+	$save = ($form_state['clicked_button']['#id'] == 'edit-save');
+	$task = $form_state['build_info']['args'][0]['task'];
+	
+	if($save || !isset($task->settings['file'])){
+		//Don't even bother...
+		return;
+	}
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		
+		$file->status = 1;
+		file_save($file);
+		
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
+		}
+	}
+	else{
+		if($task->settings['file'] == 'mandatory')
+		  form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
+	}
 }
 
 /**
@@ -642,8 +765,15 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
   $task->save();
 
-  if (! $save)
+  if (! $save){
+  	if(isset($form_state['storage']['file'])){
+  	  $file = $form_state['storage']['file'];
+	  $url = $file->uri;
+	  $url = str_replace('public://','sites/default/files/',$url);
+	  $task->task_file = $url;
+  	} 
     $task->complete();
+  }
   
   drupal_set_message(sprintf('Edited problem %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'completed.'));
 
@@ -658,11 +788,30 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
   $problem = (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '';
   $items = [];
 
-  if ($params['action'] == 'display')
-    $items['original problem'] = [
-      '#markup' => '<p><strong>'.t('Problem').':</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p><hr />'
-    ];
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
 
+  if(!isset($original_problem->task_file)){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
+
+  if ($params['action'] == 'display'){
+    $items['original problem'] = [
+      '#markup' => '<p><strong>'.t('Problem').':</strong></p><p>'.nl2br($params['previous task']->data['problem']).'</p>'
+    ];
+	
+	if(isset($original_problem->task_file)){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',url($original_problem->task_file),t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+	
+  }
   if (! $params['edit']) :
     $items['problem lb'] = [
       '#markup' => '<strong>'.t('Solution').':</strong>',
@@ -691,11 +840,35 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 
   $items[] = ['#markup' => sprintf('<p><strong>%s</strong></p>', t('Create Solution'))];
 
-  $items['body'] = [
-    '#type' => 'textarea',
+  if(isset($params['task']->settings['optional'])){
+  	$items['body'] = [
+    '#type' => 'hidden',
     '#required' => true,
-    '#default_value' => (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '',
+    '#value' => "(This solution was a file upload. Please open the file to view the solution.)",
   ];
+  }
+  else{
+	  $items['body'] = [
+	    '#type' => 'textarea',
+	    '#required' => true,
+	    '#default_value' => (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '',
+	  ];
+  }
+  
+  if(isset($params['task']->settings['file'])){
+		$m = 'You are required to submit a file for this assignment. Please upload one below.';
+		if($params['task']->settings['file'] == 'optional')
+		  $m = 'File uploading for this task is optional. If you wish to include a file, please upload one below.';
+		
+	  	$items[] = array(
+	  	  '#markup' => sprintf('<strong style="color:red;">%s</strong>',$m),
+		);
+		
+		$items['file'] = array(
+		  '#type' => 'file',
+		  '#title' => 'Please upload your file before submitting.',
+		);
+  }
 
   $items['save'] = [
     '#type' => 'submit',
@@ -706,6 +879,39 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     '#value' => 'Submit Solution',
   ];
   return $items;
+}
+
+function gg_task_create_solution_form_validate($form, &$form_state) {
+	
+	$save = ($form_state['clicked_button']['#id'] == 'edit-save');
+	$task = $form_state['build_info']['args'][0]['task'];
+	
+	if($save || !isset($task->settings['file'])){
+		//Don't even bother...
+		return;
+	}
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		
+		$file->status = 1;
+		file_save($file);
+		
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
+		}
+	}
+	else{
+		if($task->settings['file'] == 'mandatory')
+		  form_set_error('file','No file was uploaded. Please use the upload form to upload your file.');
+	}
 }
 
 /**
@@ -723,8 +929,15 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
     $task->save();
   
-  if (! $save)
+  if (! $save){
+  	if(isset($form_state['storage']['file'])){
+  	  $file = $form_state['storage']['file'];
+	  $url = $file->uri;
+	  $url = str_replace('public://','sites/default/files/',$url);
+	  $task->task_file = $url;
+  	} 
     $task->complete();
+  }
   
   drupal_set_message(sprintf(t('Solution').' %s', ($save) ? 'saved. (You must submit this still to complete the task.)' : 'completed.'));
   
@@ -752,8 +965,8 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   #krumo($class_assignment_section_id->assignment_id);
   
   //SELECT atitle FROM moodlelink3 WHERE asecid = $class_assignment_section_id
-  $class_assignment_title = db_select('moodlelink3', 'ml3')
-  	->fields('ml3', array('atitle'))
+  $class_assignment_title = db_select('moodlelink_assignment', 'ml4')
+  	->fields('ml4', array('atitle'))
 	->condition('asecid', $class_assignment_section_id->assignment_id)
 	->execute()
 	->fetch();
@@ -763,8 +976,8 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   $class_id = $user->uid;
   	
   //SELECT * FROM moodlelink4 WHERE workflowid = $class_workflow_id AND uid = $class_id
-  $record = db_select('moodlelink4', 'ml4')
-	->fields('ml4')
+  $record = db_select('moodlelink_workflow', 'ml5')
+	->fields('ml5')
 	->condition('workflowid', $class_workflow_id->workflow_id)
 	->condition('uid', $class_id)
 	->execute()
@@ -780,7 +993,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
   }
 	
   //INSERT/UPDATE into moodlelink4 ('workflowid, 'uid', 'asecid', 'atitle') VALUES ('workflowid', 'uid', 'asecid', 'atitle')
-  $query = db_merge('moodlelink4')
+  $query = db_merge('moodlelink_workflow')
 	->key(array('workflowid' => $record->workflowid))
 	->key(array('uid' => $record->uid))
 	->key(array('asecid' => $record->asecid))
@@ -799,6 +1012,17 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   $problem = $params['problem'];
   $solution = $params['solution'];
   $task = $params['task'];
+
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
+  if(!isset($original_problem->task_file)){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
 
   $items = [];
 
@@ -830,13 +1054,27 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   endif;
 
   $items['problem'] = [
-    '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
+    '#markup' => '<h4>'.t('Problem').'</h4><p>'.nl2br($problem->data['problem']).'</p>',
   ];
+  
+  if(isset($original_problem->task_file)){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',url($original_problem->task_file),t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+  
   $items['solution'] = [
-    '#markup' => '<h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
+    '#markup' => '<hr><h4>'.t('Solution').'</h4><p>'.nl2br($solution->data['solution']).'</p>',
   ];
 
-  $items[] = ['#markup' => sprintf('<h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
+  if(isset($params['solution']->task_file)){
+  	$items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',url($params['solution']->task_file),t('A file was uploaded with this solution. Click here to view it.')),
+	  ];
+  }
+
+  $items[] = ['#markup' => sprintf('<hr><h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
 
   $my_ta = $params['task']->taskActivity();
   
@@ -970,6 +1208,21 @@ function gg_task_dispute_form($form, &$form_state, $params)
     ->where('workflow_id', '=', $task->workflow_id)
     ->get();
 
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
+  if(!isset($original_problem->task_file)){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
+
+  $solution = Task::whereType('create solution')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
   if (! $params['edit']) :
     $items[] = [
       '#markup' => sprintf('<p>%s <strong>%s</strong>.</p>',
@@ -1008,16 +1261,28 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
   $a = new Accordion('dispute-'.$task->task_id);
 
+  $f = '';
+
+  if(isset($original_problem->task_file)){
+	  $f = sprintf('<br><a href="%s" style="font-weight:bold;">%s</a>',url($original_problem->task_file),t('A file was uploaded with this problem. Click here to view it.'));
+  }
+  
+  $sf = '';
+
+  if(isset($solution->task_file)){
+	  $sf = sprintf('<br><a href="%s" style="font-weight:bold;">%s</a>',url($solution->task_file),t('A file was uploaded with this solution. Click here to view it.'));
+  }
+
   // Problem for the Workflow
-  $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s</p>',
+  $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p>',
     t('Problem'),
-    nl2br($params['problem']->data['problem'])
+    nl2br($params['problem']->data['problem']),$f
   ), true);
 
   // Solution for the Workflow
-  $a->addGroup('Solution', 'solution-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s</p><hr />',
+  $a->addGroup('Solution', 'solution-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p><hr />',
     t('Solution'),
-    nl2br($params['solution']->data['solution'])
+    nl2br($params['solution']->data['solution']),$sf
   ), true);
 
   $graderCount = 1;
@@ -1227,9 +1492,11 @@ function gg_task_dispute_form_submit($form, &$form_state) {
     endif;
   else :
     $task->save();
-  
-  /*$class_task_id = $task->task_id;
-  #krumo($class_task_id);
+	$task->complete();	
+    drupal_set_message(t('Your decision to not dispute has been submitted.'));
+	
+	$class_task_id = $task->task_id;
+  #drupal_set_message($class_task_id);
   
   //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
   $class_workflow_id = db_select('pla_task', 'pla_t')
@@ -1238,17 +1505,17 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 	->execute()
 	->fetch();
 
-  #krumo($class_workflow_id->workflow_id);
+  #drupal_set_message($class_workflow_id->workflow_id);
   	
-  //SELECT uid, asecid FROM moodlelink4 WHERE workflowid = $class_workflow_id->workflow_id
-  $class_id = db_select('moodlelink4', 'ml4')
-	->fields('ml4', array('uid', 'asecid'))
+  //SELECT uid, asecid FROM moodlelink_workflow WHERE workflowid = $class_workflow_id->workflow_id
+  $class_id = db_select('moodlelink_workflow', 'ml5')
+	->fields('ml5', array('uid', 'asecid'))
 	->condition('workflowid', $class_workflow_id->workflow_id)
 	->execute()
 	->fetch();
   
-  #krumo($class_id->uid);
-  #krumo($class_id->asecid);
+  #drupal_set_message($class_id->uid);
+  #drupal_set_message($class_id->asecid);
   
   //SELECT data FROM pla_workflow WHERE workflow_id = $class_workflow_id->workflow_id
   $newgrade = db_select('pla_workflow', 'pla_w')
@@ -1265,23 +1532,23 @@ function gg_task_dispute_form_submit($form, &$form_state) {
   	
   #drupal_set_message($actualgrade);
   
-  //SELECT maid FROM moodlelink3 WHERE asecid = $class_id->asecid
-  $moodle_assignment_id = db_select('moodlelink3', 'ml3')
-  	->fields('ml3', array('maid'))
+  //SELECT maid FROM moodlelink_assignment WHERE asecid = $class_id->asecid
+  $moodle_assignment_id = db_select('moodlelink_assignment', 'ml4')
+  	->fields('ml4', array('maid'))
 	->condition('asecid', $class_id->asecid)
 	->execute()
 	->fetch();
   
-  #krumo($moodle_assignment_id->maid);
+  #drupal_set_message($moodle_assignment_id->maid);
   	
-  //SELECT mid FROM moodlelink WHERE uid = $class_id->uid
-  $moodle_id = db_select('moodlelink', 'ml')
+  //SELECT mid FROM moodlelink_user_id WHERE uid = $class_id->uid
+  $moodle_id = db_select('moodlelink_user_id', 'ml')
   	->fields('ml', array('mid'))
 	->condition('uid', $class_id->uid)
 	->execute()
 	->fetch();
   
-  #krumo($moodle_id->mid);
+  #drupal_set_message($moodle_id->mid);
   
   //SELECT lti_id FROM moodlelink_lti WHERE mid = $moodle_id->mid AND maid = $moodle_assignment_id->maid
   $lti = db_select('moodlelink_lti', 'ml2')
@@ -1295,7 +1562,7 @@ function gg_task_dispute_form_submit($form, &$form_state) {
    
   /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
    *WHERE lti_tool_provider_outcomes_id = $lti->lti_id
-   
+   */
   
   $record = db_select('lti_tool_provider_outcomes', 'lti')
   	->fields('lti', array('lti_tool_provider_outcomes_score'))
@@ -1315,10 +1582,8 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 	->fields(array('lti_tool_provider_outcomes_score' => $record->lti_tool_provider_outcomes_score))
 	->condition('lti_tool_provider_outcomes_id', $lti->lti_id)
 	->execute();
-  }*/
-  
-	$task->complete();	
-    drupal_set_message(t('Your decision to not dispute has been submitted.'));
+  }
+	
   endif;
 }
 
@@ -1333,10 +1598,36 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     ->where('workflow_id', '=', $task->workflow_id)
     ->get();
 
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
+  if(!isset($original_problem->task_file)){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
+
+  $solution = Task::whereType('create solution')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
+  $f = '';
+
+  if(isset($original_problem->task_file)){
+	  $f = sprintf('<a href="%s" style="font-weight:bold;">%s</a><hr>',url($original_problem->task_file),t('A file was uploaded with this problem. Click here to view it.'));
+  }
+
+  $sf = '';
+
+  if(isset($solution->task_file)){
+	  $sf = sprintf('<a href="%s" style="font-weight:bold;">%s</a>',url($solution->task_file),t('A file was uploaded with this solution. Click here to view it.'));
+  }
+
   $items = [];
 
   if (! $params['edit']) :
-    
     
     $data = [];
     foreach ($grades[0]->data['grades'] as $field => $g){
@@ -1376,8 +1667,16 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
   ];
 
   $items[] = [
+    '#markup' => $f
+  ];
+
+  $items[] = [
     '#markup' => '<h4>'.t('Solution').':</h4>'
-    .'<p>'.nl2br($params['solution']->data['solution']).'</p><hr />'
+    .'<p>'.nl2br($params['solution']->data['solution']).'</p>'
+  ];
+
+  $items[] = [
+    '#markup' => $sf . "<hr>"
   ];
 
   $a = new Drupal\ClassLearning\Common\Accordion('resolve-dispute');
@@ -1566,8 +1865,17 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
   $task->save();
+  
+  drupal_set_message(sprintf('%s %s', t('Grade'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
 
-  /*$class_task_id = $task->task_id;
+  if (! $save) :
+    $task->complete();
+
+    // Save to the workflow
+    $params['workflow']->setData('grade', $gradeSum);
+    $params['workflow']->save();
+    
+  $class_task_id = $task->task_id;
   #drupal_set_message($class_task_id);
   
   //SELECT workflow_id FROM pla_task WHERE task_id = $class_task_id
@@ -1580,8 +1888,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   #drupal_set_message($class_workflow_id->workflow_id);
   	
   //SELECT uid, asecid FROM moodlelink4 WHERE workflowid = $class_workflow_id->workflow_id
-  $class_id = db_select('moodlelink4', 'ml4')
-	->fields('ml4', array('uid', 'asecid'))
+  $class_id = db_select('moodlelink_workflow', 'ml5')
+	->fields('ml5', array('uid', 'asecid'))
 	->condition('workflowid', $class_workflow_id->workflow_id)
 	->execute()
 	->fetch();
@@ -1596,7 +1904,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 	->execute()
 	->fetch();
 	
-  if ($newgrade == TRUE) {
+  if ($grade == TRUE) {
   	$mygrade = json_decode($newgrade->data, true);
   }
   
@@ -1605,8 +1913,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   #drupal_set_message($actualgrade);
   
   //SELECT maid FROM moodlelink_assignment WHERE asecid = $class_id->asecid
-  $moodle_assignment_id = db_select('moodlelink3', 'ml3')
-  	->fields('ml3', array('maid'))
+  $moodle_assignment_id = db_select('moodlelink_assignment', 'ml4')
+  	->fields('ml4', array('maid'))
 	->condition('asecid', $class_id->asecid)
 	->execute()
 	->fetch();
@@ -1614,7 +1922,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   #drupal_set_message($moodle_assignment_id->maid);
   	
   //SELECT mid FROM moodlelink_user_id WHERE uid = $class_id->uid
-  $moodle_id = db_select('moodlelink', 'ml')
+  $moodle_id = db_select('moodlelink_user_id', 'ml')
   	->fields('ml', array('mid'))
 	->condition('uid', $class_id->uid)
 	->execute()
@@ -1634,7 +1942,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
    
   /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
    *WHERE lti_tool_provider_outcomes_id = $lti->lti_id
-   
+   */
   
   $record = db_select('lti_tool_provider_outcomes', 'lti')
   	->fields('lti', array('lti_tool_provider_outcomes_score'))
@@ -1654,17 +1962,8 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 	->fields(array('lti_tool_provider_outcomes_score' => $record->lti_tool_provider_outcomes_score))
 	->condition('lti_tool_provider_outcomes_id', $lti->lti_id)
 	->execute();
-  }*/
-  
-  drupal_set_message(sprintf('%s %s', t('Grade'), ($save) ? 'saved. (You must submit this still to complete the task.)' : 'submitted.'));
-
-  if (! $save) :
-    $task->complete();
-
-    // Save to the workflow
-    $params['workflow']->setData('grade', $gradeSum);
-    $params['workflow']->save();
-
+  }
+	
     return drupal_goto('class');
   endif;
 }
@@ -1849,8 +2148,8 @@ function gg_view_workflow($workflow_id, $admin = false)
   $graderCount = 0;
   if (count($tasks) > 0) :
 	
-	$manualForm = drupal_get_form('gg_manual_reassign', $section, $students);
-    $return .= drupal_render($manualForm);
+	//$manualForm = drupal_get_form('gg_manual_reassign', $section, $students);
+    //$return .= drupal_render($manualForm);
 	
 	foreach ($tasks as $task) :
     if (! $admin AND $task->type !== 'grades ok' AND isset($task->settings['internal']) AND $task->settings['internal'])
@@ -1980,6 +2279,17 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
   $solution = $params['solution'];
   $task = $params['task'];
 
+  $original_problem = Task::whereType('edit problem')
+    ->where('workflow_id','=',$params['task']->workflow_id)
+	->first();
+
+  if(!isset($original_problem->task_file)){
+
+	  $original_problem = Task::whereType('create problem')
+	    ->where('workflow_id','=',$params['task']->workflow_id)
+		->first();
+  }
+
   // Previous Grades
   $grades = Task::where('workflow_id', '=', $task->workflow_id)
     ->whereType('grade solution')
@@ -1988,14 +2298,29 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
 
   $items = [];
   $items['problem'] = [
-    '#markup' => '<h4>Problem</h4><p>'.nl2br($problem->data['problem']).'</p><hr />',
+    '#markup' => '<h4>Problem</h4><p>'.nl2br($problem->data['problem']).'</p>',
   ];
+  
+  if(isset($original_problem->task_file)){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',url($original_problem->task_file),t('A file was uploaded with this problem. Click here to view it.')),
+	  ];
+	  
+	}
+  
   $items['solution'] = [
-    '#markup' => '<h4>Solution</h4><p>'.nl2br($solution->data['solution']).'</p><hr />',
+    '#markup' => '<hr><h4>Solution</h4><p>'.nl2br($solution->data['solution']).'</p>',
   ];
 
+  if(isset($solution->task_file)){
+	  $items[] = [
+	    '#markup' => sprintf('<a href="%s" style="font-weight:bold;">%s</a>',url($solution->task_file),t('A file was uploaded with this solution. Click here to view it.')),
+	  ];
+	  
+	}
+
   $items[] = [
-    '#markup' => '<h4>Grades</h4>',
+    '#markup' => '<hr><h4>Grades</h4>',
   ];
 
   $a = new Accordion('previous-graders');
@@ -2292,11 +2617,13 @@ function gg_reassign_task_submit($form, &$form_state)
   	$update = json_decode($task->user_history,true);
   
     $user_object = user_load($task->user_id);
-  
+    $new_user = user_load($user);
 	$ar = array();
-	$ar[] = $user_object->uid;
-	$ar[] = $user_object->name;
-	$ar[] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['previous_uid'] = $user_object->uid;
+	$ar['previous_name'] = $user_object->name;
+	$ar['time'] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['new_uid'] = $new_user->uid;
+	$ar['new_name'] = $new_user->name;
 	$update[] = $ar;
 	$task->user_history = json_encode($update);
 
@@ -2372,11 +2699,13 @@ function gg_manual_reassign_submit($form, &$form_state)
   	$update = json_decode($task->user_history,true);
   
     $user_object = user_load($task->user_id);
-  
+    $new_user = user_load($user);
 	$ar = array();
-	$ar[] = $user_object->uid;
-	$ar[] = $user_object->name;
-	$ar[] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['previous_uid'] = $user_object->uid;
+	$ar['previous_name'] = $user_object->name;
+	$ar['time'] = Carbon\Carbon::now()->toDateTimeString();
+	$ar['new_uid'] = $new_user->uid;
+	$ar['new_name'] = $new_user->name;
 	$update[] = $ar;
 	$task->user_history = json_encode($update);
 
@@ -2390,7 +2719,7 @@ function gg_manual_reassign_submit($form, &$form_state)
   return drupal_set_message('User reassigned and task re-triggered.');
 }
 
-function groupgrade_retrigger_task_form($form, &$form_state, $task_id, $asec){
+function groupgrade_retrigger_task_form($form, &$form_state, $task_id, $asec, $section){
 	
 	drupal_set_title('Re-Open Task');
 	
@@ -2410,6 +2739,11 @@ function groupgrade_retrigger_task_form($form, &$form_state, $task_id, $asec){
 	$items['task'] = array(
 	  '#type' => 'hidden',
 	  '#value' => $task_id,
+	);
+	
+	$items['section'] = array(
+	  '#type' => 'hidden',
+	  '#value' => $section,
 	);
 	
 	$items['asec'] = array(
@@ -2458,8 +2792,9 @@ function groupgrade_retrigger_task_form_submit($form, &$form_state){
 	}
 	
 	$asec = $form['asec']['#value'];
+	$section = $form['section']['#value'];
 	
-	//drupal_goto('class/instructor/assignments/' . $asec . '/administrator-allocation');
+	drupal_goto(sprintf('class/instructor/%d/assignment/%d/view-reassign/table',$section,$asec));
 }
 /**
  * Reassign to Contingency Tasks

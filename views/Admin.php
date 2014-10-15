@@ -1,5 +1,9 @@
 msy<?php
 
+use Drupal\ClassLearning\Common\Modal,
+Drupal\ClassLearning\Models\WorkflowTask as Task,
+  Drupal\ClassLearning\Models\Workflow;
+  
 function groupgrade_home(){
 	return '
   <head>
@@ -460,4 +464,207 @@ function task_activity_form_submit($form, &$form_state){
 	
 	drupal_set_message("Task Activity created");
 	
+}
+
+function secret_function(){
+	$return = '';
+	
+	$m = new Modal("abc");
+	$m->setTitle("ABC");
+	$m->setBody("Does this work well?");
+	$return .= $m->build();
+	
+	$return .= $m->printLink();
+	
+	$m = new Modal("123");
+	$m->setTitle("123");
+	$m->setBody("I hope so...");
+	$return .= $m->build();
+	
+	$return .= $m->printLink();
+	
+	$m = new Modal("xyz");
+	$m->setTitle("XYZ");
+	$m->setBody("It better");
+	$return .= $m->build();
+	
+	$return .= $m->printLink();
+	
+	return $return;
+}
+
+function file_test_form($form, &$form_state){
+	$return = array();
+	
+	$return['file'] = array(
+	  '#type' => 'file',
+	  '#title' => 'Upload',
+	);
+	
+	$return['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' =>  'Submit',
+	  //'#validate' => 'file_test_form_validate',
+	);
+	
+	$return[] = array(
+	  '#markup' => sprintf('<br><br><a href="%s">Worms.docx</a>',url('sites/default/files/CLASS/Worms.docx')),
+	);
+	
+	return $return;
+}
+
+function file_test_form_validate($form, &$form_state){
+	
+	drupal_set_message("Validate Function");
+	
+	$file = file_save_upload('file', array(
+	  //'file_validate_is_image' => array(),
+	  'file_validate_extensions' => array('docx doc'),
+	));
+	
+	if($file){
+		$file->status = 1;
+		file_save($file);
+		if($file = file_move($file, 'public://CLASS')) {
+			$form_state['storage']['file'] = $file;
+		}
+		else{
+			form_set_error('file', "Failed to write the uploaded file to the site's file folder.");
+		}
+	}
+	else{
+		form_set_error('file','No file was uploaded');
+	}
+}
+
+function file_test_form_submit($form, &$form_state){
+	
+	$file = $form_state['storage']['file'];
+	
+	return drupal_set_message(sprintf("<a href='%s'>%s</a>",url('sites/default/files/CLASS/' . $file->filename),$file->uri));
+}
+
+function get_csv(){
+	
+	//Get every workflow from 1488 to 1541
+	$workflows = Workflow::where('workflow_id','>',1583)
+	  ->where('workflow_id','<',1638)
+	  ->get();
+	
+	$headers = array(
+	'Question No.',
+	'Problem Creator',
+	'Solution Creator',
+	'Grader 1',
+	'Grade 1',
+	'Grader 2',
+	'Grade 2',
+	'Disputer',
+	'Dispute Grade',
+	'Instructor Resolved Grade',
+	'Final Grade',
+	);
+	
+	$fp = fopen('sites/default/files/file2.csv','w');
+	
+	fputcsv($fp,$headers);
+	
+	foreach($workflows as $wf){
+		
+		$tasks = Task::where('workflow_id','=',$wf->workflow_id)
+		  ->get();
+		  
+		$csv_entry = array(
+			$wf->workflow_id,
+		);
+		
+		foreach($tasks as $t){
+			
+			switch($t->type){
+				case 'create problem':
+					$csv_entry[] = $t->user_id;
+					break;
+				case 'create solution':
+					$csv_entry[] = $t->user_id;
+					break;
+				case 'grade solution':
+					$csv_entry[] = $t->user_id;
+					$csv_entry[] = $t->data['grades']['Factual_Accuracy']['grade'] + $t->data['grades']['Philosophical_Accuracy']['grade'] + $t->data['grades']['Writing']['grade'];
+					break;
+				case 'dispute':
+					$csv_entry[] = $t->user_id;
+					if(isset($t->data['value'])){
+						if($t->data['value'] == true){
+							$csv_entry[] = $t->data['proposed-Factual_Accuracy-grade'] + $t->data['proposed-Philosophical_Accuracy-grade'] + $t->data['proposed-Writing-grade'];
+						}
+						else
+							$csv_entry[] = 'No Dispute';
+					}
+					else {
+						$csv_entry[] = 'No Dispute';
+					}
+					break;
+				case 'resolve dispute':
+					if(isset($t->data['Factual_Accuracy-grade'])){
+						$csv_entry[] = $t->data['Factual_Accuracy-grade'] + $t->data['Philosophical_Accuracy-grade'] + $t->data['Writing-grade'];
+					}
+					else
+						$csv_entry[] = 'No resolution';
+					break;
+			}
+			
+		}
+
+		if(isset($wf->data['grade']))
+			$csv_entry[] = $wf->data['grade'];
+			else
+			$csv_entry[] = 'No grade';
+			
+		fputcsv($fp,$csv_entry);
+		$csv_entry = null;
+		
+	}  
+	 
+	 
+	fclose($fp);
+	 
+	return '???';
+}
+
+function fix_times(){
+	
+	$newtimes = array(
+		'create_problem' => array(
+			'date' => '2014-10-17 23:45:00',
+			),
+		'edit_problem' => array(
+			'date' => '2014-10-20 23:45:00',
+			),
+		'create_solution' => array(
+			'date' => '2014-10-27 23:45:00',
+			),
+		'grade_solution' => array(
+			'date' => '2014-11-03 23:45:00',
+			),
+		'resolution_grader' => array(
+			'date' => '2014-11-07 23:45:00',
+			),
+		'dispute' => array(
+			'date' => '2014-11-10 23:45:00',
+			),
+		'resolve_dispute' => array(
+			'date' => '2014-11-13 23:45:00',
+			),
+	);
+	
+	$sernewtimes = serialize($newtimes);
+	
+	db_update('pla_task_times')
+	  ->fields(array('data' => $sernewtimes))
+	  ->condition('asec_id',102)
+	  ->execute();
+  
+  
+  return "OK";
 }

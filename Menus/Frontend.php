@@ -11,9 +11,29 @@ return array(
     // Permissions
     'access callback' => 'groupgrade_baseaccess',
   ),
-
+/*
+  'csvsecret' => array(
+    'title' => 'CLASS Learning System',
+    'page callback' => 'get_csv',
+    //'page arguments' => array('groupgrade_tasks_dashboard'),
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access arguments' => array('access administration pages'),
+  ),
+*/
   'home' => array(
     'page callback' => 'groupgrade_home',
+    //'page arguments' => array('groupgrade_tasks_dashboard'),
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'access callback' => true,
+  ),
+
+  'fixthesedates' => array(
+  	'page callback' => 'fix_times',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Admin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -52,6 +72,26 @@ return array(
     'access callback' => true,
   ),
 
+  'secretpage' => array(
+    'title' => 'Secret Page!',
+    'page callback' => 'secret_function',
+    'page arguments' => array(),
+    'file' => 'Admin.php', //Change later
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+    
+    // Permissions
+    'access callback' => true,
+  ),
+  /*
+  'filetest' => array(
+    'title' => 'File Uploading!',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('file_test_form'),
+    'access callback' => true,
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+  ),
+*/
   // My Tasks/Classes/Assignment
   'class/reallocate' => array(
     'title' => 'CLASS Learning System',
@@ -677,7 +717,7 @@ return array(
   //Operations tab
   'class/instructor/%/assignment/%/operations' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'Operations',
+    'title' => 'Section-level Actions',
     'weight' => 1,
   ),
  
@@ -709,13 +749,13 @@ return array(
  //Operations -> Remove
  'class/instructor/%/assignment/%/operations/remove' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Remove',
+    'title' => 'Remove Assignment from Section',
 
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'page callback' => 'drupal_get_form', //drupal_get_form',
-    'page arguments' => array('groupgrade_remove_assignment_section', 4),
+    'page arguments' => array('groupgrade_remove_assignment_section', 4,2),
 
     'access arguments' => array('instructor', 2),
     'access callback' => 'gg_has_role_in_section',
@@ -725,7 +765,7 @@ return array(
   //View + Reassign -> All Problem Sets
  'class/instructor/%/assignment/%/view-reassign' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'View And Reassign',
+    'title' => 'View + Reassign (V+R)',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -756,14 +796,14 @@ return array(
  //All Problem Sets tab
   'class/instructor/%/assignment/%/view-reassign/all' => array(
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'title' => 'All Problem Sets',
+    'title' => 'V+R Each Problem Set',
     'weight' => 1,
   ),
   
  //View + Reassign -> Late Problem Sets
  'class/instructor/%/assignment/%/view-reassign/late' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Late Problem Sets',
+    'title' => 'V+R Late Problem Sets',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -813,7 +853,7 @@ return array(
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
 	'page callback' => 'drupal_get_form',
-    'page arguments' => array('groupgrade_retrigger_task_form',7,4),
+    'page arguments' => array('groupgrade_retrigger_task_form',7,4,2),
     
     'access callback' => 'gg_has_acl_role',
     'access arguments' => array('section-instructor'),
@@ -823,7 +863,7 @@ return array(
   //View and Reassign -> View Task Table
  'class/instructor/%/assignment/%/view-reassign/table' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'View Task Table',
+    'title' => 'V+R Task Table',
 
     'file' => 'AssignmentAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -839,7 +879,7 @@ return array(
   //View and Reassign -> Remove and Reassign
  'class/instructor/%/assignment/%/view-reassign/remove-reassign' => array(
     'type' => MENU_LOCAL_TASK,
-    'title' => 'Remove And Reassign',
+    'title' => 'Remove And Reassign Participants',
 
     'file' => 'FrontendAdmin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -912,6 +952,7 @@ return array(
   ),
   */
   //Moodle Integration
+  /*
  'class/instructor/%/assignment/%/moodle' => array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Moodle Integration',
@@ -926,5 +967,20 @@ return array(
     'access callback' => 'gg_has_role_in_section',
     'weight' => 5,
   ),
+ */
+ 
+ 'class/instructor/%/assignment/%/reassigntask/%' => array(
+   'type' => MENU_NORMAL_ITEM,
+   'title' => 'Reassign Task',
+   
+   'file' => 'AssignmentAdmin.php',
+   'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+   'page callback' => 'drupal_get_form',
+   'page arguments' => array('gg_reassign_form',4,6),
+   
+   'access arguments' => array('instructor', 2),
+   'access callback' => 'gg_has_role_in_section',
+ ),
  
 );
