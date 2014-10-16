@@ -151,6 +151,25 @@ class Allocator {
    * @return void
    */
    
+   /*
+    * Dictionary
+    * 
+    * $roles : array
+    *   -name : role name (create problem, etc)
+    *   -rules : role data (duration, instructions, etc)
+    *   -ta : ta id
+    * 
+    * $pools : array
+    *   -'student' : all the students available for the allocation
+    *   -'instructor' : all the instructors available for the allocation
+    *   
+    * $taskInstanceStorage[$workflow_id][$role_id] = $taskInstanceId;
+    * ex. $taskInstanceStorage[100]['create problem'] contains the task id for that role
+    * 
+    * $workflows : array
+    *   -workflow_id : In the beginning of the allocation, just an array filled with role names set to null
+    */
+   
   public function runAssignmentTA()
   {
      if (count($this->roles) == 0)
@@ -720,7 +739,7 @@ class Allocator {
     for ($i = 0; $i < $maxRuns; $i++) :
       $this->runCount++;
 
-      $this->runAssignmentTA();
+      $this->runAssignment();
 
       $hasErrors = $this->contains_errors($this->getWorkflows());
 
