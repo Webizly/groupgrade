@@ -30,7 +30,16 @@ class AllocatorTA{
 		$workflows[] = $wf;
 	}
 	
+	public function advancePointer(){
+		$pointer++;
+		if($pointer >= count($users) - 1){
+			$pointer = 0;
+		}
+	}
+	
 	public function allocate(){
+		
+		//Don't forget to randomize users
 		
 		$used = array();
 		$pointer = 0;
@@ -54,17 +63,44 @@ class AllocatorTA{
 				$aTitle = $aJson['title'];
 				$aConst = $aJson['constraints'];
 				
-				//Let's do this from order of easiest to hardest.
-				
+				//Same as constraint
 				if(isset($aConst['same as'])){
 					//Let's find that person in the $used arrays...
 					$assignee = $used[$aTitle][$aConst['same as']];
 					$assignments[$task['ta_id']] = $assignee;
+				}//Not constraint
+				else if(isset($aConst['not'])){
+					//GIVE SUPPORT FOR ARRAYS, DUMMY!
+					//Who do we want to avoid?
+					$notMeArray = $used[$aTitle][$aConst['not']];
+					
+					//Set up a while loop here.
+					//While pointer is pointing at person who is not selectable...
+					  //advance pointer
+					
+					
+					//Out of loop, assign
+				}//New to subwf constraint
+				else if(isset($aConst['new to subwf'])){
+					
+					//Get subwf we want to avoid
+					
+					//while pointer is pointing at subwf we dont want...
+					  //advance pointer
+					
+					
+					//Out of loop, assign
+				}//Null constraint
+				else{
+					//assign and advance pointer
 				}
+				
+
 				
 			}
 		}
 		
+		return $assignments;
 	}
 	
 	
