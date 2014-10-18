@@ -104,7 +104,7 @@ class AllocatorTA{
 				else if(isset($aConst['new to subwf'])){
 					
 					//Get subwf we want to avoid
-					
+					$avoid = $ta['TA_visual_id'];
 					//while pointer is pointing at subwf we dont want...
 					  //advance pointer
 					
@@ -113,6 +113,8 @@ class AllocatorTA{
 				}//Null constraint
 				else{
 					//assign and advance pointer
+					$assignments[$task['ta_id']] = $users[$pointer['user']];
+					advancePointer();
 				}
 				
 
