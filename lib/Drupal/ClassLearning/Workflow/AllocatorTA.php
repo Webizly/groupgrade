@@ -75,11 +75,31 @@ class AllocatorTA{
 					$notMeArray = $used[$aTitle][$aConst['not']];
 					
 					//Set up a while loop here.
-					//While pointer is pointing at person who is not selectable...
-					  //advance pointer
+					$ok = false;
+					while(!$ok){
+						$fail = false;
+						foreach($notMeArray as $notMe){
+							if($users[$pointer]['user'] == $used[$aTitle][$notMe] && $users[$pointer]['role'] != $aTitle){
+								$fail = true;
+							}
+							/*
+							if($users[$pointer]['user'] != $used[$aTitle][$notMe] && $users[$pointer]['role'] == $aTitle){
+								$ok = true;
+								$assignments[$task['ta_id']] = $users[$pointer['user']];
+								advancePointer();
+							}
+							 *
+							 */
+						}
+						
+						if(!$fail){
+							$ok = true;
+							$assignments[$task['ta_id']] = $users[$pointer['user']];
+						}
 					
+						advancePointer();
+					}
 					
-					//Out of loop, assign
 				}//New to subwf constraint
 				else if(isset($aConst['new to subwf'])){
 					
