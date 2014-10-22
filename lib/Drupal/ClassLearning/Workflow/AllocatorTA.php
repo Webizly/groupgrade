@@ -19,22 +19,29 @@ class AllocatorTA{
 	
 	
 	
-	public function setupUsers($role, $user){
-		$users[] = array(
-			'user' => $user,
-			'role' => $role,
-		);
+	public function addUsers($role, $user){
+		
+		foreach($user as $u){
+			$this->users[] = array(
+				'user' => $u['user_id'],
+				'role' => $role,
+			);
+			watchdog(WATCHDOG_INFO, "USER: " . $role . " " . $u['user_id']);
+		}
 	}
 	
-	public function setupWorkflows($wf){
-		$workflows[] = $wf;
+	public function addWorkflow($wf){
+		$this->workflows[] = $wf;
+		watchdog(WATCHDOG_INFO, "WF ID: " . $wf);
 	}
 	
-	public function advancePointer(){
+	public function advancePointer($pointer){
 		$pointer++;
-		if($pointer >= count($users) - 1){
+		if($pointer >= count($this->users) - 1){
 			$pointer = 0;
 		}
+		
+		return $pointer;
 	}
 	
 	public function allocate(){
@@ -43,9 +50,14 @@ class AllocatorTA{
 		
 		$used = array();
 		$pointer = 0;
+		$startPointer = 0;
 		
-		foreach($workflows as $workflow){
+		foreach($this->workflows as $workflow){
 			unset($used);
+			
+			watchdog(WATCHDOG_INFO, "USING WF: " . $workflow);
+			
+			$pointer = $startPointer;
 			
 			$tasks = Task::where('workflow_id', '=', $workflow)
 			  ->get();
@@ -56,30 +68,33 @@ class AllocatorTA{
 				
 				$ta = TaskActivity::where('TA_id', '=', $ta)
 				  ->first();
-				  
+				
+				watchdog(WATCHDOG_INFO,"TASK: " . $task['task_id'] . " TA: " . $ta);
+				
 				$aJson = json_decode($ta['TA_assignee_constraints'],1);
 				$aRole = $aJson['role'];
 				//Garbage for now!
 				$aTitle = $aJson['title'];
 				$aConst = $aJson['constraints'];
 				
+				watchdog(WATCHDOG_INFO,"ACONST: " . $aRole . " " . $aTitle . " " . $aConst);
+				
 				//Same as constraint
 				if(isset($aConst['same as'])){
 					//Let's find that person in the $used arrays...
 					$assignee = $used[$aTitle][$aConst['same as']];
-					$assignments[$task['task_id']] = $assignee;
+					$this->assignments[$task['task_id']] = $assignee;
 				}//Not constraint
 				else if(isset($aConst['not'])){
-					//GIVE SUPPORT FOR ARRAYS, DUMMY!
 					//Who do we want to avoid?
-					$notMeArray = $used[$aTitle][$aConst['not']];
+					$notMeArray = $aConst['not'];
 					
 					//Set up a while loop here.
 					$ok = false;
 					while(!$ok){
 						$fail = false;
 						foreach($notMeArray as $notMe){
-							if($users[$pointer]['user'] == $used[$aTitle][$notMe] && $users[$pointer]['role'] != $aTitle){
+							if($this->users[$pointer]['user'] == $used[$aTitle][$notMe] && $this->users[$pointer]['role'] != $aTitle){
 								$fail = true;
 							}
 							/*
@@ -94,10 +109,10 @@ class AllocatorTA{
 						
 						if(!$fail){
 							$ok = true;
-							$assignments[$task['task_id']] = $users[$pointer['user']];
+							$this->assignments[$task['task_id']] = $this->users[$pointer]['user'];
 						}
 					
-						advancePointer();
+						$pointer = $this->advancePointer($pointer);
 					}
 					
 				}//New to subwf constraint
@@ -117,27 +132,29 @@ class AllocatorTA{
 					//Continue to advance the pointer until we are pointing at someone we want
 					$assignee = null;
 					while(!isset($assignee)){
-						if(!in_array($users[$pointer]['user'], $avoidArray) && $users[$pointer]['role'] == $aTitle){
-							$assignee = $users[$pointer]['user'];
+						if(!in_array($this->users[$pointer]['user'], $avoidArray) && $this->users[$pointer]['role'] == $aTitle){
+							$assignee = $this->users[$pointer]['user'];
 						}
 						
-						advancePointer();
+						$pointer = $this->advancePointer($pointer);
 					}
 					
-					$assignments[$task['task_id']] = $assignee; 
+					$this->assignments[$task['task_id']] = $assignee; 
 				}//Null constraint
 				else{
 					//assign and advance pointer
-					$assignments[$task['ta_id']] = $users[$pointer['user']];
-					advancePointer();
+					$this->assignments[$task['task_id']] = $this->users[$pointer]['user'];
+					
+					$pointer = $this->advancePointer($pointer);
+					watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $this->users[$pointer]['user']);
 				}
 				
-
-				
 			}
+
+			$startPointer++;
 		}
 		
-		return $assignments;
+		return $this->assignments;
 	}
 	
 	

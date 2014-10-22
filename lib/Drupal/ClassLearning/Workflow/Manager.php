@@ -446,8 +446,37 @@ class Manager {
     endforeach;
 
     // New Allocator
-    $allocator = new Allocator();
+    
+    $allocator = new AllocatorTA();
+	
+	watchdog(WATCHDOG_INFO, "Gonna start...");
+	
+	foreach (self::getUserRoles() as $role) :
+      $users = SectionUsers::where('section_id', '=', $a->section_id)
+        ->where('su_status', '=', 'active')
+        ->where('su_role', '=', $role)
+        ->get();
 
+      $allocator->addUsers($role, $users);
+    endforeach;
+	
+	foreach ($workflows as $workflow)
+      $allocator->addWorkflow($workflow->workflow_id);
+	
+	$assignments = $allocator->allocate();
+	
+	watchdog(WATCHDOG_INFO, 'Got this far');
+	
+	foreach($assignments as $tid => $uid){
+		$t = WorkflowTask::where('task_id','=',$tid)
+		  ->first();
+		  
+		$t['user_id'] = $uid;
+		watchdog(WATCHDOG_INFO, $tid . ': ' . $uid);
+		$t->save();
+	}
+	
+	/*
     // Add the roles
     foreach (self::getTasks($a) as $role_name => $role)
     {
@@ -509,6 +538,7 @@ class Manager {
         $taskInstance->save();
       }
     }
+	*/
   }
 
   /**
