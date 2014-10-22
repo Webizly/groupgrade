@@ -11,6 +11,7 @@ use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Course,
 
   Drupal\ClassLearning\Workflow\Allocator,
+  Drupal\ClassLearning\Workflow\AllocatorTA,
   Drupal\ClassLearning\Workflow\TaskFactory,
 
   Drupal\ClassLearning\Exception as ManagerException,

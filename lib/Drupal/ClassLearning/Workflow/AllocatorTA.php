@@ -67,7 +67,7 @@ class AllocatorTA{
 				if(isset($aConst['same as'])){
 					//Let's find that person in the $used arrays...
 					$assignee = $used[$aTitle][$aConst['same as']];
-					$assignments[$task['ta_id']] = $assignee;
+					$assignments[$task['task_id']] = $assignee;
 				}//Not constraint
 				else if(isset($aConst['not'])){
 					//GIVE SUPPORT FOR ARRAYS, DUMMY!
@@ -94,7 +94,7 @@ class AllocatorTA{
 						
 						if(!$fail){
 							$ok = true;
-							$assignments[$task['ta_id']] = $users[$pointer['user']];
+							$assignments[$task['task_id']] = $users[$pointer['user']];
 						}
 					
 						advancePointer();
@@ -105,11 +105,26 @@ class AllocatorTA{
 					
 					//Get subwf we want to avoid
 					$avoid = $ta['TA_visual_id'];
-					//while pointer is pointing at subwf we dont want...
-					  //advance pointer
+					$avoidArray = array();
 					
+					//Get all the uid's that have that visual id
+					foreach($used[$aTitle] as $vid => $uid){
+						if($vid == $avoid){
+							$avoidArray[] = $uid;
+						}
+					}
 					
-					//Out of loop, assign
+					//Continue to advance the pointer until we are pointing at someone we want
+					$assignee = null;
+					while(!isset($assignee)){
+						if(!in_array($users[$pointer]['user'], $avoidArray) && $users[$pointer]['role'] == $aTitle){
+							$assignee = $users[$pointer]['user'];
+						}
+						
+						advancePointer();
+					}
+					
+					$assignments[$task['task_id']] = $assignee; 
 				}//Null constraint
 				else{
 					//assign and advance pointer
