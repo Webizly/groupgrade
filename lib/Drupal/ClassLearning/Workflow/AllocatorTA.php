@@ -20,7 +20,7 @@ class AllocatorTA{
 	
 	
 	public function addUsers($role, $user){
-		
+		/*
 		foreach($user as $u){
 			$this->users[] = array(
 				'user' => $u['user_id'],
@@ -28,6 +28,15 @@ class AllocatorTA{
 			);
 			watchdog(WATCHDOG_INFO, "USER: " . $role . " " . $u['user_id']);
 		}
+		*/
+		
+		$people = array();
+		
+		foreach($user as $u){
+			$people[] = $u['user_id'];
+		}
+		$this->users[$role]['users'] = $people;
+		$this->users[$role]['pointer'] = 0;
 	}
 	
 	public function addWorkflow($wf){
@@ -35,9 +44,9 @@ class AllocatorTA{
 		watchdog(WATCHDOG_INFO, "WF ID: " . $wf);
 	}
 	
-	public function advancePointer($pointer){
+	public function advancePointer(&$pointer, $array){
 		$pointer++;
-		if($pointer > count($this->users) - 1){
+		if($pointer > count($array) - 1){
 			$pointer = 0;
 		}
 		
@@ -50,14 +59,12 @@ class AllocatorTA{
 		
 		$used = array();
 		$pointer = 0;
-		$startPointer = 0;
+		$loops = 0;
 		
 		foreach($this->workflows as $workflow){
 			unset($used);
 			
 			//watchdog(WATCHDOG_INFO, "USING WF: " . $workflow);
-			
-			$pointer = $startPointer;
 			
 			$tasks = Task::where('workflow_id', '=', $workflow)
 			  ->get();
@@ -107,17 +114,17 @@ class AllocatorTA{
 						//$assignee = 0;
 						//watchdog(WATCHDOG_INFO, "POINTING TO: " . $this->users[$pointer]['user']);
 						//watchdog(WATCHDOG_INFO, $this->users[$pointer]['role'] . " = " . $aRole);
-						if(!in_array($this->users[$pointer]['user'], $avoidThese) && $this->users[$pointer]['role'] == $aRole){
-							watchdog(WATCHDOG_INFO,"HEY HEY HEY : " . $this->users[$pointer]['user']);
-							$assignee = $this->users[$pointer]['user'];
+						if(!in_array($this->users[$aRole]['users'][$this->users[$aRole]['pointer']], $avoidThese)){
+							//watchdog(WATCHDOG_INFO,"HEY HEY HEY : " . $this->users[$pointer]['user']);
+							$assignee = $this->users[$aRole]['users'][$this->users[$aRole]['pointer']];
 							$used[$aRole][$ta['TA_visual_id']] = $assignee;
 							$this->assignments[$task['task_id']] = $assignee;
 						}
 						
-						$pointer = $this->advancePointer($pointer);
+						$this->advancePointer($this->users[$aRole]['pointer'],$this->users[$aRole]['users']);
 					}
 					
-					watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $assignee);
+					//watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $assignee);
 					
 				}//New to subwf constraint
 				else if(isset($aConst['new to subwf'])){
@@ -137,12 +144,12 @@ class AllocatorTA{
 					$assignee = null;
 					while(!isset($assignee)){
 						//$assignee = 0;
-						if(!in_array($this->users[$pointer]['user'], $avoidArray) && $this->users[$pointer]['role'] == $aRole){
-							$assignee = $this->users[$pointer]['user'];
+						if(!in_array($this->users[$aRole]['users'][$this->users[$aRole]['pointer']], $avoidArray)){
+							$assignee = $this->users[$aRole]['users'][$this->users[$aRole]['pointer']];
 							$used[$aRole][$ta['TA_visual_id']] = $assignee;
 						}
 						
-						$pointer = $this->advancePointer($pointer);
+						$this->advancePointer($this->users[$aRole]['pointer'],$this->users[$aRole]['users']);
 					}
 					
 					$this->assignments[$task['task_id']] = $assignee;
@@ -154,13 +161,11 @@ class AllocatorTA{
 					$assignee = null;
 					while(!isset($assignee)){
 						//$assignee = 0;
-						//watchdog(WATCHDOG_INFO,$this->users[$pointer]['role'] . ' ' . $aRole);
-						if($this->users[$pointer]['role'] == $aRole){
-							$assignee = $this->users[$pointer]['user'];
-							$used[$aRole][$ta['TA_visual_id']] = $this->users[$pointer]['user'];
-						}
+						//watchdog(WATCHDOG_INFO,$this->users[$pointer]['role'] . ' ' . $aRole)
+						$assignee = $this->users[$aRole]['users'][$this->users[$aRole]['pointer']];
+						$used[$aRole][$ta['TA_visual_id']] = $assignee;
 						
-						$pointer = $this->advancePointer($pointer);
+						$this->advancePointer($this->users[$aRole]['pointer'],$this->users[$aRole]['users']);
 					}
 					
 					$this->assignments[$task['task_id']] = $assignee;
@@ -168,8 +173,14 @@ class AllocatorTA{
 				}
 				
 			}
-
-			$startPointer++;
+			
+			$loops++;
+			foreach($this->users as $roles){
+				$roles['pointer'] = 0;
+				for($i = 0; $i < $loops; $i++){
+					$this->advancePointer($roles['pointer'],$roles['users']);
+				}
+			}
 		}
 		
 		return $this->assignments;
