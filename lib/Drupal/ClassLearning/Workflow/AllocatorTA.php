@@ -37,7 +37,7 @@ class AllocatorTA{
 	
 	public function advancePointer($pointer){
 		$pointer++;
-		if($pointer >= count($this->users) - 1){
+		if($pointer > count($this->users) - 1){
 			$pointer = 0;
 		}
 		
@@ -55,7 +55,7 @@ class AllocatorTA{
 		foreach($this->workflows as $workflow){
 			unset($used);
 			
-			watchdog(WATCHDOG_INFO, "USING WF: " . $workflow);
+			//watchdog(WATCHDOG_INFO, "USING WF: " . $workflow);
 			
 			$pointer = $startPointer;
 			
@@ -69,15 +69,16 @@ class AllocatorTA{
 				$ta = TaskActivity::where('TA_id', '=', $ta)
 				  ->first();
 				
-				watchdog(WATCHDOG_INFO,"TASK: " . $task['task_id'] . " TA: " . $ta);
+				//watchdog(WATCHDOG_INFO,"TASK: " . $task['task_id'] . " TA: " . $ta);
 				
 				$aJson = json_decode($ta['TA_assignee_constraints'],1);
 				$aRole = $aJson['role'];
+				//watchdog(WATCHDOG_INFO,$aRole);
 				//Garbage for now!
 				$aTitle = $aJson['title'];
 				$aConst = $aJson['constraints'];
 				
-				watchdog(WATCHDOG_INFO,"ACONST: " . $aRole . " " . $aTitle . " " . $aConst);
+				//watchdog(WATCHDOG_INFO,"ACONST: " . $aRole . " " . $aTitle . " " . $aConst);
 				
 				//Same as constraint
 				if(isset($aConst['same as'])){
@@ -86,54 +87,37 @@ class AllocatorTA{
 					$assignee = $used[$aRole][$aConst['same as']];
 					$this->assignments[$task['task_id']] = $assignee;
 					$used[$aRole][$ta['TA_visual_id']] = $assignee;
+					watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $assignee);
 				}//Not constraint
 				else if(isset($aConst['not'])){
 					//Who do we want to avoid?
 					$notMeArray = $aConst['not'];
 					$assignee = null;
-					//Set up a while loop here.
-					/*
-					$ok = false;
-					while(!$ok){
-						$fail = false;
-						foreach($notMeArray as $notMe){
-							if($this->users[$pointer]['user'] == $used[$aTitle][$notMe] && $this->users[$pointer]['role'] != $aTitle){
-								$fail = true;
-							}
-							/*
-							if($users[$pointer]['user'] != $used[$aTitle][$notMe] && $users[$pointer]['role'] == $aTitle){
-								$ok = true;
-								$assignments[$task['ta_id']] = $users[$pointer['user']];
-								advancePointer();
-							}
-							 *
-							 
-						}
-						
-						if(!$fail){
-							$ok = true;
-							$this->assignments[$task['task_id']] = $this->users[$pointer]['user'];
-						}
-					
-						$pointer = $this->advancePointer($pointer);
-					}
-					 * 
-					 */
 					
 					$avoidThese = array();
 					
 					foreach($notMeArray as $vid){
 						$avoidThese[] = $used[$aRole][$vid];
+						//watchdog(WATCHDOG_INFO,"NOT THIS GUY: " . $used[$aRole][$vid]);
 					}
 					
+					//watchdog(WATCHDOG_INFO, "GOING TO ASSIGN");
+					
 					while(!isset($assignee)){
-						if(!in_array($this->users[$pointer]['user'], $avoidThese) && $this->users[$pointer]['role'] == $aTitle){
+						//$assignee = 0;
+						//watchdog(WATCHDOG_INFO, "POINTING TO: " . $this->users[$pointer]['user']);
+						//watchdog(WATCHDOG_INFO, $this->users[$pointer]['role'] . " = " . $aRole);
+						if(!in_array($this->users[$pointer]['user'], $avoidThese) && $this->users[$pointer]['role'] == $aRole){
+							watchdog(WATCHDOG_INFO,"HEY HEY HEY : " . $this->users[$pointer]['user']);
 							$assignee = $this->users[$pointer]['user'];
 							$used[$aRole][$ta['TA_visual_id']] = $assignee;
+							$this->assignments[$task['task_id']] = $assignee;
 						}
 						
 						$pointer = $this->advancePointer($pointer);
 					}
+					
+					watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $assignee);
 					
 				}//New to subwf constraint
 				else if(isset($aConst['new to subwf'])){
@@ -152,7 +136,8 @@ class AllocatorTA{
 					//Continue to advance the pointer until we are pointing at someone we want
 					$assignee = null;
 					while(!isset($assignee)){
-						if(!in_array($this->users[$pointer]['user'], $avoidArray) && $this->users[$pointer]['role'] == $aTitle){
+						//$assignee = 0;
+						if(!in_array($this->users[$pointer]['user'], $avoidArray) && $this->users[$pointer]['role'] == $aRole){
 							$assignee = $this->users[$pointer]['user'];
 							$used[$aRole][$ta['TA_visual_id']] = $assignee;
 						}
@@ -160,15 +145,26 @@ class AllocatorTA{
 						$pointer = $this->advancePointer($pointer);
 					}
 					
-					$this->assignments[$task['task_id']] = $assignee; 
+					$this->assignments[$task['task_id']] = $assignee;
+					
+					watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $assignee); 
 				}//Null constraint
 				else{
-					//assign and advance pointer
-					$this->assignments[$task['task_id']] = $this->users[$pointer]['user'];
-					$used[$aRole][$ta['TA_visual_id']] = $this->users[$pointer]['user'];
 					
-					$pointer = $this->advancePointer($pointer);
-					watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $this->users[$pointer]['user']);
+					$assignee = null;
+					while(!isset($assignee)){
+						//$assignee = 0;
+						//watchdog(WATCHDOG_INFO,$this->users[$pointer]['role'] . ' ' . $aRole);
+						if($this->users[$pointer]['role'] == $aRole){
+							$assignee = $this->users[$pointer]['user'];
+							$used[$aRole][$ta['TA_visual_id']] = $this->users[$pointer]['user'];
+						}
+						
+						$pointer = $this->advancePointer($pointer);
+					}
+					
+					$this->assignments[$task['task_id']] = $assignee;
+					watchdog(WATCHDOG_INFO,"TASK " . $task['task_id'] . " GOES TO " . $assignee);
 				}
 				
 			}
