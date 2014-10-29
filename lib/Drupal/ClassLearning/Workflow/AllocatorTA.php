@@ -84,11 +84,13 @@ class AllocatorTA{
 				//Garbage for now!
 				$aTitle = $aJson['title'];
 				$aConst = $aJson['constraints'];
-				
 				//watchdog(WATCHDOG_INFO,"ACONST: " . $aRole . " " . $aTitle . " " . $aConst);
 				
-				//Same as constraint
-				if(isset($aConst['same as'])){
+				//Should this even be assigned?
+				if($aRole == "nobody"){
+					$this->assignments[$task['task_id']] = null;
+				}
+				else if(isset($aConst['same as'])){
 					
 					//Let's find that person in the $used arrays...
 					$assignee = $used[$aRole][$aConst['same as']];
@@ -179,6 +181,7 @@ class AllocatorTA{
 				$roles['pointer'] = 0;
 				for($i = 0; $i < $loops; $i++){
 					$this->advancePointer($roles['pointer'],$roles['users']);
+					watchdog(WATCHDOG_INFO, $roles['pointer']);
 				}
 			}
 		}
