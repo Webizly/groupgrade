@@ -49,8 +49,7 @@ class AllocatorTA{
 		if($pointer > count($array) - 1){
 			$pointer = 0;
 		}
-		
-		return $pointer;
+
 	}
 	
 	public function allocate(){
@@ -177,11 +176,20 @@ class AllocatorTA{
 			}
 			
 			$loops++;
-			foreach($this->users as $roles){
+			foreach($this->users as $role => $garbage){
+				/*
 				$roles['pointer'] = 0;
 				for($i = 0; $i < $loops; $i++){
 					$this->advancePointer($roles['pointer'],$roles['users']);
 					watchdog(WATCHDOG_INFO, $roles['pointer']);
+				}
+				 * 
+				 */
+				
+				$this->users[$role]['pointer'] = 0;
+				for($i = 0; $i < $loops; $i++){
+					$this->advancePointer($this->users[$role]['pointer'],$this->users[$role]['users']);
+					watchdog(WATCHDOG_INFO, $role . ":" . $this->users[$role]['pointer']);
 				}
 			}
 		}
