@@ -2249,6 +2249,492 @@ class Manager {
 	      ],
 	    ];
 	}
+
+if($asec->assignment_id == 85)//Homework 5
+	{
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+		
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => '
+	        
+			<p>
+			<em>(Homework 5 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em>
+			</p>
+			
+			<ol>
+				<li>
+				Build <strong>Ten (10)</strong> MatLab expressions. You can <strong>ONLY</strong> use <strong>numbers</strong> (<strong>NO variables</strong>), <strong>arithmetic operators</strong> including +, -, *, /, ^, <strong>relational operators</strong> including ==, ~=, <, <=, >, >= and <strong>logical operators</strong> including ~, &, &&, |, ||, xor. Each expression should meet the following requirements:
+					<ul>
+						<li>
+							It should have <strong>at least 1 relational operator and/or logical operator</strong>;
+						</li>
+						
+						<li>
+							It should have <strong>at least 3 arithmetic, relational and/or logical</strong> operators and <strong>at most 5</strong> operators;
+						</li>
+						
+						<li>
+							It should be a legitimate MatLab expression.
+						</li>
+						
+						<li>
+							Try to use as many different operators as you can across your 10 expressions.
+						</li>
+					</ul>
+				</li>
+				
+				<li>
+					Use MatLab to evaluate each expression: Type in the expression in MatLab command window and let MatLab to evaluate the expression.  If MatLab prints out an error message, modify the expression to remove the error.
+				</li>
+				
+				<li>
+					Include all the MatLab expressions and their values into a table.  Follow the example in the instructions on Moodle.
+				</li>
+			</ol>
+			
+			<p>
+				<strong>Ensure Anonymity + Submit: </strong>Ensure your Word document is anonymous.  Follow the Homework 5 link in Moodle, upload the document and then click submit.
+			</p>
+			
+	        ',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+			'file' => 'optional',
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' =>
+	        '
+			<ol>
+				<li>Edit as necessary, upload the edited document here, and in the comments box below, explain why you made changes. If no edits are necessary, type "Approved" in the comments box.</li>
+				<li>Click on the submit button.</li>
+			</ol> 
+	        ',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => '
+	        	<p>
+	        	Create solutions following the template in the instructions on Moodle.  <em>(Homework 5 instructions on Moodle provide details for each step and examples.   The following is just a summary.)</em>
+	        	</p>
+	        	
+				<p>
+	        	For each question, write the <strong>steps</strong> to evaluate the MatLab expression in the Explanation column in the Word document. You need to pay attention to the precedence of the operators, <strong>carry out the corresponding operations in a correct order, and calculate intermediate results</strong> (you may use a calculator).
+	        	</p>
+	        	
+				<p>
+	        	<strong>Important: </strong> Make sure that you have at least one separate step for each operator in the answer.
+	        	</p>
+	        	
+				<p>
+	        	<strong>Ensure Anonymity + Submit: </strong> Ensure your Word document is anonymous.  Follow the Homework 5 link in Moodle, upload the document and then click submit.
+	        	</p>
+	        ',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  'Question1_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 1',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question1_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 1',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question2_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 2',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question2_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 2',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question3_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 3',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question3_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 3',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question4_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 4',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question4_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 4',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question5_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 5',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question5_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 5',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question6_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 6',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question6_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 6',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question7_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 7',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question7_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 7',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question8_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 8',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question8_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 8',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question9_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 9',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question9_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 9',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question10_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 10',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question10_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 10',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			],
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' =>
+	        '<strong>Because the regular graders did not give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.</strong><br>'
+	          . 
+	        '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => '<strong>You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.</strong><br>'
+	          
+	          .
+	          
+	          '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.'
+	          
+	          .
+	          
+	         '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	    ];
+	}
 	
 
 	if($asec->assignment_id == 82)//PHIL 334 Quiz
