@@ -36,6 +36,11 @@ class Section extends ModelBase {
     return $this->users('student');
   }
 
+  public function instructors()
+  {
+  	return $this->users('instructor');
+  }
+
   public function assignments()
   {
     return AssignmentSection::where('section_id', '=', $this->section_id)
