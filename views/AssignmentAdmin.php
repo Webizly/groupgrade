@@ -60,15 +60,32 @@ function groupgrade_create_assignment()
 
   //To do: Query the database to return all the types of available usecases.
 
-  $items['usecase'] = array(
-    '#type' => 'select',
-    '#title' => t("Problem type"),
-    '#default_value' => variable_get("one_a", true),
-    '#options' => array(
-	  'one_a' => t("Usecase 1A"),
-	  'special' => t("Special"),
-	  ),
-  );
+  //Switch databases to get activity data.
+  db_set_active('activity');
+  
+  //In the future, only get certain assignment activities. For now, get all of 'em. 
+  $activities = db_select('pla_assignment_activity','a')
+    ->fields('a')
+	->execute();
+  
+  //Switch back
+  db_set_active('default');
+  
+  if(count($activities) > 0){
+	
+	$options = array();
+	
+	while($result = $activities->fetchAssoc()){
+		$options[$result['A_id']] = $result['A_name'];
+	}
+	
+  	$items['assignment_activity'] = array(
+      '#type' => 'select',
+      '#title' => t("Assignment type"),
+      '#options' => $options,
+    );
+
+  }
 
   $items['description'] = array(
     '#title' => 'Assignment Instructions to Students',
@@ -90,13 +107,13 @@ function groupgrade_create_assignment_submit($form, &$form_state)
 
   $title = $form['title']['#value'];
   $description = $form['description']['#value'];
-  $usecase = $form['usecase']['#value'];
 
   $a = new Assignment;
   $a->user_id = $user->uid;
   $a->assignment_title = $title;
   $a->assignment_description = $description;
-  $a->assignment_usecase = $usecase;
+  if(isset($form['assignment_activity']))
+    $a->aa_id = $form['assignment_activity']['#value'];
   $a->save();
 
   drupal_set_message(sprintf('Assignment "%s" created.  The assignment must be assigned to a section to initiate the workflow.', $a->assignment_title));
