@@ -39,9 +39,10 @@ class WorkflowTask extends ModelBase {
 	// Does a task activity exist for this task?
 	  
 	if($this->ta_id != null){
+		db_set_active('activity');
 		$ta = TaskActivity::where('TA_id','=',$this->ta_id)
 		  ->first();
-		  
+		db_set_active('default');  
 		return json_decode($ta->TA_trigger_condition,1);
 	}
 	else
@@ -133,8 +134,10 @@ class WorkflowTask extends ModelBase {
 				$no_visual_id = true;
 				  
 				foreach($tasks as $task){
+					db_set_active('activity');
 					$my_ta = TaskActivity::where('TA_id','=',$task->ta_id)
 					  ->first();
+					db_set_active('default');
 					
 					if(!isset($my_ta)){
 						continue;
@@ -703,7 +706,11 @@ class WorkflowTask extends ModelBase {
   }
   
   public function taskActivity(){
-  	return TaskActivity::where('TA_id','=',$this->ta_id)
+  	db_set_active('activity');
+  	$ta = TaskActivity::where('TA_id','=',$this->ta_id)
 	  ->first();
+	db_set_active('default');
+	
+	return $ta;
   }
 }

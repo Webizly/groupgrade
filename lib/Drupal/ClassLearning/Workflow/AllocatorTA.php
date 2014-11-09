@@ -79,8 +79,12 @@ class AllocatorTA{
 				//Better get that TA
 				$ta = $task['ta_id'];
 				
+				db_set_active('activity');
+				
 				$ta = TaskActivity::where('TA_id', '=', $ta)
 				  ->first();
+				
+				db_set_active('default');
 				
 				//watchdog(WATCHDOG_INFO,"TASK: " . $task['task_id'] . " TA: " . $ta);
 				
