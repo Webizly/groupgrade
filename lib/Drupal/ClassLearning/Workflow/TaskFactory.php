@@ -26,16 +26,25 @@ use Drupal\ClassLearning\Models\SectionUsers,
 class TaskFactory {
   private $workflow;
   private $tasks;
-
+  private $assignmentActivity;
+  
   /**
    * Constructor
    */
+  /*
   public function __construct($workflow, $tasks)
   {
     $this->tasks = $tasks;
     $this->workflow = $workflow;
   }
-
+  */
+  
+  public function __construct($workflow, $aa)
+  {
+    $this->assignmentActivity = $aa;
+    $this->workflow = $workflow;
+  }  
+  
   /**
    * Create the tasks for that workflow
    * 
@@ -84,4 +93,9 @@ class TaskFactory {
     endforeach;
 	
   }
+
+  public function createTasksTA(){
+  	
+  }
+
 }

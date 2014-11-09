@@ -9,6 +9,7 @@ use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\AssignmentSection,
   Drupal\ClassLearning\Models\Assignment,
   Drupal\ClassLearning\Models\Course,
+  Drupal\ClassLearning\Models\AssignmentActivity,
 
   Drupal\ClassLearning\Workflow\Allocator,
   Drupal\ClassLearning\Workflow\AllocatorTA,
@@ -429,6 +430,12 @@ class Manager {
       ->where('su_role', '=', 'student')
       ->get();
 
+	db_set_active('activity');
+	
+	$aa = AssignmentActivity::find($assignment['aa_id']);
+	
+	db_set_active('default');
+
 
     // We're just creating a workflow for each user
     // They're not actually assigned to this workflow
@@ -441,7 +448,7 @@ class Manager {
       $w->save();
 
       // Create the workflows tasks
-      self::triggerTaskCreation($w, $a, $users);
+      self::triggerTaskCreation($w, $aa['A_id'], $users);
 
       $workflows[] = $w;
     endforeach;
@@ -553,10 +560,10 @@ class Manager {
    * @param AssignmentSection
    * @param SectionUsers
    */
-  protected static function triggerTaskCreation($workflow, $assignment, $users)
+  protected static function triggerTaskCreation($workflow, $aa, $users)
   {
-    $factory = new TaskFactory($workflow, self::getTasks($assignment));
-    $factory->createTasks();
+    $factory = new TaskFactory($workflow, $aa);
+    $factory->createTasksTA();
   }
 
   /**
