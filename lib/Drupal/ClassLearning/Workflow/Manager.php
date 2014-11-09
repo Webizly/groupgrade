@@ -434,7 +434,8 @@ class Manager {
     // They're not actually assigned to this workflow
     foreach($users as $null) :
       $w = new Workflow;
-      $w->type = $assignment->assignment_usecase;
+	  //We won't need this anymore... Right?
+      //$w->type = $assignment->assignment_usecase;
       $w->assignment_id = $a->asec_id;
       $w->workflow_start = Carbon::now()->toDateTimeString();
       $w->save();
@@ -462,6 +463,8 @@ class Manager {
 	
 	foreach ($workflows as $workflow)
       $allocator->addWorkflow($workflow->workflow_id);
+	
+	$allocator->setAssignmentActivity($activity->aa_id);
 	
 	$assignments = $allocator->allocate();
 	

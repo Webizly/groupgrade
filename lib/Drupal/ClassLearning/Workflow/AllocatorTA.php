@@ -4,7 +4,9 @@ namespace Drupal\ClassLearning\Workflow;
 
 use Drupal\ClassLearning\Exception as AllocatorException,
   Drupal\ClassLearning\Models\TaskActivity,
-  Drupal\ClassLearning\Models\WorkflowTask as Task;
+  Drupal\ClassLearning\Models\WorkflowTask as Task,
+  Drupal\ClassLearning\Models\AssignmentActivity,
+  Drupal\ClassLearning\Models\WorkflowActivity;
 
 class AllocatorTA{
 	
@@ -17,7 +19,8 @@ class AllocatorTA{
 	//key = task id, value = uid. returned at the end of allocation
 	protected $assignments = array();
 	
-	
+	//Assignment activity
+	protected $aa_id;
 	
 	public function addUsers($role, $user){
 		/*
@@ -50,6 +53,10 @@ class AllocatorTA{
 			$pointer = 0;
 		}
 
+	}
+	
+	public function setAssignmentActivity($a){
+		$this->aa_id = $a;
 	}
 	
 	public function allocate(){
