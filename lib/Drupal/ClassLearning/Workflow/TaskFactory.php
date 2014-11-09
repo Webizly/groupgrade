@@ -13,6 +13,8 @@ use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\Workflow,
   Drupal\ClassLearning\Models\WorkflowTask,
   Drupal\ClassLearning\Models\AssignmentSection,
+  Drupal\ClassLearning\Models\WorkflowActivity,
+  Drupal\ClassLearning\Models\TaskActivity,
 
   Drupal\ClassLearning\Workflow\Allocator,
   Drupal\ClassLearning\Workflow\Manager,
@@ -95,7 +97,34 @@ class TaskFactory {
   }
 
   public function createTasksTA(){
-  	
+  	//Let's get the task activities stored in the workflow activity.
+  	db_set_active('activity');
+	
+	$wa = WorkflowActivity::where('WA_A_id','=',$this->assignmentActivity)
+	  ->first();
+	  
+	$taArray = array();
+	
+	foreach(json_decode($wa['WA_tasks'],1) as $ta){
+		$taArray[] = TaskActivity::find($ta);
+	}
+	
+	db_set_active('default');
+	
+	//Make tasks
+	foreach($taArray as $ta){
+		$t = new WorkflowTask;
+        $t->workflow_id = $this->workflow->workflow_id;
+		$t->type = $ta['TA_type'];
+		//Worry about perfecting everything later. Let's just see if we can make tasks.
+		$t->status = "not triggered";
+		$t->start = null;
+		$t->data = [];
+		$t->ta_id = $ta['TA_id'];
+		
+		$t->save();
+	}
+	
   }
 
 }
