@@ -1147,7 +1147,7 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
     endif;
 	
 	// It's good. Save.
-	$grade['grade'] = max($form[$category . '-grade']['#value'],0);
+	$grade['grade'] = $form[$category . '-grade']['#value'];
 	$grade['justification'] = $form[$category . '-justification']['#value'];
 	
 	$task->setGrades($category,$grade);
@@ -1430,7 +1430,7 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 
       // Save the fields
       $form['proposed-'.$aspect.'-grade']['#value'] = (int) $form['proposed-'.$aspect.'-grade']['#value'];
-
+/*
       if (
         $form['proposed-'.$aspect.'-grade']['#value'] !== abs($form['proposed-'.$aspect.'-grade']['#value'])
       OR
@@ -1439,8 +1439,8 @@ function gg_task_dispute_form_submit($form, &$form_state) {
         $form['proposed-'.$aspect.'-grade']['#value'] > 100
       )
         return drupal_set_message(t('Invalid grade: '.$form['proposed-'.$aspect.'-grade']['#value']));
-      
-      $task->setData(max('proposed-'.$aspect.'-grade', $form['proposed-'.$aspect.'-grade']['#value'],0));
+*/    
+      $task->setData('proposed-'.$aspect.'-grade', $form['proposed-'.$aspect.'-grade']['#value']);
       $task->setData('proposed-'.$aspect, trim($form['proposed-'.$aspect]['#value']));
     endforeach;
 
@@ -1820,8 +1820,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 	  return drupal_set_message(t('Please enter only numerical grades.'),'error');
     $form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 
-    if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
-      OR $form[$category . '-grade']['#value'] < $g['min'] OR $form[$category . '-grade']['#value'] > $g['max'])
+    if ($form[$category . '-grade']['#value'] < $g['min'] OR $form[$category . '-grade']['#value'] > $g['max'])
       return drupal_set_message(t('Invalid grade: '.$category . '-grade'),'error');
     else
       $gradeSum += $form[$category . '-grade']['#value'];
