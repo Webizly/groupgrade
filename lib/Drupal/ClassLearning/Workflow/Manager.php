@@ -432,7 +432,7 @@ class Manager {
     // They're not actually assigned to this workflow
     foreach($users as $null) :
       $w = new Workflow;
-      $w->type = $assignment->assignment_usecase;
+      $w->type = "one_a";
       $w->assignment_id = $a->asec_id;
       $w->workflow_start = Carbon::now()->toDateTimeString();
       $w->save();
@@ -3517,8 +3517,15 @@ if($asec->assignment_id == 85)//Homework 5
 			  'correctness' => [
 			    'grade' => 0,
 			    'justification' => 0,
-			    'max' => 100,
+			    'max' => 0,
+			    'min' => -6,
 			    'description' => 'How correct is this answer?',
+			  ],
+			  'somethingelse' => [
+			    'grade' => 0,
+			    'justification' => 0,
+			    'max' => 10,
+			    'description' => 'How whatever is this answer?',
 			  ],
 			],
 

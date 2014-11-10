@@ -1057,6 +1057,11 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
   //Set up another for each loop, this time for fields
   foreach($task->data['grades'] as $category => $g){
   	
+	  //Hotfix for minimum grades
+	  if(!isset($g['min'])){
+	  	$g['min'] = 0;
+	  }
+	
 	  //ADDITIONAL INSTRUCTIONS
 	  if(isset($g['additional-instructions'])){
 	  	
@@ -1086,7 +1091,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 	    '#title' => $g['description'],
 	    '#required' => true,
 	    '#default_value' => (isset($g['grade'])) ? $g['grade'] : '',
-	    '#description' => 'Grade Range: 0 - ' . $g['max'],
+	    '#description' => 'Grade Range: ' . $g['min'] . ' - ' . $g['max'],
 	  ];
 	
 	  $items[$category . '-justification'] = [
@@ -1126,18 +1131,23 @@ function gg_task_grade_solution_form_submit($form, &$form_state) {
   // For each grade category...
   
   foreach ($task->data['grades'] as $category => $grade) :
+	  
+	//Min grade hotfix
+	if(!isset($grade['min'])){
+		$grade['min'] = 0;
+	}  
+	
 	if(is_numeric($form[$category . '-grade']['#value']) == false)
 	  return drupal_set_message(t('Please only input number grades.'), 'error');
   	$form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 	
 	// Is this bad data?
-	if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
-      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $grade['max']) :
+	if ($form[$category . '-grade']['#value'] < $grade['min'] OR $form[$category . '-grade']['#value'] > $grade['max']) :
         return drupal_set_message(t('Invalid grade: ' . $form[$category . '-grade']['#value']), 'error');
     endif;
 	
 	// It's good. Save.
-	$grade['grade'] = $form[$category . '-grade']['#value'];
+	$grade['grade'] = max($form[$category . '-grade']['#value'],0);
 	$grade['justification'] = $form[$category . '-justification']['#value'];
 	
 	$task->setGrades($category,$grade);
@@ -1315,7 +1325,12 @@ function gg_task_dispute_form($form, &$form_state, $params)
   ];
   
   foreach ($grades as $grade) : foreach ($grade->data['grades'] as $category => $g) :
-	
+	  
+	  //Hotfix for minimum grades
+	  if(!isset($g['min'])){
+	  	$g['min'] = 0;
+	  }
+	  
 	  //ADDITIONAL INSTRUCTIONS
 	  if(isset($g['additional-instructions'])){
 	  	
@@ -1342,7 +1357,7 @@ function gg_task_dispute_form($form, &$form_state, $params)
 	  
     $items['proposed-'.$category.'-grade'] = [
       '#type' => 'textfield',
-      '#title' => 'Proposed '.ucfirst($category).' Grade (0-' . $g['max'] . ')',
+      '#title' => 'Proposed '.ucfirst($category).' Grade (' . $g['min'] . ' - ' . $g['max'] . ')',
       '#default_value' => (isset($task->data['proposed-'.$category.'-grade'])) ? $task->data['proposed-'.$category.'-grade'] : '',
     ];
 
@@ -1400,11 +1415,16 @@ function gg_task_dispute_form_submit($form, &$form_state) {
   if ($dispute) :
     foreach ($grade->data['grades'] as $aspect => $g) :
 	
+	//Hotfix for minimum grades
+	  if(!isset($g['min'])){
+	  	$g['min'] = 0;
+	  }
+	
     // Is anything empty?
     if ($form['proposed-'.$aspect.'-grade']['#value'] == '' || $form['proposed-'.$aspect]['#value'] == '')
 		return drupal_set_message(t('Please fill in all fields if you wish to dispute your grade.'), 'error');
 	
-      if ($form['proposed-'.$aspect.'-grade']['#value'] < 0 || $form['proposed-'.$aspect.'-grade']['#value'] > $g['max']
+      if ($form['proposed-'.$aspect.'-grade']['#value'] < $g['min'] || $form['proposed-'.$aspect.'-grade']['#value'] > $g['max']
 	  || is_numeric($form['proposed-'.$aspect.'-grade']['#value']) == false)
         return drupal_set_message(t('Incorrect value inserted for ' . $aspect . ' grade.'), 'error');
 
@@ -1420,7 +1440,7 @@ function gg_task_dispute_form_submit($form, &$form_state) {
       )
         return drupal_set_message(t('Invalid grade: '.$form['proposed-'.$aspect.'-grade']['#value']));
       
-      $task->setData('proposed-'.$aspect.'-grade', $form['proposed-'.$aspect.'-grade']['#value']);
+      $task->setData(max('proposed-'.$aspect.'-grade', $form['proposed-'.$aspect.'-grade']['#value'],0));
       $task->setData('proposed-'.$aspect, trim($form['proposed-'.$aspect]['#value']));
     endforeach;
 
@@ -1704,7 +1724,12 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 
   foreach($grades as $grade){
   	foreach($grade->data['grades'] as $category => $g){
-  		
+  	  
+	  //Hotfix for minimum grades
+	  if(!isset($g['min'])){
+	  	$g['min'] = 0;
+	  }
+	  	
 	  //ADDITIONAL INSTRUCTIONS
 	  if(isset($g['additional-instructions'])){
 	  	
@@ -1731,7 +1756,7 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
 		
 	  $items[$category . '-grade'] = [
 	    '#type' => 'textfield',
-	    '#title' => ucfirst($category) . ' Grade (0-' . $g['max'] . ')',
+	    '#title' => ucfirst($category) . ' Grade (' . $g['min'] . ' - ' . $g['max'] . ')',
 	    '#required' => true,
 	    '#default_value' => (isset($task->data[$category . '-grade'])) ? $task->data[$category . '-grade'] : '',
 	  ];
@@ -1785,12 +1810,18 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   $gradeSum = 0;
 
   foreach ($grade->data['grades'] as $category => $g) :
+	
+	//Hotfix for minimum grades
+	if(!isset($g['min'])){
+	  $g['min'] = 0;
+	}  
+	  
 	if(is_numeric($form[$category . '-grade']['#value']) == false)
 	  return drupal_set_message(t('Please enter only numerical grades.'),'error');
     $form[$category . '-grade']['#value'] = (int) $form[$category . '-grade']['#value'];
 
     if ($form[$category . '-grade']['#value'] !== abs($form[$category . '-grade']['#value'])
-      OR $form[$category . '-grade']['#value'] < 0 OR $form[$category . '-grade']['#value'] > $g['max'])
+      OR $form[$category . '-grade']['#value'] < $g['min'] OR $form[$category . '-grade']['#value'] > $g['max'])
       return drupal_set_message(t('Invalid grade: '.$category . '-grade'),'error');
     else
       $gradeSum += $form[$category . '-grade']['#value'];
@@ -1817,7 +1848,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
     $task->complete();
 
     // Save to the workflow
-    $params['workflow']->setData('grade', $gradeSum);
+    $params['workflow']->setData('grade', max($gradeSum,0));
     $params['workflow']->save();
     
   $class_task_id = $task->task_id;
@@ -2365,6 +2396,11 @@ function gg_task_resolution_grader_form($form, &$form_state, $params) {
 
 foreach($grades as $grade) : foreach($grade->data['grades'] as $category => $g) :
 	
+	//Hotfix for minimum grades
+	if(!isset($g['min'])){
+	  $g['min'] = 0;
+	}
+	
 	//ADDITIONAL INSTRUCTIONS
 	  if(isset($g['additional-instructions'])){
 	  	
@@ -2393,7 +2429,7 @@ foreach($grades as $grade) : foreach($grade->data['grades'] as $category => $g) 
 	    '#type' => 'textfield',
 	    '#title' => $g['description'],
 	    '#required' => true,
-	    '#description' => 'Grade Scale: 0 - ' . $g['max'],
+	    '#description' => 'Grade Scale: ' . $g['min'] . ' - ' . $g['max'],
 	    '#default_value' => (isset($task->data[$category . '-grade'])) ? $task->data[$category . '-grade'] : '',
 	  ];
 	
@@ -2453,10 +2489,15 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
   
   foreach($grades[0]->data['grades'] as $category => $g) :
 	  
+	  //Hotfix for minimum grades
+	  if(!isset($g['min'])){
+	  	$g['min'] = 0;
+	  }
+	  
 	  $score = $form[$category . '-grade']['#value'];
 	  if(is_numeric($score) == FALSE)
 	    return drupal_set_message(t('Invalid grade: ' . $score),'error');
-	  if($score < 0 || $score > $g['max']){
+	  if($score < $g['min'] || $score > $g['max']){
 	    return drupal_set_message(t('Invalid grade: ' . $score),'error');
 	  }
 	  $total += $score;
@@ -2477,7 +2518,7 @@ function gg_task_resolution_grader_form_submit($form, &$form_state) {
     $task->complete();
 
     $workflow = $task->workflow()->first();
-    $workflow->setData('grade', $total);
+    $workflow->setData('grade', max($total,0));
     $workflow->save();
   endif;
   
