@@ -564,6 +564,15 @@ class Manager {
 	        'user alias' => 'grade solution',
 
 	        'instructions' => '
+	        
+			<p>
+			
+			<em>
+			(The “Collaborative Exam forum gives more information, including an example question with points allocated to sections.   The following is just a summary.)
+			</em>
+			
+			</p>
+			
 	        <ol>
 	          <li>
 	          Create 3 possible exam questions. Number them 1, 2 and 3. Post all 3 questions here and post the identical 3 questions in the Create Problem task for the other part of the exam.
@@ -571,7 +580,7 @@ class Manager {
 	          
 			  <li>
 			  Each question should be from a different unit of the course.  Questions can cover any topic through educational applications.   They should ask only about things that "everybody" should have read or looked at, which includes:
-			    <ol>
+			    <ul>
 			      <li>
 			      Lecture notes for any of the lectures.
 			      </li>
@@ -583,7 +592,7 @@ class Manager {
 				  <li>
 				  Any article that was reviewed on Moodle.
 				  </li>
-			    </ol>
+			    </ul>
 			  </li>
 			  
 			  <li>
@@ -684,7 +693,7 @@ class Manager {
 	        </ol>
 	        
 			<p>
-			<strong>Ensure Anonymity + Submit:</strong>  Ensure your Word document is anonymous by removing personal information from the document. See <a href = "http://alturl.com/babcg">http://alturl.com/babcg</a> for detailed instructions.  Upload the document, and then click submit.
+			<strong>Ensure Anonymity + Submit:</strong>  Ensure your Word document is anonymous by removing personal information from the document. See <a href = "http://alturl.com/babcg" target = "_blank">http://alturl.com/babcg</a> for detailed instructions.  Upload the document, and then click submit.
 			</p>
 	        ',
 	      ],
@@ -737,7 +746,7 @@ class Manager {
 			</p>
 			
 			<p>
-			Content Justification:  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
 			  <ol>
 			    <li>
 			      State your section.
@@ -755,7 +764,7 @@ class Manager {
 			</p>
 			
 			<p>
-			<em>Important:</em>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
 			</p>
 			
 			<p>
@@ -801,7 +810,7 @@ class Manager {
 	        // Default value
 	        'value' => true,
 			
-			'resolve range' => 3,
+			'resolve range' => -100,
 			
 	        // Trigger once all the grades are submitted
 	        'trigger' => [
@@ -862,7 +871,76 @@ class Manager {
 	        'instructions' => 'Because the regular graders did give the same '
 	          .'grade, please resolve the grade disagreement. Assign your '
 	          .'own score and justification for each part of the grade, and also '
-	          .'please provide an explanation.',
+	          .'please provide an explanation.'
+	          
+	          .
+	          
+			  '
+	        <p>
+	        <strong>Content (0-30):</strong> The correctness and completeness of the answer, including considering all sides of issues, synthesizing material, etc. Includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.
+	        </p>
+	        
+			<p>
+			Divide the 30 points across the question sections according to the number of points given in the problem statement for each section.  Grade each section separately out of its point allocation. Total the points over all sections and enter the total points here.
+			</p>
+			
+			<p>
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			  <ol>
+			    <li>
+			      State your section.
+			    </li>
+			    
+				<li>
+				State your grade for that section.
+				</li>
+				
+				<li>
+				Write at least 2 full sentences explanation fully explaining and justifying the section’s grade.
+				</li>
+				
+			  </ol>
+			</p>
+			
+			<p>
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			</p>
+			
+			<p>
+			<strong>Presentation (up to 6 points can be DEDUCTED):</strong>  Deduct points to penalize the clarity of the writing, including:
+			<ul>
+			  <li>
+			  Improper citations (deduct up to 3 points if these are missing or incomplete).
+			  </li>
+			  
+			  <li>
+			  Improper length (deduct 2 points if answer is not 750-1700 words, including tables but not including figures or bibliography; you can check this in Word)
+			  </li>
+			  
+			  <li>
+			  Poor readability and clearness in typing/format/ message (deduct points as necessary) if the answer does not:
+			    <ul>
+			      <li>
+			      Use 12 point font.
+			      </li>
+			      
+				  <li>
+				  The answers must be in English.
+				  </li>
+				  
+				  <li>
+				  Minor problems with spelling or grammar should not be penalized. However, if the grammar and spelling problems are so pervasive that it is hard to understand what is being said, then points need to be deducted.
+				  </li>
+			    </ul>
+			  </li> 
+			</ul>
+			</p>
+			
+			<p>
+			<strong>Presentation Justification:</strong>  Clearly explain and justify all points deducted for presentation, or state “Good Presentation” if you deducted no points.
+			</p>
+	        ',
+	          
 	      ],
 
 	      // Dispute grades
@@ -885,7 +963,75 @@ class Manager {
 	        'instructions' => 'You have the option to dispute your grade. To do '
 	          .'so, you need to fully grade your own solution. Assign your own '
 	          .'score and justification for each part of the grade. You must also '
-	          .'explain why the other graders were wrong.',
+	          .'explain why the other graders were wrong.'
+	          
+	          .
+	          
+	          '
+	        <p>
+	        <strong>Content (0-30):</strong> The correctness and completeness of the answer, including considering all sides of issues, synthesizing material, etc. Includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.
+	        </p>
+	        
+			<p>
+			Divide the 30 points across the question sections according to the number of points given in the problem statement for each section.  Grade each section separately out of its point allocation. Total the points over all sections and enter the total points here.
+			</p>
+			
+			<p>
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			  <ol>
+			    <li>
+			      State your section.
+			    </li>
+			    
+				<li>
+				State your grade for that section.
+				</li>
+				
+				<li>
+				Write at least 2 full sentences explanation fully explaining and justifying the section’s grade.
+				</li>
+				
+			  </ol>
+			</p>
+			
+			<p>
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			</p>
+			
+			<p>
+			<strong>Presentation (up to 6 points can be DEDUCTED):</strong>  Deduct points to penalize the clarity of the writing, including:
+			<ul>
+			  <li>
+			  Improper citations (deduct up to 3 points if these are missing or incomplete).
+			  </li>
+			  
+			  <li>
+			  Improper length (deduct 2 points if answer is not 750-1700 words, including tables but not including figures or bibliography; you can check this in Word)
+			  </li>
+			  
+			  <li>
+			  Poor readability and clearness in typing/format/ message (deduct points as necessary) if the answer does not:
+			    <ul>
+			      <li>
+			      Use 12 point font.
+			      </li>
+			      
+				  <li>
+				  The answers must be in English.
+				  </li>
+				  
+				  <li>
+				  Minor problems with spelling or grammar should not be penalized. However, if the grammar and spelling problems are so pervasive that it is hard to understand what is being said, then points need to be deducted.
+				  </li>
+			    </ul>
+			  </li> 
+			</ul>
+			</p>
+			
+			<p>
+			<strong>Presentation Justification:</strong>  Clearly explain and justify all points deducted for presentation, or state “Good Presentation” if you deducted no points.
+			</p>
+	        ',
 	      ],
 
 	      // Resolve a dispute and end the workflow
@@ -909,7 +1055,76 @@ class Manager {
 	        'instructions' => 'The problem solver is disputing his or her grade. '
 	          .'You need to provide the final grade. Assign a final score with '
 	          .'justification for each part of the grade, and also please provide '
-	          .'an explanation.',
+	          .'an explanation.'
+	          
+	          .
+	          
+			  '
+	        <p>
+	        <strong>Content (0-30):</strong> The correctness and completeness of the answer, including considering all sides of issues, synthesizing material, etc. Includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.
+	        </p>
+	        
+			<p>
+			Divide the 30 points across the question sections according to the number of points given in the problem statement for each section.  Grade each section separately out of its point allocation. Total the points over all sections and enter the total points here.
+			</p>
+			
+			<p>
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			  <ol>
+			    <li>
+			      State your section.
+			    </li>
+			    
+				<li>
+				State your grade for that section.
+				</li>
+				
+				<li>
+				Write at least 2 full sentences explanation fully explaining and justifying the section’s grade.
+				</li>
+				
+			  </ol>
+			</p>
+			
+			<p>
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			</p>
+			
+			<p>
+			<strong>Presentation (up to 6 points can be DEDUCTED):</strong>  Deduct points to penalize the clarity of the writing, including:
+			<ul>
+			  <li>
+			  Improper citations (deduct up to 3 points if these are missing or incomplete).
+			  </li>
+			  
+			  <li>
+			  Improper length (deduct 2 points if answer is not 750-1700 words, including tables but not including figures or bibliography; you can check this in Word)
+			  </li>
+			  
+			  <li>
+			  Poor readability and clearness in typing/format/ message (deduct points as necessary) if the answer does not:
+			    <ul>
+			      <li>
+			      Use 12 point font.
+			      </li>
+			      
+				  <li>
+				  The answers must be in English.
+				  </li>
+				  
+				  <li>
+				  Minor problems with spelling or grammar should not be penalized. However, if the grammar and spelling problems are so pervasive that it is hard to understand what is being said, then points need to be deducted.
+				  </li>
+			    </ul>
+			  </li> 
+			</ul>
+			</p>
+			
+			<p>
+			<strong>Presentation Justification:</strong>  Clearly explain and justify all points deducted for presentation, or state “Good Presentation” if you deducted no points.
+			</p>
+	        '
+	          ,
 	      ],
 	    ];
 	}
