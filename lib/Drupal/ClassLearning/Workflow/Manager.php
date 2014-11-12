@@ -432,7 +432,7 @@ class Manager {
     // They're not actually assigned to this workflow
     foreach($users as $null) :
       $w = new Workflow;
-      $w->type = $assignment->assignment_usecase;
+      $w->type = "one_a";
       $w->assignment_id = $a->asec_id;
       $w->workflow_start = Carbon::now()->toDateTimeString();
       $w->save();
@@ -550,6 +550,584 @@ class Manager {
 	//Use section to find course
 	$course = Course::where('course_id','=', $sec->course_id)
 	  ->first();
+	
+	if($course->course_name == "IS 735"){
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+
+	        'user alias' => 'grade solution',
+
+	        'instructions' => '
+	        
+			<p>
+			
+			<em>
+			(The “Collaborative Exam forum gives more information, including an example question with points allocated to sections.   The following is just a summary.)
+			</em>
+			
+			</p>
+			
+	        <ol>
+	          <li>
+	          Create 3 possible exam questions. Number them 1, 2 and 3. Post all 3 questions here and post the identical 3 questions in the Create Problem task for the other part of the exam.
+	          </li>
+	          
+			  <li>
+			  Each question should be from a different unit of the course.  Questions can cover any topic through educational applications.   They should ask only about things that "everybody" should have read or looked at, which includes:
+			    <ul>
+			      <li>
+			      Lecture notes for any of the lectures.
+			      </li>
+			      
+				  <li>
+				  Any required article on the syllabus (with a star).
+				  </li>
+				  
+				  <li>
+				  Any article that was reviewed on Moodle.
+				  </li>
+			    </ul>
+			  </li>
+			  
+			  <li>
+			  Each question should require the person answering to draw on two or more sources.
+			  </li>
+			  
+			  <li>
+			  After each section of a question, state how many points that section is worth.   Sections should total 30 points per question.  (See example in the Collaborative Exam forum.)
+			  </li>
+			  
+			  <li>
+			  Do not include your name.  The exam is anonymous to fellow students.
+			  </li>
+			  
+	        </ol>
+	        ',
+	      ],
+
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+
+	        'duration' => 2,
+
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+
+	        'reference task' => 'create problem',
+	        'instructions' => '
+	        <ol>
+	          <li>
+	          Students submit the identical 3 questions in the Exam Part 1 and Exam Part 2.  Pick one of the 3 questions for this Exam Part, and another from the 3 questions for the other Exam Part. (Alternatively you can make up a different question and not use any of these 3 questions.)
+	          </li>
+	          
+			  <li>
+			  You may wish to print the questions and mark which one you use for each Exam Part. (You will access the other Exam Part from a different task.)
+			  </li>
+			  
+			  <li>
+			  Copy, paste and edit the question as necessary that you have chosen for this Exam Part.
+			  </li>
+			  
+			  <li>
+			  In the Comments box briefly explain why you chose this question and why you edited it as you did.
+			  </li>
+			  
+			  <li>
+			  Click on the submit button.
+			  </li>
+			  
+	        </ol>
+	        ',
+	      ],
+
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+
+			'file' => 'mandatory',
+
+			'optional' => true,
+
+	        'user alias' => 'dispute',
+
+	        'reference task' => 'edit problem',
+	        
+	        'instructions' => '
+	        <p>In a Word document, answer the question shown for this part of the exam.</p>
+	        <p>A correct and complete answer will include consider all sides of issues, synthesize materials, etc.  This includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.</p>
+	        <p>Make it clear which section of the question you are addressing, and be sure to address all sections of the question.</p>
+	        <br>
+	        <p>Notes:</p>
+	        <ol>
+	          <li>
+	            <em>Length restriction:</em> Total answers should contain 750-1700 words (including tables but not including figures or bibliography section).
+	          </li>
+	          
+			  <li>
+			    <em>Bibliography:</em> Include a References section at the end of your answer. Every time you reference any class material, put a citation marker such as [last name of author, date] and then put the full bibliographic citation including page numbers in the bibliography.
+			  </li>
+			  
+			  <li>
+			    <em>Presentation:</em>  Your writing should be clear and readable, in your typing, formatting and content. Use 12 point font.  The answers must be in English with no more than minor problems with spelling or grammar.
+			  </li>
+	        </ol>
+	        
+			<p>
+			<strong>Ensure Anonymity + Submit:</strong>  Ensure your Word document is anonymous by removing personal information from the document. See <a href = "http://alturl.com/babcg" target = "_blank">http://alturl.com/babcg</a> for detailed instructions.  Upload the document, and then click submit.
+			</p>
+	        ',
+	      ],
+
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	        
+			'criteria' => [
+			  'Content' => [
+			    'grade' => 0,
+			    'justification' => 0,
+			    'max' => 30,
+			    'description' => 'Please grade the content of this solution.',
+			  ],
+			  'Presentation' => [
+			    'grade' => 0,
+			    'justification' => 0,
+			    'min' => -6,
+			    'max' => 0,
+			    'description' => 'Please grade the presentation of this solution.',
+			  ],
+			],
+
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+
+	        'reference task' => 'create solution',
+	        'instructions' => '
+	        <p>
+	        <strong>Content (0-30):</strong> The correctness and completeness of the answer, including considering all sides of issues, synthesizing material, etc. Includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.
+	        </p>
+	        
+			<p>
+			Divide the 30 points across the question sections according to the number of points given in the problem statement for each section.  Grade each section separately out of its point allocation. Total the points over all sections and enter the total points here.
+			</p>
+			
+			<p>
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			  <ol>
+			    <li>
+			      State your section.
+			    </li>
+			    
+				<li>
+				State your grade for that section.
+				</li>
+				
+				<li>
+				Write at least 2 full sentences explanation fully explaining and justifying the section’s grade.
+				</li>
+				
+			  </ol>
+			</p>
+			
+			<p>
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			</p>
+			
+			<p>
+			<strong>Presentation (up to 6 points can be DEDUCTED):</strong>  Deduct points to penalize the clarity of the writing, including:
+			<ul>
+			  <li>
+			  Improper citations (deduct up to 3 points if these are missing or incomplete).
+			  </li>
+			  
+			  <li>
+			  Improper length (deduct 2 points if answer is not 750-1700 words, including tables but not including figures or bibliography; you can check this in Word)
+			  </li>
+			  
+			  <li>
+			  Poor readability and clearness in typing/format/ message (deduct points as necessary) if the answer does not:
+			    <ul>
+			      <li>
+			      Use 12 point font.
+			      </li>
+			      
+				  <li>
+				  The answers must be in English.
+				  </li>
+				  
+				  <li>
+				  Minor problems with spelling or grammar should not be penalized. However, if the grammar and spelling problems are so pervasive that it is hard to understand what is being said, then points need to be deducted.
+				  </li>
+			    </ul>
+			  </li> 
+			</ul>
+			</p>
+			
+			<p>
+			<strong>Presentation Justification:</strong>  Clearly explain and justify all points deducted for presentation, or state “Good Presentation” if you deducted no points.
+			</p>
+	        ',
+	      ],
+
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+
+	        // Default value
+	        'value' => true,
+			
+			'resolve range' => -100,
+			
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+
+	        'reference task' => 'grade solution',
+	      ],
+
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+
+	        'reference task' => 'grade solution',
+
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+
+	        'reference task' => 'create solution',
+	        'instructions' => 'Because the regular graders did give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and also '
+	          .'please provide an explanation.'
+	          
+	          .
+	          
+			  '
+	        <p>
+	        <strong>Content (0-30):</strong> The correctness and completeness of the answer, including considering all sides of issues, synthesizing material, etc. Includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.
+	        </p>
+	        
+			<p>
+			Divide the 30 points across the question sections according to the number of points given in the problem statement for each section.  Grade each section separately out of its point allocation. Total the points over all sections and enter the total points here.
+			</p>
+			
+			<p>
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			  <ol>
+			    <li>
+			      State your section.
+			    </li>
+			    
+				<li>
+				State your grade for that section.
+				</li>
+				
+				<li>
+				Write at least 2 full sentences explanation fully explaining and justifying the section’s grade.
+				</li>
+				
+			  </ol>
+			</p>
+			
+			<p>
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			</p>
+			
+			<p>
+			<strong>Presentation (up to 6 points can be DEDUCTED):</strong>  Deduct points to penalize the clarity of the writing, including:
+			<ul>
+			  <li>
+			  Improper citations (deduct up to 3 points if these are missing or incomplete).
+			  </li>
+			  
+			  <li>
+			  Improper length (deduct 2 points if answer is not 750-1700 words, including tables but not including figures or bibliography; you can check this in Word)
+			  </li>
+			  
+			  <li>
+			  Poor readability and clearness in typing/format/ message (deduct points as necessary) if the answer does not:
+			    <ul>
+			      <li>
+			      Use 12 point font.
+			      </li>
+			      
+				  <li>
+				  The answers must be in English.
+				  </li>
+				  
+				  <li>
+				  Minor problems with spelling or grammar should not be penalized. However, if the grammar and spelling problems are so pervasive that it is hard to understand what is being said, then points need to be deducted.
+				  </li>
+			    </ul>
+			  </li> 
+			</ul>
+			</p>
+			
+			<p>
+			<strong>Presentation Justification:</strong>  Clearly explain and justify all points deducted for presentation, or state “Good Presentation” if you deducted no points.
+			</p>
+	        ',
+	          
+	      ],
+
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+
+	        'instructions' => 'You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.'
+	          
+	          .
+	          
+	          '
+	        <p>
+	        <strong>Content (0-30):</strong> The correctness and completeness of the answer, including considering all sides of issues, synthesizing material, etc. Includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.
+	        </p>
+	        
+			<p>
+			Divide the 30 points across the question sections according to the number of points given in the problem statement for each section.  Grade each section separately out of its point allocation. Total the points over all sections and enter the total points here.
+			</p>
+			
+			<p>
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			  <ol>
+			    <li>
+			      State your section.
+			    </li>
+			    
+				<li>
+				State your grade for that section.
+				</li>
+				
+				<li>
+				Write at least 2 full sentences explanation fully explaining and justifying the section’s grade.
+				</li>
+				
+			  </ol>
+			</p>
+			
+			<p>
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			</p>
+			
+			<p>
+			<strong>Presentation (up to 6 points can be DEDUCTED):</strong>  Deduct points to penalize the clarity of the writing, including:
+			<ul>
+			  <li>
+			  Improper citations (deduct up to 3 points if these are missing or incomplete).
+			  </li>
+			  
+			  <li>
+			  Improper length (deduct 2 points if answer is not 750-1700 words, including tables but not including figures or bibliography; you can check this in Word)
+			  </li>
+			  
+			  <li>
+			  Poor readability and clearness in typing/format/ message (deduct points as necessary) if the answer does not:
+			    <ul>
+			      <li>
+			      Use 12 point font.
+			      </li>
+			      
+				  <li>
+				  The answers must be in English.
+				  </li>
+				  
+				  <li>
+				  Minor problems with spelling or grammar should not be penalized. However, if the grammar and spelling problems are so pervasive that it is hard to understand what is being said, then points need to be deducted.
+				  </li>
+			    </ul>
+			  </li> 
+			</ul>
+			</p>
+			
+			<p>
+			<strong>Presentation Justification:</strong>  Clearly explain and justify all points deducted for presentation, or state “Good Presentation” if you deducted no points.
+			</p>
+	        ',
+	      ],
+
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+
+	        'duration' => 2,
+
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.'
+	          
+	          .
+	          
+			  '
+	        <p>
+	        <strong>Content (0-30):</strong> The correctness and completeness of the answer, including considering all sides of issues, synthesizing material, etc. Includes having a framing paragraph to open, providing justification to assertions made, having a conclusion, etc.
+	        </p>
+	        
+			<p>
+			Divide the 30 points across the question sections according to the number of points given in the problem statement for each section.  Grade each section separately out of its point allocation. Total the points over all sections and enter the total points here.
+			</p>
+			
+			<p>
+			<strong>Content Justification:</strong>  It must be clear how many points you gave for each section and why you graded that way.  Provide a full written explanation (justification) of your grading. For each section of the question:
+			  <ol>
+			    <li>
+			      State your section.
+			    </li>
+			    
+				<li>
+				State your grade for that section.
+				</li>
+				
+				<li>
+				Write at least 2 full sentences explanation fully explaining and justifying the section’s grade.
+				</li>
+				
+			  </ol>
+			</p>
+			
+			<p>
+			<strong>Important:</strong>  Your content justification should also point out what is good about the answer, as well as anything that seems to be a major omission or incompleteness in the answer.
+			</p>
+			
+			<p>
+			<strong>Presentation (up to 6 points can be DEDUCTED):</strong>  Deduct points to penalize the clarity of the writing, including:
+			<ul>
+			  <li>
+			  Improper citations (deduct up to 3 points if these are missing or incomplete).
+			  </li>
+			  
+			  <li>
+			  Improper length (deduct 2 points if answer is not 750-1700 words, including tables but not including figures or bibliography; you can check this in Word)
+			  </li>
+			  
+			  <li>
+			  Poor readability and clearness in typing/format/ message (deduct points as necessary) if the answer does not:
+			    <ul>
+			      <li>
+			      Use 12 point font.
+			      </li>
+			      
+				  <li>
+				  The answers must be in English.
+				  </li>
+				  
+				  <li>
+				  Minor problems with spelling or grammar should not be penalized. However, if the grammar and spelling problems are so pervasive that it is hard to understand what is being said, then points need to be deducted.
+				  </li>
+			    </ul>
+			  </li> 
+			</ul>
+			</p>
+			
+			<p>
+			<strong>Presentation Justification:</strong>  Clearly explain and justify all points deducted for presentation, or state “Good Presentation” if you deducted no points.
+			</p>
+	        '
+	          ,
+	      ],
+	    ];
+	}
 	
 	if($course->course_name == 'IS 402')
 	{
@@ -2249,6 +2827,492 @@ class Manager {
 	      ],
 	    ];
 	}
+
+if($asec->assignment_id == 85)//Homework 5
+	{
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+		
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => '
+	        
+			<p>
+			<em>(Homework 5 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em>
+			</p>
+			
+			<ol>
+				<li>
+				Build <strong>Ten (10)</strong> MatLab expressions. You can <strong>ONLY</strong> use <strong>numbers</strong> (<strong>NO variables</strong>), <strong>arithmetic operators</strong> including +, -, *, /, ^, <strong>relational operators</strong> including ==, ~=, <, <=, >, >= and <strong>logical operators</strong> including ~, &, &&, |, ||, xor. Each expression should meet the following requirements:
+					<ul>
+						<li>
+							It should have <strong>at least 1 relational operator and/or logical operator</strong>;
+						</li>
+						
+						<li>
+							It should have <strong>at least 3 arithmetic, relational and/or logical</strong> operators and <strong>at most 5</strong> operators;
+						</li>
+						
+						<li>
+							It should be a legitimate MatLab expression.
+						</li>
+						
+						<li>
+							Try to use as many different operators as you can across your 10 expressions.
+						</li>
+					</ul>
+				</li>
+				
+				<li>
+					Use MatLab to evaluate each expression: Type in the expression in MatLab command window and let MatLab to evaluate the expression.  If MatLab prints out an error message, modify the expression to remove the error.
+				</li>
+				
+				<li>
+					Include all the MatLab expressions and their values into a table.  Follow the example in the instructions on Moodle.
+				</li>
+			</ol>
+			
+			<p>
+				<strong>Ensure Anonymity + Submit: </strong>Ensure your Word document is anonymous.  Follow the Homework 5 link in Moodle, upload the document and then click submit.
+			</p>
+			
+	        ',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+			'file' => 'optional',
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' =>
+	        '
+			<ol>
+				<li>Edit as necessary, upload the edited document here, and in the comments box below, explain why you made changes. If no edits are necessary, type "Approved" in the comments box.</li>
+				<li>Click on the submit button.</li>
+			</ol> 
+	        ',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => '
+	        	<p>
+	        	Create solutions following the template in the instructions on Moodle.  <em>(Homework 5 instructions on Moodle provide details for each step and examples.   The following is just a summary.)</em>
+	        	</p>
+	        	
+				<p>
+	        	For each question, write the <strong>steps</strong> to evaluate the MatLab expression in the Explanation column in the Word document. You need to pay attention to the precedence of the operators, <strong>carry out the corresponding operations in a correct order, and calculate intermediate results</strong> (you may use a calculator).
+	        	</p>
+	        	
+				<p>
+	        	<strong>Important: </strong> Make sure that you have at least one separate step for each operator in the answer.
+	        	</p>
+	        	
+				<p>
+	        	<strong>Ensure Anonymity + Submit: </strong> Ensure your Word document is anonymous.  Follow the Homework 5 link in Moodle, upload the document and then click submit.
+	        	</p>
+	        ',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  'Question1_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 1',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question1_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 1',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question2_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 2',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question2_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 2',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question3_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 3',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question3_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 3',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question4_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 4',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question4_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 4',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question5_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 5',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question5_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 5',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question6_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 6',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question6_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 6',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question7_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 7',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question7_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 7',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question8_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 8',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question8_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 8',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question9_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 9',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question9_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 9',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question10_Correct_Order_of_Steps' => [
+			    'max' => 8,
+			    'description' => 'Grade the order of steps for question 10',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Question10_Correct_Calculations' => [
+			    'max' => 2,
+			    'description' => 'Grade the calculations for question 10',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			],
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' =>
+	        '<strong>Because the regular graders did not give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.</strong><br>'
+	          . 
+	        '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => '<strong>You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.</strong><br>'
+	          
+	          .
+	          
+	          '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.'
+	          
+	          .
+	          
+	         '
+	        <p>
+	        <strong>Correct Order of Steps (0-8 points):</strong> If all the steps are in a correct order, give 8 points. Otherwise, divide 8 points by the number of steps, and then give that number of points to each step in a correct order. (Sometimes all the steps following an out of order step will also be out of order, and sometimes just some steps in the middle of the process will be out of order. You will just deduct points for those out of order that lead to incorrect evaluation of the expression.)  Round the number of total points up to nearest integer.
+	        </p>
+	        
+			<p>
+	        If the total points is not 8, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        <br>
+	        <p>
+	        <strong>Correct Calculations (0-2 points):</strong> Give 2 points if the calculation in every step is correct; give 1 point if the calculation(s) in some steps (not all) are correct; and give 0 points if there is NOT a step with correct calculation.
+	        </p>
+	        
+			<p>
+	        If the total points is not 2, in the justification box clearly explain what was wrong and give a correct answer.
+	        </p>
+	        ',
+	      ],
+	    ];
+	}
 	
 
 	if($asec->assignment_id == 83)//PHIL 334 Quiz
@@ -3517,8 +4581,15 @@ class Manager {
 			  'correctness' => [
 			    'grade' => 0,
 			    'justification' => 0,
-			    'max' => 100,
+			    'max' => 0,
+			    'min' => -6,
 			    'description' => 'How correct is this answer?',
+			  ],
+			  'somethingelse' => [
+			    'grade' => 0,
+			    'justification' => 0,
+			    'max' => 10,
+			    'description' => 'How whatever is this answer?',
 			  ],
 			],
 
@@ -3553,7 +4624,9 @@ class Manager {
 
 	        // Default value
 	        'value' => true,
-
+			
+			'resolve range' => 3,
+			
 	        // Trigger once all the grades are submitted
 	        'trigger' => [
 	          [
