@@ -865,7 +865,7 @@ function gg_task_create_solution_form_validate($form, &$form_state) {
 	
 	$file = file_save_upload('file', array(
 	  //'file_validate_is_image' => array(),
-	  'file_validate_extensions' => array('docx doc'),
+	  'file_validate_extensions' => array('docx doc txt'),
 	));
 	
 	if($file){
