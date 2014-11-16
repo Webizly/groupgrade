@@ -3314,6 +3314,512 @@ if($asec->assignment_id == 85)//Homework 5
 	    ];
 	}
 	
+	if($asec->assignment_id == 94)//Homework 6
+	{
+		return [
+	      'create problem' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'first task trigger',
+	          ]
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+		
+	        'user alias' => 'grade solution',
+	
+	        'instructions' => '
+	        
+			<p>
+			<em>(Homework 6 instructions on Moodle provide details for each step and examples. The following is just a summary.)</em>
+			</p>
+			
+			<ol>
+				<li>
+					Come up with <strong>FOUR</strong> programming exercises. To solve the problems in these exercises, students must use branching statement(s). You may create your own programming exercises. You may also modify the following programming exercises in 1 or more ways: 3.2, 3.4, 3.8, 3.11, and 3.12 in the exercises section of chapter 3 in the textbook.
+				</li>
+				
+				<li>
+					Whether you create your own or modify the textbook exercises, you need to clearly describe the background of the problem, specify what is required as the input for the calculation, and explain what operations should be carried out for each type of input, what is computed as the results, and how to display the results.
+				</li>
+				
+				<li>
+					Include the four exercises in a MS Word document.  Clearly number them 1, 2, 3 and 4.
+				</li>
+			</ol>
+			
+			<p>
+				<strong>Ensure Anonymity + Submit: </strong>Ensure your Word document is anonymous.  Follow the Homework 6 link in Moodle, upload the document and then click submit.
+			</p>
+			
+	        ',
+	      ],
+	
+	      'edit problem' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+			'file' => 'optional',
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create problem',
+	        'instructions' =>
+	        '
+			<ol>
+				<li>Edit as necessary, upload the edited document here, and in the comments box below, explain why you made changes. If no edits are necessary, type "Approved" in the comments box.</li>
+				<li>Click on the submit button.</li>
+			</ol> 
+	        ',
+	      ],
+	
+	      'create solution' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'edit problem',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+			'file' => 'mandatory',
+	
+			'optional' => true,
+	
+	        'user alias' => 'dispute',
+	
+	        'reference task' => 'edit problem',
+	        'instructions' => '
+	        	<p>
+	        	Create solutions following the template in the instructions on Moodle.  <em>(Homework 6 instructions on Moodle provide details for each step and examples.   The following is just a summary.)</em>
+	        	</p>
+	        	
+				<ol>
+					<li>
+					Write a MatLab script for each problem.
+					</li>
+					
+					<li>
+					Make sure that it can run in MatLab without errors.
+					</li>
+					
+					<li>
+					When you finish, test your script: Run the script multiple times. Vary the inputs every time so that the executions can go through different branches in the script. Also make sure that all the branches are tested.
+					<br>
+					Pick a set of representative commands (one for each branch or condition) and its corresponding output that can show the script is fully correct.  Include only the commands and outputs for testing the final version of the script. Do not include redundant commands and outputs.
+					</li>
+					
+					<li>
+					Follow the format in the template in the Moodle instructions!  Copy the script, the representative commands and their text output from MatLab’s Command Window. Paste them into a <span style="font-weight:bold; color:red;">TEXT document (HW6.txt)</span>.   <strong>Do NOT use MS Word documents.</strong>
+					</li>
+				</ol>
+	        	
+				<p>
+	        	<strong>Upload + Submit:</strong> Follow the Homework 6 link in Moodle, upload your HW6.txt and then click submit.
+	        	</p>
+	        ',
+	      ],
+	
+	      'grade solution' => [
+	        'count' => 2,
+	        'duration' => 3,
+	        'user alias' => 'create problem',
+	
+	        // This configuration variable defines if the role of the grade solution
+	        // should take over multiple instances of the task instance.
+	        // 
+	        // If there are two instances of 'grade solution', setting this to true will
+	        // make sure that only one get's an alias. Setting it to false will make it
+	        // it an alias for all the roles.
+	        'user alias all types' => true,
+	
+			// Just for grade solution tasks. How should this grade be set up?
+			'criteria' => [
+			  
+			  'Exercise_1-Script_Runs_in_MatLab' => [
+			    'max' => 8,
+			    'description' => 'Grade Exercise 1 - Script Runs in MatLab',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_1-Correct_Results' => [
+			    'max' => 10,
+			    'description' => 'Grade Exercise 1 - Correct Results',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_1-Testing_Quality' => [
+			    'max' => 7,
+			    'description' => 'Grade Exercise 1 - Testing Quality',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_2-Script_Runs_in_MatLab' => [
+			    'max' => 8,
+			    'description' => 'Grade Exercise 2 - Script Runs in MatLab',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_2-Correct_Results' => [
+			    'max' => 10,
+			    'description' => 'Grade Exercise 2 - Correct Results',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_2-Testing_Quality' => [
+			    'max' => 7,
+			    'description' => 'Grade Exercise 2 - Testing Quality',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_3-Script_Runs_in_MatLab' => [
+			    'max' => 8,
+			    'description' => 'Grade Exercise 3 - Script Runs in MatLab',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_3-Correct_Results' => [
+			    'max' => 10,
+			    'description' => 'Grade Exercise 3 - Correct Results',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_3-Testing_Quality' => [
+			    'max' => 7,
+			    'description' => 'Grade Exercise 3 - Testing Quality',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_4-Script_Runs_in_MatLab' => [
+			    'max' => 8,
+			    'description' => 'Grade Exercise 4 - Script Runs in MatLab',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_4-Correct_Results' => [
+			    'max' => 10,
+			    'description' => 'Grade Exercise 4 - Correct Results',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			  'Exercise_4-Testing_Quality' => [
+			    'max' => 7,
+			    'description' => 'Grade Exercise 4 - Testing Quality',
+			    'grade' => 0,
+			    'justification' => '',
+			  ],
+			  
+			],
+	
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'create solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' => '
+	        <p>
+	        <strong>Script Runs in MatLab (0 or 8 points):</strong> If the script runs without error messages in MatLab, give 8 points and write “Script OK” in the justification box.
+	        </p>
+	        
+	        <p>
+	        Otherwise, give 0 points.  In the justification box clearly explain what was wrong and give a working version of the script.
+	        </p>
+
+			<br>	        
+
+	        <p>
+	        <strong>Correct Results (0, 6, or 10 points):</strong> Give 10 points if the script produces correct results for ALL legal inputs.   Write “Correct for all legal inputs” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 6 points if the script produces correct results for only SOME legal inputs.   In the justification box specify which legal inputs produce incorrect results and why.
+			</p>
+			
+			<p>
+			Give 0 points if the script does not produce correct results for any legal inputs, and explain in the justification box.
+			</p>
+			
+			<br>
+			
+			<p>
+	        <strong>Testing Quality (0, 4 or 7 points):</strong> Give 7 points if the script is well tested.  The solver has provided representative inputs that test EVERY branch and included the corresponding outputs.   Write “Well tested for every branch” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 4 points if the script is partially tested.  The solver has provided representative inputs that test only SOME branches and included the corresponding outputs or has not provided corresponding outputs for some inputs.   In the justification box explain which branches were not tested.
+			</p>
+			
+			<p>
+			Give 0 points if no representative inputs are provided or no corresponding outputs for inputs are provided, and explain in the justification box.
+			</p>
+	        ',
+	      ],
+	
+	      // Resolve the grades
+	      'resolve grades' => [
+	        'internal' => true,
+	
+	        // Default value
+	        'value' => true,
+	
+	        // Trigger once all the grades are submitted
+	        'trigger' => [
+	          [
+	            'type' => 'reference task status',
+	            'task type' => 'grade solution',
+	            'task status' => 'complete',
+	          ],
+	        ],
+	
+	        'reference task' => 'grade solution',
+	      ],
+	
+	      // Grades are fine, store them in the workflow
+	      'grades ok' => [
+	        'internal' => true,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'grade solution',
+	        
+	        // Expire if grades are out of range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	      ],
+	
+	      // Grades are out of a range and we need a second grader
+	      'resolution grader' => [
+	        'duration' => 3,
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => false,
+	          ]
+	        ],
+	
+	        // Expire if grades are in range
+	        'expire' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'resolve grades',
+	            'compare value' => true,
+	          ]
+	        ],
+	
+	        'reference task' => 'create solution',
+	        'instructions' =>
+	        '<strong>Because the regular graders did not give the same '
+	          .'grade, please resolve the grade disagreement. Assign your '
+	          .'own score and justification for each part of the grade, and afterwards '
+	          .'summarize why you resolved it this way.</strong><br>'
+	          . 
+	        '
+	        <p>
+	        <strong>Script Runs in MatLab (0 or 8 points):</strong> If the script runs without error messages in MatLab, give 8 points and write “Script OK” in the justification box.
+	        </p>
+	        
+	        <p>
+	        Otherwise, give 0 points.  In the justification box clearly explain what was wrong and give a working version of the script.
+	        </p>
+
+			<br>	        
+
+	        <p>
+	        <strong>Correct Results (0, 6, or 10 points):</strong> Give 10 points if the script produces correct results for ALL legal inputs.   Write “Correct for all legal inputs” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 6 points if the script produces correct results for only SOME legal inputs.   In the justification box specify which legal inputs produce incorrect results and why.
+			</p>
+			
+			<p>
+			Give 0 points if the script does not produce correct results for any legal inputs, and explain in the justification box.
+			</p>
+			
+			<br>
+			
+			<p>
+	        <strong>Testing Quality (0, 4 or 7 points):</strong> Give 7 points if the script is well tested.  The solver has provided representative inputs that test EVERY branch and included the corresponding outputs.   Write “Well tested for every branch” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 4 points if the script is partially tested.  The solver has provided representative inputs that test only SOME branches and included the corresponding outputs or has not provided corresponding outputs for some inputs.   In the justification box explain which branches were not tested.
+			</p>
+			
+			<p>
+			Give 0 points if no representative inputs are provided or no corresponding outputs for inputs are provided, and explain in the justification box.
+			</p>
+	        ',
+	      ],
+	
+	      // Dispute grades
+	      // This step gives the option to dispute the grade they have recieved on their
+	      // soln to yet-another-grader
+	      'dispute' => [
+	        'duration' => 2,
+	        'user alias' => 'create solution',
+	
+	        // Trigger this if one of the tasks "resolution grader" or
+	        // "grades ok" is complete.
+	        'trigger' => [
+	          [
+	            'type' => 'check tasks for status',
+	            'task types' => ['resolution grader', 'grades ok'],
+	            'task status' => 'complete'
+	          ],
+	        ],
+	
+	        'instructions' => '<strong>You have the option to dispute your grade. To do '
+	          .'so, you need to fully grade your own solution. Assign your own '
+	          .'score and justification for each part of the grade. You must also '
+	          .'explain why the other graders were wrong.</strong><br>'
+	          
+	          .
+	          
+	          '
+	        <p>
+	        <strong>Script Runs in MatLab (0 or 8 points):</strong> If the script runs without error messages in MatLab, give 8 points and write “Script OK” in the justification box.
+	        </p>
+	        
+	        <p>
+	        Otherwise, give 0 points.  In the justification box clearly explain what was wrong and give a working version of the script.
+	        </p>
+
+			<br>	        
+
+	        <p>
+	        <strong>Correct Results (0, 6, or 10 points):</strong> Give 10 points if the script produces correct results for ALL legal inputs.   Write “Correct for all legal inputs” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 6 points if the script produces correct results for only SOME legal inputs.   In the justification box specify which legal inputs produce incorrect results and why.
+			</p>
+			
+			<p>
+			Give 0 points if the script does not produce correct results for any legal inputs, and explain in the justification box.
+			</p>
+			
+			<br>
+			
+			<p>
+	        <strong>Testing Quality (0, 4 or 7 points):</strong> Give 7 points if the script is well tested.  The solver has provided representative inputs that test EVERY branch and included the corresponding outputs.   Write “Well tested for every branch” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 4 points if the script is partially tested.  The solver has provided representative inputs that test only SOME branches and included the corresponding outputs or has not provided corresponding outputs for some inputs.   In the justification box explain which branches were not tested.
+			</p>
+			
+			<p>
+			Give 0 points if no representative inputs are provided or no corresponding outputs for inputs are provided, and explain in the justification box.
+			</p>
+	        ',
+	      ],
+	
+	      // Resolve a dispute and end the workflow
+	      // Trigger only if the "dispute" task has a value of true
+	      'resolve dispute' => [
+	        'pool' => [
+	          'name' => 'instructor',
+	          'pull after' => false,
+	        ],
+	
+	        'duration' => 2,
+	
+	        'trigger' => [
+	          [
+	            'type' => 'compare value of task',
+	            'task type' => 'dispute',
+	            'compare value' => true,
+	          ],
+	        ],
+	
+	        'instructions' => 'The problem solver is disputing his or her grade. '
+	          .'You need to provide the final grade. Assign a final score with '
+	          .'justification for each part of the grade, and also please provide '
+	          .'an explanation.'
+	          
+	          .
+	          
+	         '
+	        <p>
+	        <strong>Script Runs in MatLab (0 or 8 points):</strong> If the script runs without error messages in MatLab, give 8 points and write “Script OK” in the justification box.
+	        </p>
+	        
+	        <p>
+	        Otherwise, give 0 points.  In the justification box clearly explain what was wrong and give a working version of the script.
+	        </p>
+
+			<br>	        
+
+	        <p>
+	        <strong>Correct Results (0, 6, or 10 points):</strong> Give 10 points if the script produces correct results for ALL legal inputs.   Write “Correct for all legal inputs” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 6 points if the script produces correct results for only SOME legal inputs.   In the justification box specify which legal inputs produce incorrect results and why.
+			</p>
+			
+			<p>
+			Give 0 points if the script does not produce correct results for any legal inputs, and explain in the justification box.
+			</p>
+			
+			<br>
+			
+			<p>
+	        <strong>Testing Quality (0, 4 or 7 points):</strong> Give 7 points if the script is well tested.  The solver has provided representative inputs that test EVERY branch and included the corresponding outputs.   Write “Well tested for every branch” in the justification box.
+	        </p>
+	        
+			<p>
+			Give 4 points if the script is partially tested.  The solver has provided representative inputs that test only SOME branches and included the corresponding outputs or has not provided corresponding outputs for some inputs.   In the justification box explain which branches were not tested.
+			</p>
+			
+			<p>
+			Give 0 points if no representative inputs are provided or no corresponding outputs for inputs are provided, and explain in the justification box.
+			</p>
+	        ',
+	      ],
+	    ];
+	}
 
 	if($asec->assignment_id == 82)//PHIL 334 Quiz
 	{
