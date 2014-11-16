@@ -31,7 +31,7 @@ return array(
 
     'access callback' => true,
   ),
-
+/*
   'fixthesedates' => array(
   	'page callback' => 'fix_times',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
@@ -40,8 +40,8 @@ return array(
 
     'access callback' => true,
   ),
-
-  'about' => array(
+*/
+  'class/about' => array(
     'title' => 'About CLASS',
     'page callback' => 'groupgrade_about',
     'file' => 'Admin.php', //Change later
