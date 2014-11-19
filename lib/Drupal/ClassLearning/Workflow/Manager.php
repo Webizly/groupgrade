@@ -3314,7 +3314,7 @@ if($asec->assignment_id == 85)//Homework 5
 	    ];
 	}
 	
-	if($asec->assignment_id == 94)//Homework 6
+	if($asec->assignment_id == 87)//Homework 6
 	{
 		return [
 	      'create problem' => [
