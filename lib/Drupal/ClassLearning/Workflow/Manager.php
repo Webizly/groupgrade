@@ -8,8 +8,8 @@ use Drupal\ClassLearning\Models\SectionUsers,
   Drupal\ClassLearning\Models\WorkflowTask,
   Drupal\ClassLearning\Models\AssignmentSection,
   Drupal\ClassLearning\Models\Assignment,
-  Drupal\ClassLearning\Models\Course,
   Drupal\ClassLearning\Models\AssignmentActivity,
+  Drupal\ClassLearning\Models\Course,
 
   Drupal\ClassLearning\Workflow\Allocator,
   Drupal\ClassLearning\Workflow\AllocatorTA,
@@ -429,13 +429,23 @@ class Manager {
       ->where('su_status', '=', 'active')
       ->where('su_role', '=', 'student')
       ->get();
-
+/*
 	db_set_active('activity');
 	
 	$aa = AssignmentActivity::find($assignment['aa_id']);
 	
 	db_set_active('default');
-
+*/
+	db_set_active('activity');
+  
+    //In the future, only get certain assignment activities. For now, get all of 'em. 
+    $aa = db_select('pla_assignment_activity','a')
+      ->fields('a')
+	  ->condition('A_id', $assignment['aa_id'], '=')
+	  ->execute()
+	  ->fetchAssoc();
+    //Switch back
+    db_set_active('default');
 
     // We're just creating a workflow for each user
     // They're not actually assigned to this workflow

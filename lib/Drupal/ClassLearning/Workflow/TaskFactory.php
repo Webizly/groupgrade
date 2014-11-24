@@ -100,8 +100,20 @@ class TaskFactory {
   	//Let's get the task activities stored in the workflow activity.
   	db_set_active('activity');
 	
+	/*
 	$wa = WorkflowActivity::where('WA_A_id','=',$this->assignmentActivity)
 	  ->first();
+	*/
+	
+	db_set_active('activity');
+   
+    $wa = db_select('pla_workflow_activity','wf')
+      ->fields('wf')
+	  ->condition('WA_A_id', $this->assignmentActivity, '=')
+	  ->execute()
+	  ->fetchAssoc();
+    //Switch back
+    db_set_active('default');
 	  
 	$taArray = array();
 	
