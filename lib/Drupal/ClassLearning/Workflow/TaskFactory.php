@@ -113,12 +113,17 @@ class TaskFactory {
 	  ->execute()
 	  ->fetchAssoc();
     //Switch back
-    db_set_active('default');
 	  
 	$taArray = array();
 	
 	foreach(json_decode($wa['WA_tasks'],1) as $ta){
-		$taArray[] = TaskActivity::find($ta);
+		$taArray[] = db_select('pla_task_activity','ta')
+		  ->fields('ta')
+		  ->condition('TA_id', $ta, '=')
+		  ->execute()
+		  ->fetchAssoc();
+		  
+		//$taArray[] = TaskActivity::find($ta);
 	}
 	
 	db_set_active('default');

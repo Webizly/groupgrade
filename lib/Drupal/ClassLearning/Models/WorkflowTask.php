@@ -40,10 +40,18 @@ class WorkflowTask extends ModelBase {
 	  
 	if($this->ta_id != null){
 		db_set_active('activity');
-		$ta = TaskActivity::where('TA_id','=',$this->ta_id)
-		  ->first();
+		
+		$ta = db_select('pla_task_activity','ta')
+		  ->fields('ta')
+		  ->condition('TA_id', $this->ta_id, '=')
+		  ->execute()
+		  ->fetchAssoc();
+		
+		/*$ta = TaskActivity::where('TA_id','=',$this->ta_id)
+		  ->first();*/
+		  
 		db_set_active('default');  
-		return json_decode($ta->TA_trigger_condition,1);
+		return json_decode($ta['TA_trigger_condition'],1);
 	}
 	else
     	return $this->settings['trigger'];
@@ -135,8 +143,16 @@ class WorkflowTask extends ModelBase {
 				  
 				foreach($tasks as $task){
 					db_set_active('activity');
-					$my_ta = TaskActivity::where('TA_id','=',$task->ta_id)
+					
+					$my_ta = db_select('pla_task_activity','ta')
+		  				->fields('ta')
+		  				->condition('TA_id', $task->ta_id, '=')
+		  				->execute()
+		  				->fetchAssoc();
+					
+					/*$my_ta = TaskActivity::where('TA_id','=',$task->ta_id)
 					  ->first();
+					 */
 					db_set_active('default');
 					
 					if(!isset($my_ta)){
@@ -406,7 +422,17 @@ class WorkflowTask extends ModelBase {
 	
 	if(isset($my_ta)){
 		$my_ta->TA_start_time = $this->start;
-		$my_ta->save();
+		//$my_ta->save();
+		db_set_active('activity');
+		
+		db_update('pla_task_activity')
+		  ->fields(array(
+		    'TA_start_time' => $this->start,
+		  ))
+		  ->condition('TA_id',$my_ta->TA_id,'=')
+		  ->execute();
+		
+		db_set_active('default');
 	}
 	
     $this->save();
@@ -488,7 +514,7 @@ class WorkflowTask extends ModelBase {
 	$my_ta = $this->taskActivity();
 	
 	if(isset($my_ta)){
-	  $due = json_decode($my_ta->TA_due,1);
+	  $due = json_decode($my_ta['TA_due'],1);
 	  
 	  if($due['type'] == 'duration'){
 	  	return Carbon::createFromFormat(MYSQL_DATETIME, $my_ta->TA_start_time)->addDays($due['value']);
@@ -707,8 +733,16 @@ class WorkflowTask extends ModelBase {
   
   public function taskActivity(){
   	db_set_active('activity');
-  	$ta = TaskActivity::where('TA_id','=',$this->ta_id)
+	
+	$ta = db_select('pla_task_activity','ta')
+		  ->fields('ta')
+		  ->condition('TA_id', $this->ta_id, '=')
+		  ->execute()
+		  ->fetchAssoc();
+	
+  	/*$ta = TaskActivity::where('TA_id','=',$this->ta_id)
 	  ->first();
+	*/
 	db_set_active('default');
 	
 	return $ta;

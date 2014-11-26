@@ -81,8 +81,15 @@ class AllocatorTA{
 				
 				db_set_active('activity');
 				
-				$ta = TaskActivity::where('TA_id', '=', $ta)
+				$ta = db_select('pla_task_activity','ta')
+		  		  ->fields('ta')
+		  		  ->condition('TA_id', $ta, '=')
+		  		  ->execute()
+		  		  ->fetchAssoc();
+				
+				/*$ta = TaskActivity::where('TA_id', '=', $ta)
 				  ->first();
+				*/
 				
 				db_set_active('default');
 				
