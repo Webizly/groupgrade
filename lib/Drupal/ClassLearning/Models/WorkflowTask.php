@@ -421,7 +421,7 @@ class WorkflowTask extends ModelBase {
 	$my_ta = $this->taskActivity();
 	
 	if(isset($my_ta)){
-		$my_ta->TA_start_time = $this->start;
+		//$my_ta->TA_start_time = $this->start;
 		//$my_ta->save();
 		db_set_active('activity');
 		

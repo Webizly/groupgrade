@@ -983,4 +983,17 @@ return array(
    'access callback' => 'gg_has_role_in_section',
  ),
  
+ 'class/assignmenteditor' => array(
+   'type' => MENU_NORMAL_ITEM,
+   'title' => 'Assignment Editor',
+   
+   'file' => 'AssignmentEditor.php',
+   'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+   'page callback' => 'groupgrade_form1',
+   'page arguments' => array(),
+   
+   'access callback' => true,
+ ),
+ 
 );
