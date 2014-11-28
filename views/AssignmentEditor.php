@@ -542,6 +542,7 @@ function groupgrade_createproblem($form, &$form_state){
   $form['tasks']['p1']['TA_next_task'] = array(
 	'#type' => 'hidden',
   );
+  
    
 //************************************************************
 //	Create Problem ---- p1.1 ==> Edit & Comment
@@ -768,7 +769,7 @@ function groupgrade_createproblem($form, &$form_state){
    $form['tasks']['p11']['template']['p11-TA_instructions'] = array(
    	'#type' => 'textarea',
     '#title' => t('Instructions'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => 'Rephrase the problem (if necessary) so it is '
           .'appropriate to the assignment and clear to the person solving '
           .'it. The solver and graders will only see your edited version, not '
@@ -1151,7 +1152,7 @@ function groupgrade_createproblem($form, &$form_state){
    $form['tasks']['p12']['template']['p12-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for comment only'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -1522,7 +1523,7 @@ function groupgrade_createproblem($form, &$form_state){
    $form['tasks']['p13']['template']['p13-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for revise & resubmit'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -1903,7 +1904,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['p14']['template']['p14-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for grade'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -2081,7 +2082,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
   );
 
 
-
+  
   //************************************************************
  //	Create Problem ---- p15 ==> Resolve Grades
  //************************************************************
@@ -2234,6 +2235,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
     	'#required' => FALSE,
     	'#description' => "Please enter Description",	
    );
+   
    $form['tasks']['p15']['advanced']['p15-TA_one_or_seperate'] = array(
        '#type' => 'hidden',
        '#title' => t('Everyone gets same problem?'),
@@ -2241,7 +2243,9 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+	   '#default_value' => 0,
   );
+  
    $form['tasks']['p15']['advanced']['p15-TA_assignee_constraints'] = array(
        '#type' => 'select',
        '#title' => t('Who does?'),
@@ -2253,24 +2257,24 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
 
 // option 0
 
-   $form['tasks']['p15']['advanced']['p15-TA_assignee_constraints select'] = array(
+   $form['tasks']['p15']['advanced']['p15-TA_assignee_constraints_select'] = array(
         '#type' => 'radios',
         '#title' => 'Student does work:',
-	'#options' => array (
-	  0 => t('Individual'),
-	  1 => t('Group'),
+		'#options' => array (
+	  	  0 => t('Individual'),
+	  	  1 => t('Group'),
 		),
         '#default_value' => 0,
     	'#states' => array(
-		'visible' => array(
-		':input[name="p15-TA_assignee_constraints"]' => array('value' => 0),
+		  'visible' => array(
+			':input[name="p15-TA_assignee_constraints"]' => array('value' => 0),
+			),
 		),
-	),
 	);
 
    // option 1
    
-   $form['tasks']['p15']['advanced']['p15-TA_assignee_constraints select1'] = array(
+   $form['tasks']['p15']['advanced']['p15-TA_assignee_constraints_select1'] = array(
         '#type' => 'radios',
         '#title' => 'Instructor does work:',
 	'#options' => array (
@@ -2284,10 +2288,12 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
 		),
 	),
 	);
+	
    $form['tasks']['p15']['advanced']['p15-TA_function_type'] = array(
 	
    );
 
+   
 // template
 
    $form['tasks']['p15']['template'] = array(
@@ -2311,7 +2317,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['p15']['template']['p15-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -2610,6 +2616,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+       '#default_value' => 0,
   );
   $form['tasks']['p16']['advanced']['p16-TA_assignee_constraints'] = array(
        '#type' => 'select',
@@ -2681,7 +2688,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['p16']['template']['p16-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -2982,6 +2989,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+       '#default_value' => 0,
   );
    $form['tasks']['p17']['advanced']['p17-TA_assignee_constraints'] = array(
        '#type' => 'select',
@@ -3053,7 +3061,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['p17']['template']['p17-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -3435,7 +3443,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['s1']['template']['s1-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -3736,6 +3744,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+       '#default_value' => 0,
   );
    $form['tasks']['s11']['advanced']['s11-TA_assignee_constraints'] = array(
        '#type' => 'select',
@@ -3808,7 +3817,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['s11']['template']['s11-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -4178,7 +4187,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['s12']['template']['s12-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for comment only'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -4548,7 +4557,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['s13']['template']['s13-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for revise & resubmit'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -4848,6 +4857,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+       '#default_value' => 0,
   );
    $form['tasks']['s14']['advanced']['s14-TA_assignee_constraints'] = array(
        '#type' => 'select',
@@ -4915,13 +4925,13 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    	'#type' => 'textarea',
     '#title' => t('Instructions'),
     '#required' => TRUE,
-    '#default_value' => '',
+    '#default_value' => 'TBD',
     '#description' => "Please enter instructions.",	
    );
    $form['tasks']['s14']['template']['s14-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -5260,6 +5270,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+       '#default_value' => 0,
   );
    $form['tasks']['s15']['advanced']['s15-TA_assignee_constraints'] = array(
        '#type' => 'select',
@@ -5330,7 +5341,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['s15']['template']['s15-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -5628,6 +5639,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+       '#default_value' => 0,
   );
   $form['tasks']['s16']['advanced']['s16-TA_assignee_constraints'] = array(
        '#type' => 'select',
@@ -5699,7 +5711,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['s16']['template']['s16-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
@@ -6000,6 +6012,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
          0 => t('No'),
          1 => t('Yes'),
 		 ),
+       '#default_value' => 0,
   );
    $form['tasks']['s17']['advanced']['s17-TA_assignee_constraints'] = array(
        '#type' => 'select',
@@ -6044,6 +6057,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
 		),
 	),
 	);
+	
    $form['tasks']['s17']['advanced']['s17-TA_function_type'] = array(
 	
    );
@@ -6071,7 +6085,7 @@ $form['tasks']['p14']['basic']['p14-TA_due'] =array(
    $form['tasks']['s17']['template']['s17-TA_rubric'] = array(
    	'#type' => 'textarea',
     '#title' => t('Rubric for edit & comment'),
-    '#required' => TRUE,
+    //'#required' => TRUE,
     '#default_value' => " ",
     	'#description' => "Please enter Rubric",	
    );
