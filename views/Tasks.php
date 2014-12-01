@@ -801,6 +801,13 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
       '#type' => 'item',
       '#markup' => nl2br($problem),
     ];
+	
+	if(isset($params['task']->task_file)){
+		$items['solution_file'] = [
+		  '#type' => 'item',
+		  '#markup' => sprintf("<a href = '%s'>Solution File</a>",url($params['task']->task_file)),
+		];
+	}
 
     return $items;
   endif;
