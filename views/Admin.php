@@ -658,3 +658,55 @@ function fix_times(){
   
   return "OK";
 }
+
+
+function add_student(){
+	
+	$wf = new Workflow();
+	$wf->type = "one_a";
+	$wf->assignment_id = 107;
+	$wf->workflow_start = 1;
+	$wf->workflow_end = null;
+	$wf->data = null;
+	$wf->save();
+	
+	$workflow = db_select('pla_workflow','wf');
+	$workflow->fields('wf',array('workflow_id'))
+	  ->orderBy('workflow_id','DESC')
+	  ->range(0,1);
+	  
+	$result = $workflow->execute();
+	$result = $result->fetchAssoc();
+	
+	$useThisWF = $result['workflow_id'];
+	
+	$tasks = Task::where('workflow_id', '=', 2195)
+	  ->get();
+	
+	foreach($tasks as $task){
+		$t = new Task();
+		$t->workflow_id = $useThisWF;
+		if(!isset($task['user_id']))
+		  $t->user_id = null;
+		else
+		  $t->user_id = 0;
+		$t->group_id = null;
+		$t->type = $task['type'];
+		$t->referenced_task = $task['referenced_task'];
+		$t->status = 'not triggered';
+		$t->start = null;
+		$t->end = null;
+		$t->force_end = null;
+		$t->data = $task['data'];
+		$t->settings = $task['settings'];
+		$t->user_history = null;
+		$t->ta_id = $task['ta_id'];
+		$t->task_file = null;
+		
+		$t->save();
+	}
+	
+	return "OK! " . $useThisWF;  
+	  
+}
+

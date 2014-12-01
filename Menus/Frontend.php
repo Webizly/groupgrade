@@ -41,6 +41,16 @@ return array(
     'access callback' => true,
   ),
 */
+/*
+  'addthisstudent' => array(
+    'page callback' => 'add_student',
+    //'page arguments' => array('groupgrade_tasks_dashboard'),
+    'file' => 'Admin.php',
+    'file path' => drupal_get_path('module', 'groupgrade').'/views',
+
+    'access callback' => true,
+  ),
+*/
   'class/about' => array(
     'title' => 'About CLASS',
     'page callback' => 'groupgrade_about',
