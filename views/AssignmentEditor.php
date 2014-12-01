@@ -6292,18 +6292,17 @@ $task = form_process_fieldset($form['tasks'],$form_state);
 			
 		endforeach;		
 	
-	$TA_due_date_select[$key]['-TA_due_date_select'] = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
-		drupal_set_message($TA_due_date_select);
-		//drupal_set_message($key . '-' .  sprintf("%d days after triggering",$TA_due_select));
+	$TA_due_date = sprintf('%s-%s-%s %s:%s:00', $start['year'], $start['month'], $start['day'], $start['hour'], $start['minute']);
+	drupal_set_message($TA_due_date);
 	}
 	// HAVE to DO
-	$TA_start_time = $form['tasks'][$key]['advanced'][$key . '-start_time']['#value'];
+	$TA_start_time = $form['tasks'][$key]['advanced'][$key . '-TA_start_time']['#value'];
 	drupal_set_message($TA_start_time);
 	// drupal_set_message($key . '-' . $TA_due);
 	// drupal_set_message($key . '-' . $TA_name);
 	// drupal_set_message($key . '-' . $TA_type);
 	$TA_at_duration_end = $form['tasks'][$key]['advanced'][$key . '-TA_at_duration_end']['#value'];	
-	$TA_what_if_late = $form['tasks'][$key]['advanced'][$key . '$TA_what_if_late']['#value'];		
+	$TA_what_if_late = $form['tasks'][$key]['advanced'][$key . '-TA_what_if_late']['#value'];		
 }
  
   
