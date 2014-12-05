@@ -990,8 +990,8 @@ return array(
    'file' => 'AssignmentEditor.php',
    'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
-   'page callback' => 'groupgrade_form1',
-   'page arguments' => array(),
+   'page callback' => 'drupal_get_form',
+   'page arguments' => array('groupgrade_ae'),
    
    'access callback' => true,
  ),
