@@ -22,6 +22,11 @@ function getDefaults($type, $v){
 	    '#suffix' => '</div>',
     );   
 	
+	$defaults[$v]['basic'][$v . '-TA_type'] = array(
+		'#type' => 'hidden',
+      	'#value' => $type,
+	);
+	
 	$defaults[$v]['basic'][$v . '-TA_name'] = array(
       '#type' => 'textfield',
       '#title' => t('Task Assignment Name:'),
