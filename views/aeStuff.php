@@ -86,7 +86,7 @@ function getDefaults($type, $v){
    //'#description' => t('Set this to <em>Yes</em> if you would like this category to be selected by default.'),
    );
    // option "NO"
-   $defaults[$v]['advanced'][$v . '-TA_start_time date_select'] =array(
+   $defaults[$v]['advanced'][$v . '-TA_start_time_date_select'] =array(
 	   '#type' => 'date_select',
     '#date_format' => 'Y-m-d H:i',
     '#title' => t('Start no earlier than specific date/time'),
@@ -158,35 +158,14 @@ function getDefaults($type, $v){
 
    $defaults[$v]['advanced'][$v . '-TA_assignee_constraints_select'] = array(
         '#type' => 'radios',
-        '#title' => 'Student does work:',
+        '#title' => 'Individual or group task?',
 	'#options' => array (
 	  0 => t('Individual'),
 	  1 => t('Group'),
 		),
         '#default_value' => 0,
-    	'#states' => array(
-		'visible' => array(
-		':input[name="p1-TA_assignee_constraints"]' => array('value' => 0),
-		),
-	),
 	);
 
-   // option 1
-   
-   $defaults[$v]['advanced'][$v . '-TA_assignee_constraints_select1'] = array(
-        '#type' => 'radios',
-        '#title' => 'Instructor does work:',
-	'#options' => array (
-	  0 => t('Individual'),
-	  1 => t('Group'),
-		),
-        '#default_value' => 0,
-    	'#states' => array(
-		'visible' => array(
-		':input[name="p1-TA_assignee_constraints"]' => array('value' => 1),
-		),
-	),
-	);
    $defaults[$v]['advanced'][$v . '-TA_function_type'] = array(
 	
    );
@@ -230,24 +209,17 @@ function getDefaults($type, $v){
     '#prefix' => '<div style="margin-bottom:50px;margin-left:50px">',
     '#suffix' => '</div>',
    );   
-   $defaults[$v]['supplemental'][$v . '-TA_allow_edit+comment'] = array(
+   $defaults[$v]['supplemental'][$v . '-TA_comments'] = array(
        '#type' => 'select',
-       '#title' => t('Edit & comment?'),
+       '#title' => t('Comments?'),
        '#options' => array(
-         0 => t('Yes'),
-         1 => t('No'),
+         0 => t('Edit and Comment'),
+         1 => t('Just Comment'),
+         2 => t('No'),
 		 ),
        '#description' => t('Choose One'),
    );
-   $defaults[$v]['supplemental'][$v . '-TA_allow_comment_only'] = array(
-       '#type' => 'select',
-       '#title' => t('Comment only?'),
-       '#options' => array(
-         0 => t('No'),
-         1 => t('Yes'),
-		 ),
-       '#description' => t('Choose One'),
-	   );
+   
    $defaults[$v]['supplemental'][$v . '-TA_allow_revisions'] = array(
        '#type' => 'select',
        '#title' => t('Optionally send back for revisions?'),
