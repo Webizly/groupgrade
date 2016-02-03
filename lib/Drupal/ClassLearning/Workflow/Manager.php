@@ -178,7 +178,7 @@ class Manager {
           t('task assigned for'),
           $courseSectionSemester
         );
-		if($course->course_name == ' PHIL 334' || $course->course_name == 'CS 101')
+		if($course->course_name == ' PHIL 334' || $course->course_name == 'CS 101' || $course->course_name == 'IS 350')
 		{
 	        $body = sprintf('Hello,
 	
@@ -4725,7 +4725,7 @@ if($asec->assignment_id == 85)//Homework 5
 	    ];
 	}
 
-	if($course->course_name == ' PHIL 334')
+	if($course->course_name == ' PHIL 334' || $course->course_name == 'IS 350')
 	{
 		return [
 	      'create problem' => [
