@@ -11,10 +11,10 @@ return array(
     // Permissions
     'access callback' => 'groupgrade_baseaccess',
   ),
-/*
+
   'csvsecret' => array(
     'title' => 'CLASS Learning System',
-    'page callback' => 'get_csv',
+    'page callback' => 'fix_these_grades',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Admin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
@@ -22,7 +22,7 @@ return array(
     // Permissions
     'access arguments' => array('access administration pages'),
   ),
-*/
+
   'home' => array(
     'page callback' => 'groupgrade_home',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
@@ -31,7 +31,7 @@ return array(
 
     'access callback' => true,
   ),
-
+/*
   'fixthesedates' => array(
   	'page callback' => 'fix_times',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
@@ -40,17 +40,18 @@ return array(
 
     'access callback' => true,
   ),
-  
+*/
+/*
   'addthisstudent' => array(
-  	'page callback' => 'add_student',
+    'page callback' => 'add_student',
     //'page arguments' => array('groupgrade_tasks_dashboard'),
     'file' => 'Admin.php',
     'file path' => drupal_get_path('module', 'groupgrade').'/views',
 
     'access callback' => true,
   ),
-
-  'about' => array(
+*/
+  'class/about' => array(
     'title' => 'About CLASS',
     'page callback' => 'groupgrade_about',
     'file' => 'Admin.php', //Change later

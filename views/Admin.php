@@ -2,7 +2,7 @@
 
 use Drupal\ClassLearning\Common\Modal,
 Drupal\ClassLearning\Models\WorkflowTask as Task,
-  Drupal\ClassLearning\Models\Workflow;
+Drupal\ClassLearning\Models\Workflow;
   
 function groupgrade_home(){
 	return '
@@ -535,17 +535,76 @@ function file_test_form_submit($form, &$form_state){
 	return drupal_set_message(sprintf("<a href='%s'>%s</a>",url('sites/default/files/CLASS/' . $file->filename),$file->uri));
 }
 
+function fix_these_grades(){
+	//This was used to fix the LTI issue where grades would all appear as 0's.
+	
+	return "Hold it!";
+	
+	//Get all the tasks
+	$tasks = Task::where('task_id','>=',22791)
+	->where('task_id','<',23970)
+	->where('type','=','create solution')
+	->get();
+	
+	echo "---" . count($tasks) . "---<br>";
+	
+	//Get the workflow id of the first task and then
+	//increment it every iteration.
+	$workflow_id = 2674;
+	//2555
+	$missing = 0;
+	
+	foreach($tasks as $t){
+		//Get the user's id
+		$user = $t->user_id;
+		$workflow = Workflow::where('workflow_id','=',$workflow_id)
+		->first();
+		
+		$workflow_id++;
+		
+		if(!isset($workflow->data['grade'])){
+			$missing++;
+			continue;
+		}
+		
+		$grade = $workflow->data['grade'];
+		
+		$existingGrade = db_select('lti_tool_provider_outcomes', 'lti')
+		  ->fields('lti',array('lti_tool_provider_outcomes_score'))
+		  ->condition('lti_tool_provider_outcomes_user_id',$user)
+		  ->condition('lti_tool_provider_outcomes_resource_entity_id_fk',26)
+		  ->execute()
+		  ->fetchAssoc();
+		
+		echo $user . " " . "EXISTING: " . $existingGrade['lti_tool_provider_outcomes_score'] . " " . "CURRENT: " . ($grade / 100) . "<br>";
+		
+		if(($grade / 100) > $existingGrade['lti_tool_provider_outcomes_score']){
+			db_update('lti_tool_provider_outcomes')
+			  ->fields(array('lti_tool_provider_outcomes_score' => $grade / 100))
+			  ->condition('lti_tool_provider_outcomes_resource_entity_id_fk',26)
+			  ->condition('lti_tool_provider_outcomes_user_id',$user)
+			  ->execute();
+		}
+
+	}
+	
+	return "" . $missing;
+}
+
 function get_csv(){
 	
-	//Get every workflow from 1488 to 1541
-	$workflows = Workflow::where('workflow_id','>',1583)
-	  ->where('workflow_id','<',1638)
+	return "!!!";
+	
+	//Get every workflow from 2198 to 2317
+	$workflows = Workflow::where('workflow_id','>=',2174)
+	  ->where('workflow_id','<=',2197)
 	  ->get();
 	
 	$headers = array(
-	'Question No.',
+	'Workflow ID',
 	'Problem Creator',
 	'Solution Creator',
+	'Extra Credit',
 	'Grader 1',
 	'Grade 1',
 	'Grader 2',
@@ -556,7 +615,97 @@ function get_csv(){
 	'Final Grade',
 	);
 	
-	$fp = fopen('sites/default/files/file2.csv','w');
+	$fn = "CS101Homework6_FALL2014.csv";
+	
+	$fp = fopen('sites/default/files/' . $fn,'w');
+	
+	fputcsv($fp,$headers);
+	
+	foreach($workflows as $wf){
+		
+		$tasks = Task::where('workflow_id','=',$wf->workflow_id)
+		  ->get();
+		  
+		$csv_entry = array(
+			$wf->workflow_id,
+		);
+		
+		foreach($tasks as $t){
+			
+			$user = user_load($t->user_id);
+			
+			switch($t->type){
+				case 'create problem':
+					$csv_entry[] = $user->name;
+					break;
+				case 'create solution':
+					$csv_entry[] = $user->name;
+					if(isset($t->user_history))
+						$csv_entry[] = "Yes";
+					else
+						$csv_entry[] = "No";
+					break;
+				case 'grade solution':
+					$csv_entry[] = $user->name;
+					$csv_entry[] = $t->data['grades']['Exercise_1-Script_Runs_in_MatLab']['grade'] + $t->data['grades']['Exercise_1-Correct_Results']['grade'] + $t->data['grades']['Exercise_1-Testing_Quality']['grade'] + $t->data['grades']['Exercise_2-Script_Runs_in_MatLab']['grade'] + $t->data['grades']['Exercise_2-Correct_Results']['grade'] + $t->data['grades']['Exercise_2-Testing_Quality']['grade'] + $t->data['grades']['Exercise_3-Script_Runs_in_MatLab']['grade'] + $t->data['grades']['Exercise_3-Correct_Results']['grade'] + $t->data['grades']['Exercise_3-Testing_Quality']['grade'] + $t->data['grades']['Exercise_4-Script_Runs_in_MatLab']['grade'] + $t->data['grades']['Exercise_4-Correct_Results']['grade'] + $t->data['grades']['Exercise_4-Testing_Quality']['grade'];
+					break;
+				case 'dispute':
+					$csv_entry[] = $user->name;
+					if(isset($t->data['value'])){
+						if($t->data['value'] == true){
+							$csv_entry[] = $t->data['proposed-Exercise_1-Script_Runs_in_MatLab-grade'] + $t->data['proposed-Exercise_1-Correct_Results-grade'] + $t->data['proposed-Exercise_1-Testing_Quality-grade'] + $t->data['proposed-Exercise_2-Script_Runs_in_MatLab-grade'] + $t->data['proposed-Exercise_2-Correct_Results-grade'] + $t->data['proposed-Exercise_2-Testing_Quality-grade'] + $t->data['proposed-Exercise_3-Script_Runs_in_MatLab-grade'] + $t->data['proposed-Exercise_3-Correct_Results-grade'] + $t->data['proposed-Exercise_3-Testing_Quality-grade'] + $t->data['proposed-Exercise_4-Script_Runs_in_MatLab-grade'] + $t->data['proposed-Exercise_4-Correct_Results-grade'] + $t->data['proposed-Exercise_4-Testing_Quality-grade'];
+						}
+						else
+							$csv_entry[] = 'No Dispute';
+					}
+					else {
+						$csv_entry[] = 'No Dispute';
+					}
+					break;
+				case 'resolve dispute':
+					if(isset($t->data['Exercise_1-Script_Runs_in_MatLab-grade'])){
+						$csv_entry[] = $t->data['Exercise_1-Script_Runs_in_MatLab-grade'] + $t->data['Exercise_1-Correct_Results-grade'] + $t->data['Exercise_1-Testing_Quality-grade'] + $t->data['Exercise_2-Script_Runs_in_MatLab-grade'] + $t->data['Exercise_2-Correct_Results-grade'] + $t->data['Exercise_2-Testing_Quality-grade'] + $t->data['Exercise_3-Script_Runs_in_MatLab-grade'] + $t->data['Exercise_3-Correct_Results-grade'] + $t->data['Exercise_3-Testing_Quality-grade'] + $t->data['Exercise_4-Script_Runs_in_MatLab-grade'] + $t->data['Exercise_4-Correct_Results-grade'] + $t->data['Exercise_4-Testing_Quality-grade'];
+					}
+					else
+						$csv_entry[] = 'No resolution';
+					break;
+			}
+			
+		}
+
+		if(isset($wf->data['grade']))
+			$csv_entry[] = $wf->data['grade'];
+			else
+			$csv_entry[] = 'No grade';
+			
+		fputcsv($fp,$csv_entry);
+		$csv_entry = null;
+		
+	}  
+	 
+	fclose($fp);
+	 
+	return "<a href = 'sites/default/files/" . $fn . "'>Download</a>";
+	
+	/*
+	//Get every workflow from 1488 to 1541
+	$workflows = Workflow::where('workflow_id','>=',2174)
+	  ->where('workflow_id','<=',2197)
+	  ->get();
+	
+	$headers = array(
+	'Question No.',
+	'Original Problem Upload',
+	'Edited Problem Upload',
+	'Solution URL',
+	'Grade 1 URL',
+	'Grade 2 URL',
+	'Dispute URL',
+	'Instructor Resolved Grade',
+	'Final Grade',
+	);
+	
+	$fp = fopen('sites/default/files/csfiles-hw6.csv','w');
 	
 	fputcsv($fp,$headers);
 	
@@ -573,34 +722,28 @@ function get_csv(){
 			
 			switch($t->type){
 				case 'create problem':
-					$csv_entry[] = $t->user_id;
+					if(isset($t->task_file))
+					  $csv_entry[] = "http://ec2-54-81-177-27.compute-1.amazonaws.com/" . $t->task_file;
+					else
+					  $csv_entry[] = "Not found";
+					break;
+				case 'edit problem':
+					if(isset($t->task_file))
+					  $csv_entry[] = "http://ec2-54-81-177-27.compute-1.amazonaws.com/" . $t->task_file;
+					else
+					  $csv_entry[] = "Not found";
 					break;
 				case 'create solution':
-					$csv_entry[] = $t->user_id;
+					$csv_entry[] = "http://ec2-54-81-177-27.compute-1.amazonaws.com/class/task/" . $t->task_id;
 					break;
 				case 'grade solution':
-					$csv_entry[] = $t->user_id;
-					$csv_entry[] = $t->data['grades']['Factual_Accuracy']['grade'] + $t->data['grades']['Philosophical_Accuracy']['grade'] + $t->data['grades']['Writing']['grade'];
+					$csv_entry[] = "http://ec2-54-81-177-27.compute-1.amazonaws.com/class/task/" . $t->task_id;
 					break;
 				case 'dispute':
-					$csv_entry[] = $t->user_id;
-					if(isset($t->data['value'])){
-						if($t->data['value'] == true){
-							$csv_entry[] = $t->data['proposed-Factual_Accuracy-grade'] + $t->data['proposed-Philosophical_Accuracy-grade'] + $t->data['proposed-Writing-grade'];
-						}
-						else
-							$csv_entry[] = 'No Dispute';
-					}
-					else {
-						$csv_entry[] = 'No Dispute';
-					}
+					$csv_entry[] = "http://ec2-54-81-177-27.compute-1.amazonaws.com/class/task/" . $t->task_id;
 					break;
 				case 'resolve dispute':
-					if(isset($t->data['Factual_Accuracy-grade'])){
-						$csv_entry[] = $t->data['Factual_Accuracy-grade'] + $t->data['Philosophical_Accuracy-grade'] + $t->data['Writing-grade'];
-					}
-					else
-						$csv_entry[] = 'No resolution';
+					$csv_entry[] = "http://ec2-54-81-177-27.compute-1.amazonaws.com/class/task/" . $t->task_id;
 					break;
 			}
 			
@@ -620,31 +763,33 @@ function get_csv(){
 	fclose($fp);
 	 
 	return '???';
+	 * 
+	 */
 }
 
 function fix_times(){
 	
 	$newtimes = array(
 		'create_problem' => array(
-			'date' => '2014-10-17 23:45:00',
+			'date' => '2014-11-19 23:45:00',
 			),
 		'edit_problem' => array(
-			'date' => '2014-10-20 23:45:00',
+			'date' => '2014-11-22 23:45:00',
 			),
 		'create_solution' => array(
-			'date' => '2014-10-27 23:45:00',
+			'date' => '2014-11-26 23:45:00',
 			),
 		'grade_solution' => array(
-			'date' => '2014-11-03 23:45:00',
+			'date' => '2014-12-03 23:45:00',
 			),
 		'resolution_grader' => array(
-			'date' => '2014-11-07 23:45:00',
+			'date' => '2014-12-06 23:45:00',
 			),
 		'dispute' => array(
-			'date' => '2014-11-10 23:45:00',
+			'date' => '2014-12-09 23:45:00',
 			),
 		'resolve_dispute' => array(
-			'date' => '2014-11-13 23:45:00',
+			'date' => '2014-12-12 23:45:00',
 			),
 	);
 	
@@ -652,7 +797,7 @@ function fix_times(){
 	
 	db_update('pla_task_times')
 	  ->fields(array('data' => $sernewtimes))
-	  ->condition('asec_id',102)
+	  ->condition('asec_id',107)
 	  ->execute();
   
   
@@ -664,7 +809,7 @@ function add_student(){
 	
 	$wf = new Workflow();
 	$wf->type = "one_a";
-	$wf->assignment_id = 201;
+	$wf->assignment_id = 107;
 	$wf->workflow_start = 1;
 	$wf->workflow_end = null;
 	$wf->data = null;
@@ -680,7 +825,7 @@ function add_student(){
 	
 	$useThisWF = $result['workflow_id'];
 	
-	$tasks = Task::where('workflow_id', '=', 2306)
+	$tasks = Task::where('workflow_id', '=', 2195)
 	  ->get();
 	
 	foreach($tasks as $task){

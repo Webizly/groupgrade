@@ -525,6 +525,19 @@ function gg_task_create_problem_form($form, &$form_state, $params) {
 	
   }
 
+  $problemDifficultyLevels = array(
+  "EASY" => "Easy",
+  "MEDIUM" => "Medium",
+  "DIFFICULT" => "Difficult"
+  );
+
+  $items['problem-difficulty'] = [
+    '#type' => 'select',
+    '#title' => 'Problem Difficulty',
+    '#options' => $problemDifficultyLevels,
+    '#required' => 'true'
+  ];
+
   $items['save'] = [
     '#type' => 'submit',
     '#value' => 'Save Problem For Later',
@@ -579,7 +592,9 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
     return drupal_not_found();
   
   $save = ($form_state['clicked_button']['#id'] == 'edit-save' );
-  $task->setDataAttribute(['problem' =>  $form['body']['#value']]);
+  $task->setDataAttribute(['problem' =>  $form['body']['#value'],
+  'question_difficulty' =>  $form['problem-difficulty']['#value']
+  ]);
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
   $task->save();
 
@@ -684,6 +699,19 @@ function gg_task_edit_problem_form($form, &$form_state, $params) {
     '#default_value' => $comment,
   ];
 
+  $problemDifficultyLevels = array(
+  "EASY" => "Easy",
+  "MEDIUM" => "Medium",
+  "DIFFICULT" => "Difficult"
+  );
+
+  $items['problem-difficulty'] = [
+    '#type' => 'select',
+    '#title' => 'Problem Difficulty',
+    '#options' => $problemDifficultyLevels,
+    '#required' => 'true'
+  ];
+
   $items['save'] = [
     '#type' => 'submit',
     '#value' => 'Save Edited Problem For Later',
@@ -741,6 +769,7 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
   $task->setDataAttribute([
     'problem' =>  $form['body']['#value'],
     'comment' => $form['comment']['#value'],
+    'expert_defined_question_difficulty' => $form['problem-difficulty']['#value']
   ]);
 
   if ($task->status !== 'timed out') $task->status = ($save) ? 'started' : 'complete';
@@ -766,6 +795,8 @@ function gg_task_edit_problem_form_submit($form, &$form_state) {
  * Impliments a edit problem form
  */
 function gg_task_create_solution_form($form, &$form_state, $params) {
+	
+	
   $problem = (isset($params['task']->data['solution'])) ? $params['task']->data['solution'] : '';
   $items = [];
 
@@ -812,6 +843,38 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
     return $items;
   endif;
 
+  $asec_id = db_select('pla_workflow', 'pla_w')
+  	->fields('pla_w', array('assignment_id'))
+	->condition('workflow_id', $params['task']->workflow_id)
+	->execute()
+	->fetch();
+
+  //"Invisible", "Visible", "Visible & Edit Optional", "Visible & Edit Required"
+
+  
+  $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
+		->fields('pla_a_s', array('question_visibility'))
+		->condition('asec_id', $asec_id->asec_id)
+		->execute()
+		->fetch();
+
+  
+  if (isset($problem_visibility)){
+  	
+	  if ($problem_visibility != "INVISIBLE"){
+	  	
+		$problem_difficulty = Task::whereType('edit problem')
+    		->where('workflow_id','=',$params['task']->workflow_id)
+			->first();
+		
+		  $items[] = [
+		    '#markup' => sprintf('<h3>Question Difficulty</h3><p>%s</p>', $problem_difficulty->data['expert_defined_question_difficulty']),
+		  ];
+		
+	  } 
+	
+  }
+  
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
@@ -1055,6 +1118,36 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $items[] = ['#markup' => sprintf('<hr><h4>%s: %s</h4>', t('Current Task'), t($params['task']->humanTask()))];
 
+  $asec_id = db_select('pla_workflow', 'pla_w')
+  	->fields('pla_w', array('assignment_id'))
+	->condition('workflow_id', $params['task']->workflow_id)
+	->execute()
+	->fetch();
+
+  //"Invisible", "Visible", "Visible & Edit Optional", "Visible & Edit Required"
+
+  $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
+		->fields('pla_a_s', array('question_visibility'))
+		->condition('asec_id', $asec_id->asec_id)
+		->execute()
+		->fetch();
+  
+  if (isset($problem_visibility)){
+  	
+	  if ($problem_visibility != "INVISIBLE"){
+	  	
+		$problem_difficulty = Task::whereType('edit problem')
+    		->where('workflow_id','=',$params['task']->workflow_id)
+			->first();
+		
+		  $items[] = [
+		    '#markup' => sprintf('<h3>Question Difficulty</h3><p>%s</p>', $problem_difficulty->data['expert_defined_question_difficulty']),
+		  ];
+		
+	  } 
+	
+  }
+
   if (isset($params['task']->settings['instructions']))
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
@@ -1253,11 +1346,54 @@ function gg_task_dispute_form($form, &$form_state, $params)
 	  $sf = sprintf('<br><a href="%s" style="font-weight:bold;">%s</a>',url($solution->task_file),t('A file was uploaded with this solution. Click here to view it.'));
   }
 
+  $asec_id = db_select('pla_workflow', 'pla_w')
+  	->fields('pla_w', array('assignment_id'))
+	->condition('workflow_id', $params['task']->workflow_id)
+	->execute()
+	->fetch();
+
+  //"Invisible", "Visible", "Visible & Edit Optional", "Visible & Edit Required"
+
+  $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
+		->fields('pla_a_s', array('question_visibility'))
+		->condition('asec_id', $asec_id->asec_id)
+		->execute()
+		->fetch();
+  
+  if (isset($problem_visibility)){
+  	
+	  if ($problem_visibility != "INVISIBLE"){
+	  	
+		$problem_difficulty = Task::whereType('edit problem')
+    		->where('workflow_id','=',$params['task']->workflow_id)
+			->first();
+		
+			// Problem for the Workflow
+		  $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p><strong>Question Difficulty</strong>: %s</p><br><p>%s %s</p>',
+		    t('Problem'),
+		    $problem_difficulty->data['expert_defined_question_difficulty'],
+		    nl2br($params['problem']->data['problem']),$f
+  ), true);
+		
+		} else {
+				
+			// Problem for the Workflow
+			  $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p>',
+			    t('Problem'),
+			    nl2br($params['problem']->data['problem']),$f
+			  ), true);
+			
+		}
+
+  } else {
+  			
   // Problem for the Workflow
   $a->addGroup('Problem', 'problem-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p>',
     t('Problem'),
     nl2br($params['problem']->data['problem']),$f
   ), true);
+  	
+  }
 
   // Solution for the Workflow
   $a->addGroup('Solution', 'solution-'.$task->task_id, sprintf('<h4>%s:</h4><p>%s %s</p><hr />',
@@ -1632,6 +1768,36 @@ function gg_task_resolve_dispute_form($form, &$form_state, $params)
     $items[] = [
       '#markup' => sprintf('<p>%s</p>', t($params['task']->settings['instructions']))
     ];
+
+$asec_id = db_select('pla_workflow', 'pla_w')
+  	->fields('pla_w', array('assignment_id'))
+	->condition('workflow_id', $params['task']->workflow_id)
+	->execute()
+	->fetch();
+
+  //"Invisible", "Visible", "Visible & Edit Optional", "Visible & Edit Required"
+
+  $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
+		->fields('pla_a_s', array('question_visibility'))
+		->condition('asec_id', $asec_id->asec_id)
+		->execute()
+		->fetch();
+  
+  if (isset($problem_visibility)){
+  	
+	  if ($problem_visibility != "INVISIBLE"){
+	  	
+		$problem_difficulty = Task::whereType('edit problem')
+    		->where('workflow_id','=',$params['task']->workflow_id)
+			->first();
+		
+		  $items[] = [
+		    '#markup' => sprintf('<h3>Question Difficulty</h3><p>%s</p>', $problem_difficulty->data['expert_defined_question_difficulty']),
+		  ];
+		
+	  } 
+	
+  }
 
   $items[] = [
     '#markup' => '<h4>'.t('Problem').':</h4>'

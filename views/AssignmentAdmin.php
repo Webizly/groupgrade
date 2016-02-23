@@ -245,6 +245,20 @@ function groupgrade_add_assignment_section($form, &$form_state, $assignment) {
     '#required' => true
   );
 
+  // Question Difficulty
+  $showQuestionVisibilityOptions = array(
+  "INVISIBLE" => "Invisible",
+  "VISIBLE" => "Visible",
+  "EDIT_OPTIONAL" => "Visible & Edit Optional",
+  "EDIT_REQUIRED" => "Visible & Edit Required"
+  );
+
+  $items['question-visibility'] = array(
+  	'#type' => 'select',
+  	'#title' => 'Question Difficulty is:',
+  	'#options' => $showQuestionVisibilityOptions
+  );
+
   $items['start-now'] = [
     '#type' => 'checkbox',
     '#title' => 'Start Now',
@@ -383,6 +397,7 @@ function groupgrade_add_assignment_section_submit($form, &$form_state) {
   $s = new AssignmentSection;
   $s->assignment_id = (int) $form['assignment_id']['#value'];
   $s->section_id = (int) $section;
+  $s->question_visibility = (String) $form['question-visibility']['#value'];
 
   foreach (['year', 'month', 'day', 'hour', 'minute'] as $i) :
     if ($start[$i] == '')
