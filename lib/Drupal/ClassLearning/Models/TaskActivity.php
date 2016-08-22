@@ -6,15 +6,13 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
 
 class TaskActivity extends ModelBase {
   protected $primaryKey = 'TA_id';
-  protected $table = 'task_activity';
+  protected $table = 'task_assignment';
   public $timestamps = false;
 
-  public function getTask()
+  public function task()
   {
-    return WorkflowTask::where('ta_id','=',$this->ta_id)
+    return WorkflowTask::where('task_id','=',$this->task_id)
 	  ->first();
   }
-  
-  
   
 }

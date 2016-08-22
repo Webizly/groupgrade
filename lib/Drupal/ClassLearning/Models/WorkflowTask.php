@@ -4,7 +4,6 @@ use Illuminate\Database\Eloquent\Model as ModelBase,
   Drupal\ClassLearning\Exception as ModelException,
   Carbon\Carbon,
   Drupal\ClassLearning\Workflow\Manager as WorkflowManager,
-  Drupal\ClassLearning\Models\TaskActivity,
   Drupal\ClassLearning\Workflow\InternalCallback;
 
 
@@ -33,28 +32,10 @@ class WorkflowTask extends ModelBase {
    */
   public function getTriggerConditions()
   {
-  	//Comment out this section for testing
-    //if (! isset($this->settings['trigger']))
-      //return NULL;
-	// Does a task activity exist for this task?
-	  
-	if($this->ta_id != null){
-		db_set_active('activity');
-		
-		$ta = db_select('pla_task_activity','ta')
-		  ->fields('ta')
-		  ->condition('TA_id', $this->ta_id, '=')
-		  ->execute()
-		  ->fetchAssoc();
-		
-		/*$ta = TaskActivity::where('TA_id','=',$this->ta_id)
-		  ->first();*/
-		  
-		db_set_active('default');  
-		return json_decode($ta['TA_trigger_condition'],1);
-	}
-	else
-    	return $this->settings['trigger'];
+    if (! isset($this->settings['trigger']))
+      return NULL;
+
+    return $this->settings['trigger'];
   }
 
   /**
@@ -96,97 +77,15 @@ class WorkflowTask extends ModelBase {
       return TRUE;
 
     $conditions = $this->getTriggerConditions();
-	
-	if($this->ta_id == null){
-	    if ($conditions == NULL) return FALSE;
-	
-	    foreach ($conditions as $condition) {
-	      if (! $this->conditionMet($condition))
-	        return FALSE;
-	    }
-		
-		return true;
-	}
-	
-	//How trigger conditions will be handled
-	/*
-	 * Iterate through conditions array.
-	 * Each index of the array will contain another array.
-	 * These inner arrays will also have arrays.
-	 * Check if all of the innermost arrays are true.
-	 * If they are, then trigger.
-	 * If not, go to next innermost array and check.
-	 * This simulates an AND clause.
-	 * If all innermost arrays fail, go out and check for another array inside conditions
-	 * This simualtes an OR clause.
-	 */
-	 
-	 foreach($conditions as $condition){
-	 	$return = true;
-	 	foreach($condition as $c){
-	 			//Check for the 'first' value.
-	 			if(isset($c['first']))
-				  return true;
-			
-	 			//If we can make it to the end without hitting a false statement, we will trigger.
-				$visual_id = $c['visual_id'];
-				$status = $c['status'];
-				if(isset($c['value'])){
-					$value = $c['value'];
-				}
-				
-				//For all tasks in THIS WORKFLOW...
-				$tasks = WorkflowTask::where('workflow_id','=',$this->workflow_id)
-				  ->get();
-				
-				$no_visual_id = true;
-				  
-				foreach($tasks as $task){
-					db_set_active('activity');
-					
-					$my_ta = db_select('pla_task_activity','ta')
-		  				->fields('ta')
-		  				->condition('TA_id', $task->ta_id, '=')
-		  				->execute()
-		  				->fetchAssoc();
-					
-					/*$my_ta = TaskActivity::where('TA_id','=',$task->ta_id)
-					  ->first();
-					 */
-					db_set_active('default');
-					
-					if(!isset($my_ta)){
-						continue;
-					}
-					
-					if($my_ta->TA_visual_id == $visual_id){
-						$no_visual_id = false;
-						if($task->status != $status)
-						{
-						  if(isset($value)){
-						  	  if(!isset($task->data['value'])){
-						  	  	$return = false;
-								continue;
-						  	  }
-						  	$data = $task->data;
-						  	if($data['value'] != $value)
-							$return = false;
-						  }
-						  else
-						    $return = false;
-						}
-					}
-				}
-				
-				if($no_visual_id == true)
-				  $return = false;
-			
-	 	}
-		if($return)
-			  return true;
-	 }
-	
-    return false;
+
+    if ($conditions == NULL) return FALSE;
+
+    foreach ($conditions as $condition) {
+      if (! $this->conditionMet($condition))
+        return FALSE;
+    }
+
+    return TRUE;
   }
 
   /**
@@ -417,24 +316,6 @@ class WorkflowTask extends ModelBase {
     $this->status = 'triggered';
     $this->start = Carbon::now()->toDateTimeString();
     $this->force_end = $this->timeoutTime()->toDateTimeString();
-	
-	$my_ta = $this->taskActivity();
-	
-	if(isset($my_ta)){
-		//$my_ta->TA_start_time = $this->start;
-		//$my_ta->save();
-		db_set_active('activity');
-		
-		db_update('pla_task_activity')
-		  ->fields(array(
-		    'TA_start_time' => $this->start,
-		  ))
-		  ->condition('TA_id',$my_ta->TA_id,'=')
-		  ->execute();
-		
-		db_set_active('default');
-	}
-	
     $this->save();
 
     // Notify user
@@ -461,15 +342,16 @@ class WorkflowTask extends ModelBase {
     // Notify user
     WorkflowManager::notifyUser('expired', $this);
 
-	$my_ta = $this->taskActivity();
-	
-	if(isset($my_ta)){
-		$this->status = $my_ta->TA_at_duration_end;
-		
-		//TA_what_if_late
+	//Is this a dispute? If so, set it to complete.
+	if($this->type == 'dispute'){
+		//Not disputing!
+		$this->setData('value', false);
+		$this->save();
+		$this->complete();
 	}
-	
-    $this->save();
+	else
+		//If not, just save.
+    	$this->save();
   }
 
   /**
@@ -480,7 +362,6 @@ class WorkflowTask extends ModelBase {
     // Update the status
     $this->status = 'expired';
     $this->end = Carbon::now()->toDateTimeString();
-	
     $this->save();
   }
 
@@ -509,25 +390,6 @@ class WorkflowTask extends ModelBase {
   {
     if ($this->start == NULL)
       throw new ModelException('Start time for instance cannot be null.');
-	
-	//Hopefully, this task will have a task activity
-	$my_ta = $this->taskActivity();
-	
-	if(isset($my_ta)){
-	  $due = json_decode($my_ta['TA_due'],1);
-	  
-	  if($due['type'] == 'duration'){
-	  	return Carbon::createFromFormat(MYSQL_DATETIME, $my_ta->TA_start_time)->addDays($due['value']);
-	  }
-	  else if($due['type'] == 'date'){
-	  	return Carbon::createFromFormat(MYSQL_DATETIME, $due['value']);
-	  }
-	  
-	}
-	else{
-	
-	//Old tasks that are not using task activities. This will be deleted later,
-	//but keep this stuff for now.
 	
 	$asec = $this->assignmentSection()->first();
 	
@@ -565,6 +427,7 @@ class WorkflowTask extends ModelBase {
 			  }
 			  
 			  // Neither are set?!
+			  watchdog(WATCHDOG_INFO,"uh oh");
 			  throw new ModelException('Neither duration and date are set for ' . $this->type . ' task.');
 			}
 		}
@@ -573,9 +436,6 @@ class WorkflowTask extends ModelBase {
 	// We still haven't returned anything? This is most likely a task that won't need a time restraint.
 	// Give it something generic.
 	return Carbon::createFromFormat(MYSQL_DATETIME, $this->start)->addDays(2);
-	 
-	}
-	
 }	
   
 
@@ -729,22 +589,5 @@ class WorkflowTask extends ModelBase {
   public function assignment()
   {
     return $this->assignmentSection()->first()->assignment();
-  }
-  
-  public function taskActivity(){
-  	db_set_active('activity');
-	
-	$ta = db_select('pla_task_activity','ta')
-		  ->fields('ta')
-		  ->condition('TA_id', $this->ta_id, '=')
-		  ->execute()
-		  ->fetchAssoc();
-	
-  	/*$ta = TaskActivity::where('TA_id','=',$this->ta_id)
-	  ->first();
-	*/
-	db_set_active('default');
-	
-	return $ta;
   }
 }

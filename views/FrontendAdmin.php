@@ -645,8 +645,6 @@ function groupgrade_remove_reassign_form_submit($form, &$form_state){
 	  	$update = json_decode($task->user_history,true);
       
 	  $ar = array();
-	  $new_user = user_load($user);
-	  $ar = array();
 	  $ar['previous_uid'] = $removeUser->uid;
 	  $ar['previous_name'] = $removeUser->name;
 	  $ar['time'] = Carbon\Carbon::now()->toDateTimeString();

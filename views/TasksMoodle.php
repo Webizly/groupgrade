@@ -569,24 +569,12 @@ function gg_task_create_problem_form_validate($form, &$form_state) {
 		$file->status = 1;
 		file_save($file);
 		
-		$fileLocation = 'public://CLASS_FILES/';
-
-		if(file_prepare_directory($fileLocation, FILE_CREATE_DIRECTORY)) {
-		  if($file = file_move($file, $fileLocation . $file->filename)){
-		    $form_state['storage']['file'] = $file;
-		  }
-		  else {
-		    form_set_error('file', "The file failed to save. Please notify your instructor right away.");
-		  }
-		}
-		/*
 		if($file = file_move($file, 'public://CLASS')) {
 			$form_state['storage']['file'] = $file;
 		}
 		else{
 			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
 		}
-		*/
 	}
 	else{
 		if($task->settings['file'] == 'mandatory')
@@ -614,9 +602,7 @@ function gg_task_create_problem_form_submit($form, &$form_state) {
   	if(isset($form_state['storage']['file'])){
   	  $file = $form_state['storage']['file'];
 	  $url = $file->uri;
-	  //drupal_set_message(sprintf('%s', 'File->URI is ' . $url));
 	  $url = str_replace('public://','sites/default/files/',$url);
-	  //drupal_set_message(sprintf('%s', 'URL is ' . $url));
 	  $task->task_file = $url;
   	} 
     $task->complete();
@@ -756,24 +742,13 @@ function gg_task_edit_problem_form_validate($form, &$form_state) {
 		
 		$file->status = 1;
 		file_save($file);
-		$fileLocation = 'public://CLASS_FILES/';
-
-		if(file_prepare_directory($fileLocation, FILE_CREATE_DIRECTORY)) {
-		  if($file = file_move($file, $fileLocation . $file->filename)){
-		    $form_state['storage']['file'] = $file;
-		  }
-		  else {
-		    form_set_error('file', "The file failed to save. Please notify your instructor right away.");
-		  }
-		}
-	/*	
+		
 		if($file = file_move($file, 'public://CLASS')) {
 			$form_state['storage']['file'] = $file;
 		}
 		else{
 			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
 		}
-	*/
 	}
 	else{
 		if($task->settings['file'] == 'mandatory')
@@ -880,7 +855,7 @@ function gg_task_create_solution_form($form, &$form_state, $params) {
 
   $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
 		->fields('pla_a_s', array('question_visibility'))
-		->condition('asec_id', $asec_id->assignment_id)
+		->condition('asec_id', $asec_id->asec_id)
 		->execute()
 		->fetch();
 
@@ -968,24 +943,13 @@ function gg_task_create_solution_form_validate($form, &$form_state) {
 		
 		$file->status = 1;
 		file_save($file);
-		$fileLocation = 'public://CLASS_FILES/';
-
-		if(file_prepare_directory($fileLocation, FILE_CREATE_DIRECTORY)) {
-		  if($file = file_move($file, $fileLocation . $file->filename)){
-		    $form_state['storage']['file'] = $file;
-		  }
-		  else {
-		    form_set_error('file', "The file failed to save. Please notify your instructor right away.");
-		  }
-		}
-		/*	
+		
 		if($file = file_move($file, 'public://CLASS')) {
 			$form_state['storage']['file'] = $file;
 		}
 		else{
 			form_set_error('file', "The file failed to save. Please notify your instructor right away.");
 		}
-		*/
 	}
 	else{
 		if($task->settings['file'] == 'mandatory')
@@ -1042,7 +1006,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
 	->fetch();
   
   #krumo($class_assignment_section_id->assignment_id);
-  /*
+  
   //SELECT atitle FROM moodlelink3 WHERE asecid = $class_assignment_section_id
   $class_assignment_title = db_select('moodlelink_assignment', 'ml4')
   	->fields('ml4', array('atitle'))
@@ -1079,7 +1043,7 @@ function gg_task_create_solution_form_submit($form, &$form_state) {
 	->key(array('atitle' => $record->atitle))
 	->fields((array) $record)
 	->execute();
-  */
+
   if (! $save)
     return drupal_goto('class');
 }
@@ -1165,7 +1129,7 @@ function gg_task_grade_solution_form($form, &$form_state, $params) {
 
   $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
 		->fields('pla_a_s', array('question_visibility'))
-		->condition('asec_id', $asec_id->assignment_id)
+		->condition('asec_id', $asec_id->asec_id)
 		->execute()
 		->fetch();
   
@@ -1391,15 +1355,12 @@ function gg_task_dispute_form($form, &$form_state, $params)
 
   //"Invisible", "Visible", "Visible & Edit Optional", "Visible & Edit Required"
 
-  if (isset($asec_id)){
-
   $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
 		->fields('pla_a_s', array('question_visibility'))
-		->condition('asec_id', $asec_id->assignment_id)
+		->condition('asec_id', $asec_id->asec_id)
 		->execute()
 		->fetch();
-  }
-
+  
   if (isset($problem_visibility)){
   	
 	  if ($problem_visibility != "INVISIBLE"){
@@ -1663,7 +1624,7 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 	->fetch();
 
   #drupal_set_message($class_workflow_id->workflow_id);
-/*  	
+  	
   //SELECT uid, asecid FROM moodlelink_workflow WHERE workflowid = $class_workflow_id->workflow_id
   $class_id = db_select('moodlelink_workflow', 'ml5')
 	->fields('ml5', array('uid', 'asecid'))
@@ -1716,6 +1677,10 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 	->fetch();
   
   #drupal_set_message($lti->lti_id);
+   
+  /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
+   *WHERE lti_tool_provider_outcomes_id = $lti->lti_id
+   */
   
   $record = db_select('lti_tool_provider_outcomes', 'lti')
   	->fields('lti', array('lti_tool_provider_outcomes_score'))
@@ -1736,7 +1701,7 @@ function gg_task_dispute_form_submit($form, &$form_state) {
 	->condition('lti_tool_provider_outcomes_id', $lti->lti_id)
 	->execute();
   }
-  */
+	
   endif;
 }
 
@@ -1815,7 +1780,7 @@ $asec_id = db_select('pla_workflow', 'pla_w')
 
   $problem_visibility = db_select('pla_assignment_section', 'pla_a_s')
 		->fields('pla_a_s', array('question_visibility'))
-		->condition('asec_id', $asec_id->assignment_id)
+		->condition('asec_id', $asec_id->asec_id)
 		->execute()
 		->fetch();
   
@@ -2072,13 +2037,12 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   #drupal_set_message($class_workflow_id->workflow_id);
   	
   //SELECT uid, asecid FROM moodlelink4 WHERE workflowid = $class_workflow_id->workflow_id
-  /*
   $class_id = db_select('moodlelink_workflow', 'ml5')
 	->fields('ml5', array('uid', 'asecid'))
 	->condition('workflowid', $class_workflow_id->workflow_id)
 	->execute()
 	->fetch();
-  */
+  
   #drupal_set_message($class_id->uid);
   #drupal_set_message($class_id->asecid);
   
@@ -2097,7 +2061,6 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
   	
   #drupal_set_message($actualgrade);
   
-  /*
   //SELECT maid FROM moodlelink_assignment WHERE asecid = $class_id->asecid
   $moodle_assignment_id = db_select('moodlelink_assignment', 'ml4')
   	->fields('ml4', array('maid'))
@@ -2125,11 +2088,11 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 	->fetch();
   
   #drupal_set_message($lti->lti_id);
-  */ 
+   
   /*SELECT lti_tool_provider_outcomes_score FROM lti_tool_provider_outcomes
    *WHERE lti_tool_provider_outcomes_id = $lti->lti_id
    */
-  /*
+  
   $record = db_select('lti_tool_provider_outcomes', 'lti')
   	->fields('lti', array('lti_tool_provider_outcomes_score'))
 	->condition('lti_tool_provider_outcomes_id', $lti->lti_id)
@@ -2149,7 +2112,7 @@ function gg_task_resolve_dispute_form_submit($form, &$form_state) {
 	->condition('lti_tool_provider_outcomes_id', $lti->lti_id)
 	->execute();
   }
-*/	
+	
     return drupal_goto('class');
   endif;
 }
