@@ -1388,7 +1388,7 @@ class Manager {
 
 // FDU MIS 1045 Assignments
 
-		if ($course->course_name == 'MIS 1045' && $asec->assignment_id == 4)  // Special Assignment 1
+		if ($course->course_name == 'MIS 1045' && ($asec->assignment_id == 4 || $asec->assignment_id == 7 || $asec->assignment_id == 8 || $asec->assignment_id == 9 || $asec->assignment_id == 14))  // Special Assignment 1
 	{
 		return [
 	      'create problem' => [
@@ -1846,7 +1846,7 @@ In Part 1A, design an incomplete template spreadsheet.  In Part 1B, design solut
 
 
 
-		if($course->course_name == 'MIS 1045' && $asec->assignment_id == 5)  // FDU MSIS 1045 - Special Assignment 2
+		if($course->course_name == 'MIS 1045' && ($asec->assignment_id == 5 || $asec->assignment_id == 10 || $asec->assignment_id == 12 || $asec->assignment_id == 15 || $asec->assignment_id == 17))  // FDU MSIS 1045 - Special Assignment 2
 	{
 		return [
 	      'create problem' => [
@@ -2419,7 +2419,7 @@ In Part 1A, design an incomplete template spreadsheet.  In Part 1B, design solut
 	}
 
 
-		if($course->course_name == 'MIS 1045' && $asec->assignment_id == 6)  // FDU MSIS 1045 - Special Assignment 3
+		if($course->course_name == 'MIS 1045' && ($asec->assignment_id == 6 ||  $asec->assignment_id == 11 || $asec->assignment_id == 13 || $asec->assignment_id == 16 || $asec->assignment_id == 18))  // FDU MSIS 1045 - Special Assignment 3
 	{
 		return [
 	      'create problem' => [
